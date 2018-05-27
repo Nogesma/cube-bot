@@ -1,0 +1,43 @@
+{
+  "name": "cube-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha --recursive"
+  },
+  "dependencies": {
+    "chalk": "^2.3.2",
+    "discord.js": "^11.3.2",
+    "dotenv": "^5.0.1",
+    "moment": "^2.22.0",
+    "sequelize": "^4.37.6",
+    "sinon": "^4.5.0",
+    "sqlite3": "^4.0.0",
+    "winston": "^2.4.1"
+  },
+  "xo": {
+    "esnext": true,
+    "envs": [
+      "node",
+      "mocha"
+    ],
+    "space": 2,
+    "rules": {
+      "max-len": [
+        "error",
+        80,
+        2
+      ]
+    },
+    "ignores": [
+      "Gruntfile.js"
+    ]
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "proxyquire": "^2.0.1",
+    "sinon-chai": "^3.0.0",
+    "sinon-stub-promise": "^4.0.0"
+  }
+}
