@@ -9,5 +9,4 @@ const {incomingMessage} = require('./app/message-controller.js');
 bot.on('ready', () => logger.log('info', 'Bot ready'));
 
 bot.on('message', incomingMessage);
-
 bot.login(process.env.TOKEN);

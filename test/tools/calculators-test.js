@@ -1,5 +1,8 @@
 const chai = require('chai');
-const {averageOfFiveCalculator} = require('../../app/tools/calculators');
+const {
+  averageOfFiveCalculator,
+  computeScore
+} = require('../../app/tools/calculators');
 
 chai.should();
 
@@ -24,7 +27,9 @@ describe('app/tools/calculators.js', () => {
     context('When array contains string of numbers', () => {
       it('should return the average', () => {
         averageOfFiveCalculator(['13', '4', '5', '3', '6']).should.be
-          .equal(4);
+          .equal(5.000);
+        averageOfFiveCalculator(['12.34', '0.05', '78.32', '34.21', '9.95'])
+          .should.be.equal(18.833);
         averageOfFiveCalculator(['12', '13', '17', '15', '22']).should.be
           .equal(15);
       });
@@ -33,9 +38,33 @@ describe('app/tools/calculators.js', () => {
     context('When array contains numbers', () => {
       it('should return the average', () => {
         averageOfFiveCalculator([13, 4, 5, 3, 6]).should.be
-          .equal(4);
+          .equal(5);
+        averageOfFiveCalculator([12.34, 0.05, 78.32, 34.21, 9.95])
+          .should.be.equal(18.833);
         averageOfFiveCalculator([12, 13, 17, 15, 22]).should.be
           .equal(15);
+      });
+    });
+  });
+
+  describe('#computeScore()', () => {
+    context('Compute the scores', () => {
+      it('should return max points when first', () => {
+        computeScore(10, 0).should.be.equal(100);
+        computeScore(1, 0).should.be.equal(100);
+      });
+
+      it('should return min points when last', () => {
+        computeScore(10, 9).should.be.equal(50);
+        computeScore(50, 49).should.be.equal(50);
+        computeScore(301, 300).should.be.equal(50);
+        computeScore(2, 1).should.be.equal(50);
+      });
+
+      it('should return points based on rank', () => {
+        computeScore(3, 1).should.be.equal(75);
+        computeScore(10, 5).should.be.equal(73);
+        computeScore(301, 122).should.be.equal(80);
       });
     });
   });

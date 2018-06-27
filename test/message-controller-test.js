@@ -36,7 +36,7 @@ describe('app/message-controller.js', () => {
           send: () => {
           }
         },
-        author: 'author'
+        author: {id: 'author'}
       });
       stub.should.have.been.calledWith('2018-01-01', 'author',
         ['12', '13', '14', '15', '16']);

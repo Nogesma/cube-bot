@@ -44,7 +44,7 @@ const wl = new winston.Logger({
   ]
 });
 
-wl.level = process.env.LOG_LEVEL;
+wl.level = process.env.LOG_LEVEL || 'info';
 
 const logger = {
   silly(msg) {

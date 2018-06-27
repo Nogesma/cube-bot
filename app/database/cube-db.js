@@ -1,11 +1,11 @@
 const Sequelize = require('sequelize');
-const {averageOfFiveCalculator} = require('../tools/calculators');
+const {averageOfFiveCalculator, computeScore} = require('../tools/calculators');
 
 const sequelize = new Sequelize({
-  database: process.env.database,
-  username: process.env.username,
-  password: process.env.password,
-  dialect: 'sqlite',
+  database: process.env.DATABASE,
+  username: process.env.USERNAME,
+  password: process.env.PASSWORD,
+  dialect: 'mysql',
   operatorsAliases: false
 });
 
@@ -61,10 +61,21 @@ const updateStandings = async (date, monthDate) => {
   await Promise.all(promisesUpdate);
 };
 
+const getTodayStandings = async date => {
+  const todayStandings = await cubeDB.findAll({where: {date}});
+  todayStandings.sort((a, b) => a.time - b.time);
+  return todayStandings;
+};
+
 const getMonthStandings = async monthDate => {
   const monthStandings = await cubeDB.findAll({where: {date: monthDate}});
   monthStandings.sort((a, b) => a.score - b.score);
   return monthStandings;
 };
 
-module.exports = {insertNewTimes, updateStandings, getMonthStandings};
+module.exports = {
+  insertNewTimes,
+  updateStandings,
+  getTodayStandings,
+  getMonthStandings
+};
