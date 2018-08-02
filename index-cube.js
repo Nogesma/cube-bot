@@ -6,7 +6,9 @@ const bot = new discord.Client();
 
 const {incomingMessage} = require('./app/message-controller.js');
 
-bot.on('ready', () => logger.log('info', 'Bot ready'));
+var scramble = require('./app/tools/scramble.js')
+
+bot.on('ready', () => logger.log('info', 'Bot ready'), scramble);
 
 bot.on('message', incomingMessage);
 bot.login(process.env.TOKEN);
