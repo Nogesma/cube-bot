@@ -10,7 +10,7 @@ sinonStubPromise(sinon);
 const stub = sinon.stub().returnsPromise();
 
 const {incomingMessage} = proxyquire('../app/message-controller', {
-  './database/cube-db': {
+  './controllers/cube-db': {
     insertNewTimes: stub
   },
   moment: () => {
@@ -26,7 +26,9 @@ describe('app/message-controller.js', () => {
     before(() => {
     });
 
-    after(() => {
+    after(async () => {
+      const mongoose = require('mongoose');
+      await mongoose.disconnect();
     });
 
     it('should call insertNewTimes', async () => {
