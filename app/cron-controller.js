@@ -23,7 +23,7 @@ const startCron = bot => {
   }));
 
   cronList_.push(new CronJob({
-    cronTime: '59 59 23 * * *',
+    cronTime: '00 59 23 * * *',
     onTick: () => {
       const channel333 = bot.channels.get(process.env.CHANNEL_333);
       updateStandings(moment().format('YYYY-MM-DD'))
