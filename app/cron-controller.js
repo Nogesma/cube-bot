@@ -23,10 +23,10 @@ const startCron = bot => {
   }));
 
   cronList_.push(new CronJob({
-    cronTime: '00 59 23 * * *',
-    onTick: () => {
+    cronTime: '00 01 00 * * *',
+    onTick: async () => {
       const channel333 = bot.channels.get(process.env.CHANNEL_333);
-      updateStandings(moment().format('YYYY-MM-DD'))
+      await updateStandings(moment().format('YYYY-MM-DD'))
         .then(() => channel333.send('?classement'));
     },
     start: false,
@@ -34,13 +34,13 @@ const startCron = bot => {
   }));
 
   cronList_.push(new CronJob({
-    cronTime: '00 01 00 * * *', onTick:
-      async () => {
-        await event333().then(scrambles => sendScrambles(
-          bot.channels.get(process.env.CHANNEL_333),
-          `Scrambles 3x3x3 (${moment().format('YYYY-MM-DD')}) : `,
-          scrambles));
-      },
+    cronTime: '00 45 06 * * *',
+    onTick: async () => {
+      await event333().then(scrambles => sendScrambles(
+        bot.channels.get(process.env.CHANNEL_333),
+        `Scrambles 3x3x3 (${moment().format('YYYY-MM-DD')}) : `,
+        scrambles));
+    },
     start: false,
     timeZone: 'Europe/Paris'
   }));
