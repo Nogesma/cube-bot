@@ -29,7 +29,7 @@ describe('app/tools/calculators.js', () => {
         averageOfFiveCalculator(['13', '4', '5', '3', '6']).should.be
           .equal(5.000);
         averageOfFiveCalculator(['12.34', '0.05', '78.32', '34.21', '9.95'])
-          .should.be.equal(18.833);
+          .should.be.equal(18.83);
         averageOfFiveCalculator(['12', '13', '17', '15', '22']).should.be
           .equal(15);
       });
@@ -40,7 +40,7 @@ describe('app/tools/calculators.js', () => {
         averageOfFiveCalculator([13, 4, 5, 3, 6]).should.be
           .equal(5);
         averageOfFiveCalculator([12.34, 0.05, 78.32, 34.21, 9.95])
-          .should.be.equal(18.833);
+          .should.be.equal(18.83);
         averageOfFiveCalculator([12, 13, 17, 15, 22]).should.be
           .equal(15);
       });
