@@ -5,7 +5,11 @@ const fs = require('fs-extra');
 const event333 = async () => {
   const scrambles = new Scrambo().get(5);
   const filesList = scrambles.map(s => [
-    'http://roudai.net/visualcube/visualcube.php?fmt=gif&sch=wrgyob&alg=',
+    'http://roudai.net/visualcube/visualcube.php',
+    '?fmt=png',
+    '&size=90',
+    '&sch=wrgyob',
+    '&alg=',
     s.replace(/ /g, '').replace(/'/g, '%27')
   ].join(''));
   await fs.ensureDir('./tmp');
