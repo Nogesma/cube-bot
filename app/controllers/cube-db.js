@@ -66,7 +66,7 @@ const getTodayStandings = async date => {
 const getMonthStandings = async date => {
   const monthDate = date.slice(0, -3);
   const monthStandings = await Ranking.find({date: monthDate}).exec();
-  monthStandings.sort((a, b) => a.score - b.score);
+  monthStandings.sort((a, b) => b.score - a.score);
   return monthStandings;
 };
 
