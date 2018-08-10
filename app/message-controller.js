@@ -3,7 +3,8 @@ const logger = require('./tools/logger');
 const {
   insertNewTimes,
   getTodayStandings,
-  getMonthStandings
+  getMonthStandings,
+  haveTimesForToday
 } = require('./controllers/cube-db');
 
 const incomingMessage = message => {
@@ -44,11 +45,16 @@ const incomingMessage = message => {
               ].join(' ')).join('\n'));
           });
         break;
+      case '?didido333':
+        haveTimesForToday(date, author.id)
+          .then(hasParticipated =>
+            channel.send(hasParticipated ? 'Oui' : 'Non'));
+        break;
       case '?h':
       case '?help':
         channel.send([
           '```Markdown',
-          '# Envoyer tes temps :' +
+          '# Envoyer tes temps : ' +
           '?t <tps1> <tps2> <tps3> <tps4> <tps5>',
           'Exemple : ?t 12.03 55.40 70.30 12.37 15.42',
           'Pensez à mettre vos temps en secondes !',
@@ -56,6 +62,8 @@ const incomingMessage = message => {
           '# Afficher le classement de la journée : ?classement',
           '',
           '# Afficher le classement pour le mois en cours : ?classementmois',
+          '',
+          '# Afficher votre participation d\'aujourd\'hui : ?didido333',
           '```'
         ].join('\n'));
         break;
