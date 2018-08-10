@@ -27,10 +27,15 @@ const incomingMessage = message => {
       case '?classement':
         getTodayStandings(date)
           .then(ranks => {
-            channel.send('Classement du jour (en cours) :\n' + ranks.map(
-              cuber => `${channel.client.users.get(
-                cuber.author).username} : ${cuber.time}s`)
-              .join('\n'));
+            channel.send([
+              '```glsl',
+              'Classement du jour :',
+              ...ranks.map(
+                cuber => `# ${channel.client.users.get(
+                  cuber.author).username}: ${cuber.time} ao5
+[${cuber.solves.join(', ')}]`),
+              '```'
+            ].join('\n'));
           });
         break;
       case '?classementmois':
@@ -54,8 +59,7 @@ const incomingMessage = message => {
       case '?help':
         channel.send([
           '```Markdown',
-          '# Envoyer tes temps : ' +
-          '?t <tps1> <tps2> <tps3> <tps4> <tps5>',
+          '# Envoyer tes temps : ?t <tps1> <tps2> <tps3> <tps4> <tps5>',
           'Exemple : ?t 12.03 55.40 70.30 12.37 15.42',
           'Pensez à mettre vos temps en secondes !',
           '',
