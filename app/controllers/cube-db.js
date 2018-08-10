@@ -21,7 +21,7 @@ const insertNewTimes = async (date, author, content) => {
     return 'Vous avez déjà soumis vos temps.';
   }
   await new Cube({author, time: averageOfFive, date}).save();
-  return `Vos temps ont bien étés enregistrés ! AO5: ${averageOfFive}s`;
+  return `Vos temps ont bien étés enregistrés ! ao5: ${averageOfFive}s`;
 };
 
 /**
@@ -70,9 +70,14 @@ const getMonthStandings = async date => {
   return monthStandings;
 };
 
+const haveTimesForToday = async (date, author) => {
+  return Boolean(await Cube.findOne({author, date}).exec());
+};
+
 module.exports = {
   insertNewTimes,
   updateStandings,
   getTodayStandings,
-  getMonthStandings
+  getMonthStandings,
+  haveTimesForToday
 };
