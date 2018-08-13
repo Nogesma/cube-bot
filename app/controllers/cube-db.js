@@ -20,7 +20,7 @@ const insertNewTimes = async (date, author, content) => {
   if (entry) {
     return 'Vous avez déjà soumis vos temps.';
   }
-  await new Cube({author, time: averageOfFive, date}).save();
+  await new Cube({author, solves: content, time: averageOfFive, date}).save();
   return `Vos temps ont bien étés enregistrés ! ao5: ${averageOfFive}s`;
 };
 
