@@ -6,6 +6,10 @@ const {
   getMonthStandings,
   haveTimesForToday
 } = require('./controllers/cube-db');
+const {
+  dailyRankingsFormat,
+  monthlyRankingsFormat
+} = require('./helpers/messages-helpers');
 
 const incomingMessage = message => {
   if (message.content.indexOf('?') === 0) {
@@ -26,32 +30,12 @@ const incomingMessage = message => {
         break;
       case '?classement':
         getTodayStandings(date)
-          .then(ranks => {
-            channel.send([
-              '```glsl',
-              'Classement du jour :',
-              ...ranks.map(
-                cuber => `# ${channel.client.users.get(
-                  cuber.author).username}: ${cuber.time} ao5
-[${cuber.solves.join(', ')}]`),
-              '```'
-            ].join('\n'));
-          });
+          .then(ranks => channel.send(dailyRankingsFormat(ranks, channel)));
         break;
       case '?classementmois':
         getMonthStandings(date)
           .then(ranks => {
-            channel.send('Classement du mois (en cours) :\n' + ranks.map(
-              cuber => {
-                const user = channel.client.users.get(cuber.author);
-                const name = (user) ? user.username : 'RAGE-QUITTER';
-                return [
-                  `${name} : `,
-                  `${cuber.score} points, `,
-                  `${cuber.wins} win(s), `,
-                  `${cuber.podiums} podium(s)`
-                ].join(' ');
-              }).join('\n'));
+            channel.send(monthlyRankingsFormat(ranks, channel));
           });
         break;
       case '?didido333':

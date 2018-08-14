@@ -25,9 +25,8 @@ const insertNewTimes = async (date, author, content) => {
 };
 
 /**
- *
+ * Compute the daily standings and saves them to db
  * @param {String} date - Format : YYYY-MM-DD
- * @returns {Promise<void>}
  */
 const updateStandings = async date => {
   const monthDate = date.slice(0, -3);

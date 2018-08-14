@@ -1,6 +1,7 @@
-const winston = require('winston');
+const {createLogger, format, transports} = require('winston');
 const chalk = require('chalk');
-const moment = require('moment');
+
+const {combine, timestamp, printf} = format;
 
 const chooseColor = level => {
   switch (level) {
@@ -21,27 +22,20 @@ const chooseColor = level => {
   }
 };
 
-const wl = new winston.Logger({
-  transports: [
-    new winston.transports.Console({
-      timestamp: () => {
-        return moment().format('HH:mm:ss');
-      },
-      formatter: options => { // jshint ignore:line
-        const color = chooseColor(options.level.toLowerCase());
+const myFormat = printf(info => {
+  const color = chooseColor(info.level);
+  return [
+    color(`[${info.timestamp}] ${info.level.toUpperCase()}:`),
+    info.message
+  ].join(' ');
+});
 
-        const message = [
-          color(`[${options.timestamp()}]`),
-          color(`${options.level.toUpperCase()}:`),
-          options.message || '',
-          (options.meta && Object.keys(options.meta).length) ?
-            `${'\n\t'}${JSON.stringify(options.meta)}` : ''
-        ];
-
-        return message.join(' ');
-      }
-    })
-  ]
+const wl = createLogger({
+  format: combine(
+    timestamp(),
+    myFormat
+  ),
+  transports: [new transports.Console()]
 });
 
 wl.level = process.env.LOG_LEVEL || 'info';

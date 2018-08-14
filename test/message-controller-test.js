@@ -1,13 +1,10 @@
 const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
-const sinonStubPromise = require('sinon-stub-promise');
 const proxyquire = require('proxyquire');
 const moment = require('moment');
 
-sinonStubPromise(sinon);
-
-const stub = sinon.stub().returnsPromise();
+const stub = sinon.stub().resolves();
 
 const {incomingMessage} = proxyquire('../app/message-controller', {
   './controllers/cube-db': {
