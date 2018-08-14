@@ -1,6 +1,15 @@
-const dailyRankingsFormat = (ranks, channel) => [
+const moment = require('moment');
+const fs = require('fs-extra');
+
+const helpMessage = async () => [
+  '```Markdown',
+  await fs.readFile('./app/raw-data/help.md', 'utf8'),
+  '```'
+];
+
+const dailyRankingsFormat = (ranks, date, channel) => [
   '```glsl',
-  'Classement du jour :',
+  `Classement du ${date} :`,
   ...ranks.map(
     cuber => {
       const user = channel.client.users.get(cuber.author);
@@ -27,4 +36,15 @@ const monthlyRankingsFormat = (ranks, channel) => {
     }).join('\n');
 };
 
-module.exports = {dailyRankingsFormat, monthlyRankingsFormat};
+const getDate = date => {
+  const minDate = moment().subtract(1, 'days');
+  const wantedDate = moment(date);
+  return ((wantedDate < minDate) ? wantedDate : minDate).format('YYYY-MM-DD');
+};
+
+module.exports = {
+  helpMessage,
+  dailyRankingsFormat,
+  monthlyRankingsFormat,
+  ensureDate: getDate
+};
