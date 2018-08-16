@@ -20,6 +20,8 @@ const incomingMessage = message => {
     const date = moment().format('YYYY-MM-DD');
 
     switch (command) {
+      case '?':
+        break;
       case '?t':
         insertNewTimes(date, author.id, args)
           .then(msg => {
