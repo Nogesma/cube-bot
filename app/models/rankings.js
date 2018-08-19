@@ -5,7 +5,8 @@ const rankingsSchema = new mongoose.Schema({
   author: {type: String, required: true},
   score: {type: Number, default: 0},
   wins: {type: Number, default: 0},
-  podiums: {type: Number, default: 0}
+  podiums: {type: Number, default: 0},
+  event: {type: String, enum: ['333', 'OH'], require: true}
 });
 
 module.exports = {Ranking: mongoose.model('Ranking', rankingsSchema)};

@@ -2,7 +2,15 @@ const fs = require('fs-extra');
 const moment = require('moment');
 const {CronJob} = require('cron');
 const logger = require('./tools/logger');
-const {updateStandings} = require('./controllers/cube-db');
+const {
+  updateStandings,
+  getMonthStandings,
+  getTodayStandings
+} = require('./controllers/cube-db');
+const {
+  monthlyRankingsFormat,
+  dailyRankingsFormat
+} = require('./helpers/messages-helpers');
 const {
   sendScrambles,
   event333
@@ -26,8 +34,14 @@ const startCron = bot => {
     cronTime: '00 59 23 * * *',
     onTick: async () => {
       const channel333 = bot.channels.get(process.env.CHANNEL_333);
-      await updateStandings(moment().format('YYYY-MM-DD'))
-        .then(() => channel333.send('?classement'));
+      await updateStandings(moment().format('YYYY-MM-DD'), '333')
+        .then(() => getTodayStandings(moment().format('YYYY-MM-DD'), '333'))
+        .then(ranks => channel333.send(dailyRankingsFormat(ranks, channel333)));
+
+      const channelOH = bot.channels.get(process.env.CHANNEL_OH);
+      await updateStandings(moment().format('YYYY-MM-DD'), 'OH')
+        .then(() => getTodayStandings(moment().format('YYYY-MM-DD'), 'OH'))
+        .then(ranks => channelOH.send(dailyRankingsFormat(ranks, channelOH)));
     },
     start: false,
     timeZone: 'Europe/Paris'
@@ -40,6 +54,25 @@ const startCron = bot => {
         bot.channels.get(process.env.CHANNEL_333),
         `Scrambles 3x3x3 (${moment().format('YYYY-MM-DD')}) : `,
         scrambles));
+
+      await event333().then(scrambles => sendScrambles(
+        bot.channels.get(process.env.CHANNEL_OH),
+        `Scrambles 3x3x3 (${moment().format('YYYY-MM-DD')}) : `,
+        scrambles));
+    },
+    start: false,
+    timeZone: 'Europe/Paris'
+  }));
+
+  cronList_.push(new CronJob({
+    cronTime: '1 0 0 1 * *',
+    onTick: async () => {
+      const channel333 = bot.channels.get(process.env.CHANNEL_333);
+      const date = moment().subtract(1, 'days').format('YYYY-MM-DD');
+      getMonthStandings(date)
+        .then(ranks => {
+          channel333.send(monthlyRankingsFormat(ranks, channel333));
+        });
     },
     start: false,
     timeZone: 'Europe/Paris'

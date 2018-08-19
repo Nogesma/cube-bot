@@ -30,14 +30,14 @@ describe('app/message-controller.js', () => {
 
     it('should call insertNewTimes', async () => {
       await incomingMessage({
-        content: '?t 12 13 14 15 16',
+        content: '?t 333 12 13 14 15 16',
         channel: {
           send: () => {
           }
         },
         author: {id: 'author'}
       });
-      stub.should.have.been.calledWith('2018-01-01', 'author',
+      stub.should.have.been.calledWith('2018-01-01', 'author', '333',
         ['12', '13', '14', '15', '16']);
     });
   });

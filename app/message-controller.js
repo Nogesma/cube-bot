@@ -7,13 +7,15 @@ const {
   haveTimesForToday
 } = require('./controllers/cube-db');
 const {
+  helpMessage,
   dailyRankingsFormat,
-  monthlyRankingsFormat
+  monthlyRankingsFormat,
+  ensureDate
 } = require('./helpers/messages-helpers');
 
 const incomingMessage = message => {
   if (message.content.indexOf('?') === 0) {
-    const [command, ...args] = message.content.split(' ');
+    const [command, event, ...args] = message.content.split(' ');
     const {author} = message;
     const {channel} = message;
 
@@ -23,7 +25,7 @@ const incomingMessage = message => {
       case '?':
         break;
       case '?t':
-        insertNewTimes(date, author.id, args)
+        insertNewTimes(date, author.id, event, args)
           .then(msg => {
             channel.send(msg);
             logger.log('info',
@@ -31,8 +33,12 @@ const incomingMessage = message => {
           });
         break;
       case '?classement':
-        getTodayStandings(date)
-          .then(ranks => channel.send(dailyRankingsFormat(ranks, channel)));
+        if (!event) {
+          channel.send('Merci de préciser l\'event');
+          return;
+        }
+        getTodayStandings(ensureDate(args[0]), event).then(
+          ranks => channel.send(dailyRankingsFormat(ranks, date, channel)));
         break;
       case '?classementmois':
         getMonthStandings(date)
@@ -40,26 +46,14 @@ const incomingMessage = message => {
             channel.send(monthlyRankingsFormat(ranks, channel));
           });
         break;
-      case '?didido333':
-        haveTimesForToday(date, author.id)
+      case '?didido':
+        haveTimesForToday(date, author.id, event)
           .then(hasParticipated =>
             channel.send(hasParticipated ? 'Oui' : 'Non'));
         break;
       case '?h':
       case '?help':
-        channel.send([
-          '```Markdown',
-          '# Envoyer tes temps : ?t <tps1> <tps2> <tps3> <tps4> <tps5>',
-          'Exemple : ?t 12.03 55.40 70.30 12.37 15.42',
-          'Pensez à mettre vos temps en secondes !',
-          '',
-          '# Afficher le classement de la journée : ?classement',
-          '',
-          '# Afficher le classement pour le mois en cours : ?classementmois',
-          '',
-          '# Afficher votre participation d\'aujourd\'hui : ?didido333',
-          '```'
-        ].join('\n'));
+        helpMessage().then(help => channel.send(help));
         break;
       default:
         channel.send('Commande non reconnue');
