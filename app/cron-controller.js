@@ -37,11 +37,6 @@ const startCron = bot => {
       await updateStandings(moment().format('YYYY-MM-DD'), '333')
         .then(() => getTodayStandings(moment().format('YYYY-MM-DD'), '333'))
         .then(ranks => channel333.send(dailyRankingsFormat(ranks, channel333)));
-
-      const channelOH = bot.channels.get(process.env.CHANNEL_OH);
-      await updateStandings(moment().format('YYYY-MM-DD'), 'OH')
-        .then(() => getTodayStandings(moment().format('YYYY-MM-DD'), 'OH'))
-        .then(ranks => channelOH.send(dailyRankingsFormat(ranks, channelOH)));
     },
     start: false,
     timeZone: 'Europe/Paris'
@@ -52,11 +47,6 @@ const startCron = bot => {
     onTick: async () => {
       await event333().then(scrambles => sendScrambles(
         bot.channels.get(process.env.CHANNEL_333),
-        `Scrambles 3x3x3 (${moment().format('YYYY-MM-DD')}) : `,
-        scrambles));
-
-      await event333().then(scrambles => sendScrambles(
-        bot.channels.get(process.env.CHANNEL_OH),
         `Scrambles 3x3x3 (${moment().format('YYYY-MM-DD')}) : `,
         scrambles));
     },
