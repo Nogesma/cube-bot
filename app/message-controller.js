@@ -2,7 +2,7 @@ const moment = require('moment');
 const logger = require('./tools/logger');
 const {
   insertNewTimes,
-  getTodayStandings,
+  getDayStandings,
   getMonthStandings,
   haveTimesForToday
 } = require('./controllers/cube-db');
@@ -37,8 +37,9 @@ const incomingMessage = message => {
           channel.send('Merci de préciser l\'event');
           return;
         }
-        getTodayStandings(ensureDate(args[0]), event).then(
-          ranks => channel.send(dailyRankingsFormat(ranks, date, channel)));
+        getDayStandings(ensureDate(args[0]), event).then(
+          ranks => channel.send(
+            dailyRankingsFormat(ranks, ensureDate(args[0]), channel)));
         break;
       case '?classementmois':
         getMonthStandings(date)

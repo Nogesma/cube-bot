@@ -66,7 +66,7 @@ const updateStandings = async (date, event) => {
   await Promise.all(promisesUpdate);
 };
 
-const getTodayStandings = async (date, event) => {
+const getDayStandings = async (date, event) => {
   const todayStandings = await Cube.find({date, event}).exec();
   todayStandings.sort((a, b) => a.time - b.time);
   return todayStandings;
@@ -85,7 +85,7 @@ const haveTimesForToday = async (date, author, event) => Boolean(
 module.exports = {
   insertNewTimes,
   updateStandings,
-  getTodayStandings,
+  getDayStandings,
   getMonthStandings,
   haveTimesForToday
 };

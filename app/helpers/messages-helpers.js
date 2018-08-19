@@ -13,7 +13,7 @@ const dailyRankingsFormat = (ranks, date, channel) => [
   ...ranks.map(
     cuber => {
       const user = channel.client.users.get(cuber.author);
-      const name = (user) ? user.username : 'RAGE-QUITTER';
+      const name = user ? user.username : 'RAGE-QUITTER';
       return [
         `# ${name}: ${cuber.time} ao5`,
         `[${cuber.solves.join(', ')}]`
@@ -36,9 +36,11 @@ const monthlyRankingsFormat = (ranks, channel) => {
     }).join('\n');
 };
 
-const getDate = date => {
+const ensureDate = date => {
   const minDate = moment().subtract(1, 'days');
   const wantedDate = moment(date);
+  console.log(minDate);
+  console.log(wantedDate < minDate);
   return ((wantedDate < minDate) ? wantedDate : minDate).format('YYYY-MM-DD');
 };
 
@@ -46,5 +48,5 @@ module.exports = {
   helpMessage,
   dailyRankingsFormat,
   monthlyRankingsFormat,
-  ensureDate: getDate
+  ensureDate
 };
