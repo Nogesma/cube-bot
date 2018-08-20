@@ -42,7 +42,7 @@ const incomingMessage = message => {
             dailyRankingsFormat(ranks, ensureDate(args[0]), channel)));
         break;
       case '?classementmois':
-        getMonthStandings(date)
+        getMonthStandings(date, event)
           .then(ranks => {
             channel.send(monthlyRankingsFormat(ranks, channel));
           });

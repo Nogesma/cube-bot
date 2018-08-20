@@ -5,7 +5,7 @@ const logger = require('./tools/logger');
 const {
   updateStandings,
   getMonthStandings,
-  getTodayStandings
+  getDayStandings
 } = require('./controllers/cube-db');
 const {
   monthlyRankingsFormat,
@@ -35,7 +35,7 @@ const startCron = bot => {
     onTick: async () => {
       const channel333 = bot.channels.get(process.env.CHANNEL_333);
       await updateStandings(moment().format('YYYY-MM-DD'), '333')
-        .then(() => getTodayStandings(moment().format('YYYY-MM-DD'), '333'))
+        .then(() => getDayStandings(moment().format('YYYY-MM-DD'), '333'))
         .then(ranks => channel333.send(dailyRankingsFormat(ranks, channel333)));
     },
     start: false,

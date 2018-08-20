@@ -39,8 +39,6 @@ const monthlyRankingsFormat = (ranks, channel) => {
 const ensureDate = date => {
   const minDate = moment().subtract(1, 'days');
   const wantedDate = moment(date);
-  console.log(minDate);
-  console.log(wantedDate < minDate);
   return ((wantedDate < minDate) ? wantedDate : minDate).format('YYYY-MM-DD');
 };
 
