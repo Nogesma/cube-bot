@@ -7,7 +7,7 @@ const helpMessage = async () => [
   '```'
 ];
 
-const dailyRankingsFormat = (ranks, date, channel) => [
+const dailyRankingsFormat = (channel, date, ranks) => [
   '```glsl',
   `Classement du ${date} :`,
   ...ranks.map(
@@ -22,7 +22,7 @@ const dailyRankingsFormat = (ranks, date, channel) => [
   '```'
 ].join('\n');
 
-const monthlyRankingsFormat = (ranks, channel) => {
+const monthlyRankingsFormat = (channel, ranks) => {
   return 'Classement du mois (en cours) :\n' + ranks.map(
     cuber => {
       const user = channel.client.users.get(cuber.author);
@@ -36,7 +36,7 @@ const monthlyRankingsFormat = (ranks, channel) => {
     }).join('\n');
 };
 
-const ensureDate = date => {
+const ensureDay = date => {
   const minDate = moment().subtract(1, 'days');
   const wantedDate = moment(date);
   return ((wantedDate < minDate) ? wantedDate : minDate).format('YYYY-MM-DD');
@@ -46,5 +46,5 @@ module.exports = {
   helpMessage,
   dailyRankingsFormat,
   monthlyRankingsFormat,
-  ensureDate
+  ensureDay
 };

@@ -34,9 +34,11 @@ const startCron = bot => {
     cronTime: '00 59 23 * * *',
     onTick: async () => {
       const channel333 = bot.channels.get(process.env.CHANNEL_333);
-      await updateStandings(moment().format('YYYY-MM-DD'), '333')
-        .then(() => getDayStandings(moment().format('YYYY-MM-DD'), '333'))
-        .then(ranks => channel333.send(dailyRankingsFormat(ranks, channel333)));
+      const date = moment().format('YYYY-MM-DD');
+      await updateStandings(date, '333')
+        .then(() => getDayStandings(date, '333'))
+        .then(ranks => channel333.send(
+          dailyRankingsFormat(channel333, date, ranks)));
     },
     start: false,
     timeZone: 'Europe/Paris'
@@ -58,10 +60,10 @@ const startCron = bot => {
     cronTime: '1 0 0 1 * *',
     onTick: async () => {
       const channel333 = bot.channels.get(process.env.CHANNEL_333);
-      const date = moment().subtract(1, 'days').format('YYYY-MM-DD');
+      const date = moment().subtract(1, 'months').format('YYYY-MM-DD');
       getMonthStandings(date)
         .then(ranks => {
-          channel333.send(monthlyRankingsFormat(ranks, channel333));
+          channel333.send(monthlyRankingsFormat(channel333, ranks));
         });
     },
     start: false,

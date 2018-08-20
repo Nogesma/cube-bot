@@ -1,6 +1,6 @@
 {
   "name": "cube-bot",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
@@ -18,6 +18,8 @@
     "merge-img": "^2.1.2",
     "moment": "^2.22.0",
     "mongoose": "^5.2.6",
+    "ramda": "^0.25.0",
+    "ramda-fantasy": "^0.8.0",
     "request": "^2.87.0",
     "scrambo": "^0.3.0",
     "winston": "^3.0.0"
