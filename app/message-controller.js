@@ -1,66 +1,37 @@
 const moment = require('moment');
-const logger = require('./tools/logger');
+
+const {T, cond, propEq} = require('ramda');
+const {Maybe} = require('ramda-fantasy');
 const {
-  insertNewTimes,
-  getDayStandings,
-  getMonthStandings,
-  haveTimesForToday
-} = require('./controllers/cube-db');
-const {
-  helpMessage,
-  dailyRankingsFormat,
-  monthlyRankingsFormat,
-  ensureDate
-} = require('./helpers/messages-helpers');
+  helpCommand,
+  newTimesCommand,
+  dailyRanksCommand,
+  monthlyRanksCommand,
+  dididoCommand
+} = require('./helpers/messages-handler');
 
-const incomingMessage = message => {
-  if (message.content.indexOf('?') === 0) {
-    const [command, event, ...args] = message.content.split(' ');
-    const {author} = message;
-    const {channel} = message;
+const messageIsCommand = content => (content.indexOf('?') === 0);
 
-    const date = moment().format('YYYY-MM-DD');
+const commandChoose = cond([
+  [propEq('command', '?t'), newTimesCommand],
+  [propEq('command', '?h'), helpCommand],
+  [propEq('command', '?help'), helpCommand],
+  [propEq('command', '?classement'), dailyRanksCommand],
+  [propEq('command', '?classementmois'), monthlyRanksCommand],
+  [propEq('command', '?didido'), dididoCommand],
+  [T, () => {}]
+]);
 
-    switch (command) {
-      case '?':
-        break;
-      case '?t':
-        insertNewTimes(date, author.id, event, args)
-          .then(msg => {
-            channel.send(msg);
-            logger.log('info',
-              `${author.username} (${author.id}) submitted times`);
-          });
-        break;
-      case '?classement':
-        if (!event) {
-          channel.send('Merci de préciser l\'event');
-          return;
-        }
-        getDayStandings(ensureDate(args[0]), event).then(
-          ranks => channel.send(
-            dailyRankingsFormat(ranks, ensureDate(args[0]), channel)));
-        break;
-      case '?classementmois':
-        getMonthStandings(date, event)
-          .then(ranks => {
-            channel.send(monthlyRankingsFormat(ranks, channel));
-          });
-        break;
-      case '?didido':
-        haveTimesForToday(date, author.id, event)
-          .then(hasParticipated =>
-            channel.send(hasParticipated ? 'Oui' : 'Non'));
-        break;
-      case '?h':
-      case '?help':
-        helpMessage().then(help => channel.send(help));
-        break;
-      default:
-        channel.send('Commande non reconnue');
-        break;
-    }
-  }
+const applyCommand = message => {
+  const date = moment().format('YYYY-MM-DD');
+  const {author} = message;
+  const {channel} = message;
+  const [command, event, ...args] = message.content.split(' ');
+
+  return commandChoose({date, author, channel, command, event, args});
 };
+
+const incomingMessage = message => messageIsCommand(message.content) ?
+  applyCommand(message) : Maybe.Nothing;
 
 module.exports = {incomingMessage};

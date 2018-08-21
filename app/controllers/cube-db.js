@@ -67,9 +67,8 @@ const updateStandings = async (date, event) => {
 };
 
 const getDayStandings = async (date, event) => {
-  const todayStandings = await Cube.find({date, event}).exec();
-  todayStandings.sort((a, b) => a.time - b.time);
-  return todayStandings;
+  return (await Cube.find({date, event}).exec())
+    .sort((a, b) => a.time - b.time);
 };
 
 const getMonthStandings = async (date, event) => {
