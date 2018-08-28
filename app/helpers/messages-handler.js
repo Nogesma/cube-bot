@@ -33,12 +33,16 @@ const dailyRanksCommand = async ({channel, event, args}) => {
     )(date, event);
 };
 
-const monthlyRanksCommand = async ({channel, event, date}) => {
+const monthlyRanksCommand = async ({
+  channel,
+  event,
+  args: [date = new Date()]
+}) => {
   const messageSender = sendMessageToChannel(channel);
   return not(event) ? messageSender('Merci de préciser l\'event') :
     pipeP(
       getMonthStandings,
-      curry(monthlyRankingsFormat)(channel),
+      curry(monthlyRankingsFormat)(channel, event, date),
       messageSender
     )(date, event);
 };
