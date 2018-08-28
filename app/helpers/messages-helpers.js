@@ -38,7 +38,7 @@ const monthlyRankingsFormat = (channel, event, date, ranks) => [
     cuber => {
       const user = channel.client.users.get(cuber.author);
       const name = (user) ? user.username : 'RAGE-QUITTER';
-      return `${name} : ${cuber.score}w pts`; // (${cuber.attendances})`;
+      return `${name} : ${cuber.score} pts`; // (${cuber.attendances})`;
     }),
   '```'
 ].join('\n');
