@@ -47,8 +47,7 @@ const updateStandings = async (date, event) => {
       Ranking.findOne({date: monthDate, author: entry.author, event})
         .then(currentStanding => {
           currentStanding.score += computeScore(todayStandings.length, index);
-          currentStanding.wins += (index === 0) ? 1 : 0;
-          currentStanding.podiums += (index <= 2) ? 1 : 0;
+          currentStanding.attendances++;
           return currentStanding.save();
         })
         .catch(() => {
@@ -56,8 +55,7 @@ const updateStandings = async (date, event) => {
             date: monthDate,
             author: entry.author,
             score: computeScore(todayStandings.length, index),
-            wins: (index === 0) ? 1 : 0,
-            podiums: (index <= 2) ? 1 : 0,
+            attendances: 1,
             event
           }).save();
         })

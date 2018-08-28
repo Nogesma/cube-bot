@@ -1,5 +1,6 @@
 const moment = require('moment');
 const fs = require('fs-extra');
+const {memoize} = require('ramda');
 
 const helpMessage = async () => [
   '```Markdown',
@@ -22,19 +23,25 @@ const dailyRankingsFormat = (channel, date, ranks) => [
   '```'
 ].join('\n');
 
-const monthlyRankingsFormat = (channel, ranks) => {
-  return 'Classement du mois (en cours) :\n' + ranks.map(
+const getMonthDateFormat_ = memoize(date => moment(date).format('YYYY-MM'));
+
+const isCurrentMonth_ = date => getMonthDateFormat_(date) ===
+  getMonthDateFormat_();
+
+const displayMonthDate_ = date => isCurrentMonth_(date) ? 'en cours' :
+  getMonthDateFormat_(date);
+
+const monthlyRankingsFormat = (channel, event, date, ranks) => [
+  '```glsl',
+  `Classement ${event} du mois (${displayMonthDate_(date)}) :`,
+  ...ranks.map(
     cuber => {
       const user = channel.client.users.get(cuber.author);
       const name = (user) ? user.username : 'RAGE-QUITTER';
-      return [
-        `${name} : `,
-        `${cuber.score} points, `,
-        `${cuber.wins} win(s), `,
-        `${cuber.podiums} podium(s)`
-      ].join(' ');
-    }).join('\n');
-};
+      return `${name} : ${cuber.score}w pts`; // (${cuber.attendances})`;
+    }),
+  '```'
+].join('\n');
 
 const ensureDay = date => {
   const minDate = moment().subtract(1, 'days');
