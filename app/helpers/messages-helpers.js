@@ -12,11 +12,11 @@ const dailyRankingsFormat = (channel, date, ranks) => [
   '```glsl',
   `Classement du ${date} :`,
   ...ranks.map(
-    cuber => {
+    (cuber, idx) => {
       const user = channel.client.users.get(cuber.author);
       const name = user ? user.username : 'RAGE-QUITTER';
       return [
-        `# ${name}: ${cuber.time} ao5`,
+        `#${idx + 1} ${name}: ${cuber.time} ao5`,
         `[${cuber.solves.join(', ')}]`
       ].join('\n');
     }),
@@ -32,13 +32,14 @@ const displayMonthDate_ = date => isCurrentMonth_(date) ? 'en cours' :
   getMonthDateFormat_(date);
 
 const monthlyRankingsFormat = (channel, event, date, ranks) => [
-  '```glsl',
+  '```xl',
   `Classement ${event} du mois (${displayMonthDate_(date)}) :`,
   ...ranks.map(
-    cuber => {
+    (cuber, idx) => {
       const user = channel.client.users.get(cuber.author);
       const name = (user) ? user.username : 'RAGE-QUITTER';
-      return `${name} : ${cuber.score} pts`; // (${cuber.attendances})`;
+      return `#${idx + 1} ${name} : ${cuber.score} pts`;
+      // (${cuber.attendances})`;
     }),
   '```'
 ].join('\n');
