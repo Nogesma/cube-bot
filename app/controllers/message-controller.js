@@ -8,7 +8,7 @@ const {
   dailyRanksCommand,
   monthlyRanksCommand,
   dididoCommand
-} = require('./helpers/messages-handler');
+} = require('../helpers/messages-handler');
 
 const messageIsCommand = content => (content.indexOf('?') === 0);
 

@@ -1,20 +1,20 @@
 const fs = require('fs-extra');
 const moment = require('moment');
 const {CronJob} = require('cron');
-const logger = require('./tools/logger');
+const logger = require('../tools/logger');
+const {
+  monthlyRankingsFormat,
+  dailyRankingsFormat
+} = require('../helpers/messages-helpers');
 const {
   updateStandings,
   getMonthStandings,
   getDayStandings
-} = require('./controllers/cube-db');
-const {
-  monthlyRankingsFormat,
-  dailyRankingsFormat
-} = require('./helpers/messages-helpers');
+} = require('./cube-db');
 const {
   sendScrambles,
   event333
-} = require('./controllers/scrambler');
+} = require('./scrambler');
 
 const cronList_ = [];
 

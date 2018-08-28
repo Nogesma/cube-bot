@@ -6,8 +6,8 @@ const moment = require('moment');
 
 const stub = sinon.stub().resolves();
 
-const {incomingMessage} = proxyquire('../app/message-controller', {
-  './controllers/cube-db': {
+const {incomingMessage} = proxyquire('../app/controllers/message-controller', {
+  './cube-db': {
     insertNewTimes: stub
   },
   moment: () => {
@@ -18,7 +18,7 @@ const {incomingMessage} = proxyquire('../app/message-controller', {
 chai.use(sinonChai);
 chai.should();
 
-describe.skip('app/message-controller.js', () => {
+describe.skip('app/controllers/message-controller.js', () => {
   describe('#incomingMessage()', () => {
     before(() => {
     });
