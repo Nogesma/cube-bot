@@ -1,6 +1,6 @@
 {
   "name": "cube-bot",
-  "version": "0.2.3",
+  "version": "0.2.6",
   "main": "index.js",
   "license": "MIT",
   "scripts": {

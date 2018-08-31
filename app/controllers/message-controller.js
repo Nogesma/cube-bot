@@ -1,7 +1,6 @@
-const moment = require('moment');
-
 const {T, cond, propEq} = require('ramda');
 const {Maybe} = require('ramda-fantasy');
+const moment = require('moment');
 const {
   helpCommand,
   newTimesCommand,
@@ -19,7 +18,8 @@ const commandChoose = cond([
   [propEq('command', '?classement'), dailyRanksCommand],
   [propEq('command', '?classementmois'), monthlyRanksCommand],
   [propEq('command', '?didido'), dididoCommand],
-  [T, () => {}]
+  [T, () => {
+  }]
 ]);
 
 const applyCommand = message => {
