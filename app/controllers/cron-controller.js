@@ -57,7 +57,7 @@ const startCron = bot => {
   }));
 
   cronList_.push(new CronJob({
-    cronTime: '0 0 0 1 * *',
+    cronTime: '1 0 0 1 * *',
     onTick: async () => {
       const channel333 = bot.channels.get(process.env.CHANNEL_333);
       const date = moment().subtract(1, 'months').format('YYYY-MM-DD');
