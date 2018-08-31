@@ -1,6 +1,6 @@
+const {memoizeWith, identity} = require('ramda');
 const moment = require('moment');
 const fs = require('fs-extra');
-const {memoize} = require('ramda');
 
 const helpMessage = async () => [
   '```Markdown',
@@ -23,7 +23,8 @@ const dailyRankingsFormat = (channel, date, ranks) => [
   '```'
 ].join('\n');
 
-const getMonthDateFormat_ = memoize(date => moment(date).format('YYYY-MM'));
+const getMonthDateFormat_ = memoizeWith(identity,
+  date => moment(date).format('YYYY-MM'));
 
 const isCurrentMonth_ = date => getMonthDateFormat_(date) ===
   getMonthDateFormat_();
