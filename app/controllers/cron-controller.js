@@ -57,13 +57,14 @@ const startCron = bot => {
   }));
 
   cronList_.push(new CronJob({
-    cronTime: '1 0 0 1 * *',
+    cronTime: '0 0 0 1 * *',
     onTick: async () => {
       const channel333 = bot.channels.get(process.env.CHANNEL_333);
       const date = moment().subtract(1, 'months').format('YYYY-MM-DD');
-      getMonthStandings(date)
+      getMonthStandings(date, '333')
         .then(ranks => {
-          channel333.send(monthlyRankingsFormat(channel333, ranks));
+          channel333.send(
+            monthlyRankingsFormat(channel333, '333', date, ranks));
         });
     },
     start: false,
