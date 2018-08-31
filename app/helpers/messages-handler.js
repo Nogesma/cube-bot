@@ -5,6 +5,7 @@ const {
   getMonthStandings,
   haveTimesForToday
 } = require('../controllers/cube-db');
+const {events: availableEvents} = require('../config.js');
 const {
   helpMessage,
   ensureDay,
@@ -25,7 +26,8 @@ const newTimesCommand = async ({channel, date, author, event, args}) => pipeP(
 const dailyRanksCommand = async ({channel, event, args}) => {
   const date = ensureDay(args[0]);
   const messageSender = sendMessageToChannel(channel);
-  return not(event) ? messageSender('Merci de préciser l\'event') :
+  return not(availableEvents.includes(event)) ?
+    messageSender('Merci de préciser l\'event') :
     pipeP(
       getDayStandings,
       curry(dailyRankingsFormat)(channel, date),
@@ -39,7 +41,8 @@ const monthlyRanksCommand = async ({
   args: [date = new Date()]
 }) => {
   const messageSender = sendMessageToChannel(channel);
-  return not(event) ? messageSender('Merci de préciser l\'event') :
+  return not(availableEvents.includes(event)) ?
+    messageSender('Merci de préciser l\'event') :
     pipeP(
       getMonthStandings,
       curry(monthlyRankingsFormat)(channel, event, date),
@@ -47,11 +50,16 @@ const monthlyRanksCommand = async ({
     )(date, event);
 };
 
-const dididoCommand = async ({date, author, event, channel}) => pipeP(
-  haveTimesForToday,
-  participation => participation ? 'Oui' : 'Non',
-  sendMessageToChannel(channel)
-)(date, author.id, event);
+const dididoCommand = async ({date, author, event, channel}) => {
+  const messageSender = sendMessageToChannel(channel);
+  return not(availableEvents.includes(event)) ?
+    messageSender('Merci de préciser l\'event') :
+    pipeP(
+      haveTimesForToday,
+      participation => participation ? 'Oui' : 'Non',
+      messageSender
+    )(date, author.id, event);
+};
 
 module.exports = {
   helpCommand,
