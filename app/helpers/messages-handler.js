@@ -3,7 +3,9 @@ const {
   insertNewTimes,
   getDayStandings,
   getMonthStandings,
-  haveTimesForToday
+  haveTimesForToday,
+  addNotifSquad,
+  deleteNotifSquad
 } = require('../controllers/cube-db');
 const {events: availableEvents} = require('../config.js');
 const {
@@ -61,10 +63,28 @@ const dididoCommand = async ({date, author, event, channel}) => {
     )(date, author.id, event);
 };
 
+const idoCommand = async ({author, event, channel}) => {
+  const messageSender = sendMessageToChannel(channel);
+  return not(availableEvents.includes(event)) ?
+    messageSender('Merci de préciser l\'event') :
+    addNotifSquad(author.id, event)
+      .then(messageSender('Vous avez bien été ajouté a la notif squad !'));
+};
+
+const idonotdoCommand = async ({author, event, channel}) => {
+  const messageSender = sendMessageToChannel(channel);
+  return not(availableEvents.includes(event)) ?
+    messageSender('Merci de préciser l\'event') :
+    deleteNotifSquad(author.id, event)
+      .then(messageSender('Vous avez bien été supprimé de la notif squad !'));
+};
+
 module.exports = {
   helpCommand,
   newTimesCommand,
   dailyRanksCommand,
   monthlyRanksCommand,
-  dididoCommand
+  dididoCommand,
+  idoCommand,
+  idonotdoCommand
 };
