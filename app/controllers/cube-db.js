@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 const {averageOfFiveCalculator, computeScore} = require('../tools/calculators');
 const {Cube} = require('../models/cubes');
+const {Squad} = require('../models/notif');
 const {Ranking} = require('../models/rankings');
 
 mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/test',
@@ -79,10 +80,24 @@ const getMonthStandings = async (date, event) => {
 const haveTimesForToday = async (date, author, event) => Boolean(
   await Cube.findOne({author, date, event}).exec());
 
+const addNotifSquad = (author, event) =>
+  Squad.findOneAndUpdate({event}, {$addToSet: {author}}).exec();
+
+const deleteNotifSquad = (author, event) =>
+  Squad.findOneAndUpdate({event}, {$pull: {author}}).exec();
+
+const getNotifSquad = event => {
+  console.log(Squad.find({event}).exec());
+  return Squad.find({event}).exec();
+};
+
 module.exports = {
   insertNewTimes,
   updateStandings,
   getDayStandings,
   getMonthStandings,
-  haveTimesForToday
+  haveTimesForToday,
+  addNotifSquad,
+  deleteNotifSquad,
+  getNotifSquad
 };

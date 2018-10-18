@@ -8,7 +8,8 @@ const {
 const {
   updateStandings,
   getMonthStandings,
-  getDayStandings
+  getDayStandings,
+  getNotifSquad
 } = require('./cube-db');
 const {
   sendScrambles,
@@ -54,6 +55,19 @@ const startCron = bot => {
           channel333.send(
             monthlyRankingsFormat(channel333, '333', date, ranks));
         });
+    },
+    start: false,
+    timeZone: 'Europe/Paris'
+  }));
+
+  cronList_.push(new CronJob({
+    cronTime: '00 36 14 * * *',
+    onTick: async () => {
+      const channelSpam = bot.channels.get(process.env.CHANNEL_SPAM);
+      await getNotifSquad('333')
+        .then(author =>
+          channelSpam.send(
+            `Faites votre 333 !`, author));
     },
     start: false,
     timeZone: 'Europe/Paris'
