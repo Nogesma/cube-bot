@@ -1,11 +1,11 @@
 const averageOfFiveCalculator = times => {
   times = times.map(a => Number(a));
-  if (times.filter(a => !isNaN(a)).length === 5) {
+  if (times.filter(a => !isNaN(a) && a > 0).length === 5) {
     times.sort((a, b) => a - b).shift();
     times.pop();
     return Math.round((times.reduce((a, b) => a + b) / 3) * 100) / 100;
   }
-  return 'You must give an array of 5 numbers';
+  return 'You must give an array of 5 positive numbers';
 };
 
 const computeScore = (numberOfContestants, rank) => {
