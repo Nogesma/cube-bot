@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
-const {averageOfFiveCalculator, computeScore} = require('../tools/calculators');
+const {
+  averageOfFiveCalculator,
+  timeToSeconds,
+  secondsToTime,
+  computeScore
+} = require('../tools/calculators');
 const {Cube} = require('../models/cubes');
 const {Squad} = require('../models/notif');
 const {Ranking} = require('../models/rankings');
@@ -12,9 +17,9 @@ const insertNewTimes = async (date, author, event, solves) => {
   if (solves.length !== 5) {
     return 'Veuillez entrer 5 temps';
   }
-
-  const averageOfFive = averageOfFiveCalculator(solves);
-  if (typeof averageOfFive !== 'number') {
+  const times = solves.map(timeToSeconds);
+  const average = averageOfFiveCalculator(times);
+  if (typeof average !== 'number') {
     return 'Veuillez entrer des temps valides';
   }
 
@@ -26,11 +31,11 @@ const insertNewTimes = async (date, author, event, solves) => {
   await new Cube({
     author,
     solves,
-    time: averageOfFive,
+    time: average,
     date,
     event
   }).save();
-  return `Vos temps ont bien étés enregistrés ! ao5: ${averageOfFive}s`;
+  return `Vos temps ont bien étés enregistrés ! ao5: ${secondsToTime(average)}`;
 };
 
 /**
