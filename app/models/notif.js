@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
-const {events: availableEvents} = require('../config.js');
+const {events} = require('../config');
 
 const SquadSchema = new mongoose.Schema({
-  author: {type: [String]},
-  event: {type: String, enum: availableEvents, required: true, unique: true}
+  authors: [String],
+  event: {type: String, enum: events, unique: true}
 });
 
 module.exports = {Squad: mongoose.model('Squad', SquadSchema)};

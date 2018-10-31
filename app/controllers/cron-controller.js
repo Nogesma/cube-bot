@@ -61,7 +61,7 @@ const startCron = bot => {
   }));
 
   cronList_.push(new CronJob({
-    cronTime: '00 36 14 * * *',
+    cronTime: '00 00 18 * * *',
     onTick: async () => {
       const channelSpam = bot.channels.get(process.env.CHANNEL_SPAM);
       await getNotifSquad('333')

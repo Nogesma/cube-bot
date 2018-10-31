@@ -87,7 +87,6 @@ const deleteNotifSquad = (author, event) =>
   Squad.findOneAndUpdate({event}, {$pull: {author}}).exec();
 
 const getNotifSquad = event => {
-  console.log(Squad.find({event}).exec());
   return Squad.find({event}).exec();
 };
 

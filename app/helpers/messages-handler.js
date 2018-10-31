@@ -86,5 +86,5 @@ module.exports = {
   monthlyRanksCommand,
   dididoCommand,
   idoCommand,
-  idonotdoCommand,
+  idonotdoCommand
 };
