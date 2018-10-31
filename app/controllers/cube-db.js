@@ -19,13 +19,8 @@ const insertNewTimes = async (date, author, event, solves) => {
   }
   const times = solves.map(timeToSeconds);
   const average = averageOfFiveCalculator(times);
-  if (typeof average !== 'number') {
+  if (typeof average !== 'number' && average !== 'DNF') {
     return 'Veuillez entrer des temps valides';
-  }
-
-  const entry = await Cube.findOne({author, date, event}).exec();
-  if (entry) {
-    return 'Vous avez déjà soumis vos temps.';
   }
 
   await new Cube({
