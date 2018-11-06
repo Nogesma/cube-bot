@@ -20,17 +20,6 @@ const cronList_ = [];
 
 const startCron = bot => {
   cronList_.push(new CronJob({
-    cronTime: '00 00 02 * * *',
-    onTick: async () => {
-      await fs.remove('./tmp');
-      await fs.ensureDir('./tmp');
-      logger.log('info', 'tmp dir cleaned');
-    },
-    start: false,
-    timeZone: 'Europe/Paris'
-  }));
-
-  cronList_.push(new CronJob({
     cronTime: '00 59 23 * * *',
     onTick: async () => {
       const channel333 = bot.channels.get(process.env.CHANNEL_333);
