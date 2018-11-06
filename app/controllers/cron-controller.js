@@ -1,4 +1,3 @@
-const fs = require('fs-extra');
 const moment = require('moment');
 const {CronJob} = require('cron');
 const logger = require('../tools/logger');

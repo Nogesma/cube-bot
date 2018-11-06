@@ -509,6 +509,11 @@ commander@2.9.0:
   dependencies:
     graceful-readlink ">= 1.0.0"
 
+commander@^2.19.0:
+  version "2.19.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.19.0.tgz#f6198aa84e5b83c46054b94ddedbfed5ee9ff12a"
+  integrity sha512-6tvAOO+D6OENvRAh524Dh9jcfKTYDQAqvqezbCW82xj5X0pSrcpxtvRKHLG0yBY6SD7PSDrJaj+0AiOcKVd1Xg==
+
 commander@^2.3.0:
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.17.1.tgz#bd77ab7de6de94205ceacc72f1716d29f20a77bf"
@@ -3353,6 +3358,13 @@ scrambo@^0.3.0:
   resolved "https://registry.yarnpkg.com/scrambo/-/scrambo-0.3.0.tgz#0334b4ef0c7ffcd0b7d85fd1a67d89b0b7fb204f"
   dependencies:
     commander "^2.3.0"
+
+scrambow@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/scrambow/-/scrambow-1.0.2.tgz#3692f1ca4d5f5c345f47a27b934898ee347dc2b8"
+  integrity sha512-cyQ0fA1bqFFIdrPcnAZ2wsxXoHaW44qcjG99prrpxtm3x1mGYqffwuiqQ/BX/TjXNgsFqukU17k0uyd6FB98XA==
+  dependencies:
+    commander "^2.19.0"
 
 semver-diff@^2.0.0:
   version "2.1.0"

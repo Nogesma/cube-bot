@@ -1,14 +1,12 @@
-const Scrambo = require('scrambo');
-const fs = require('fs-extra');
+const R = require('ramda');
+const {Scrambow} = require('scrambow');
 
-const event333 = async () => {
-  return {scrambles: new Scrambo().get(5), files: []};
-};
+const event333 = async () => R.pluck('scramble_string', new Scrambow().get(5));
 
-const sendScrambles = async (chan, header, {scrambles, files}) => {
+const sendScrambles = async (chan, header, scrambles) => {
   await chan.send(header);
-  scrambles.forEach(async (s, i) => {
-    await chan.send(s, {files: [files[i]]});
+  scrambles.forEach(async s => {
+    await chan.send(s);
   });
 };
 

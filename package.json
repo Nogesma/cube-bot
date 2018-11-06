@@ -21,7 +21,7 @@
     "ramda": "^0.25.0",
     "ramda-fantasy": "^0.8.0",
     "request": "^2.87.0",
-    "scrambo": "^0.3.0",
+    "scrambow": "^1.0.2",
     "winston": "^3.0.0"
   },
   "devDependencies": {
