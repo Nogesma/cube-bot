@@ -1,19 +1,24 @@
 const timeToSeconds = t => {
   if (t === 'DNF') {
-    t = Infinity;
-  } else {
-    if (t.match(/\+$/g) !== null) {
-      t = t.slice(0, -1);
-    }
-    t = t.split(':').reduce((acc, t) => (60 * Number(acc)) + Number(t), 0);
+    return Infinity;
   }
+  if (t.match(/\+$/g) !== null) {
+    t = t.slice(0, -1);
+  }
+  t = t.split(':').reduce((acc, t) => (60 * Number(acc)) + Number(t), 0);
   return t;
 };
 
 const secondsToTime = t => {
+  if (t === Infinity) {
+    return 'DNF';
+  }
   const h = Math.floor(t / 3600);
   const min = Math.floor((t - (h * 3600)) / 60);
-  const s = Math.round((t - (h * 3600) - (min * 60)) * 100) / 100;
+  let s = (Math.round((t - (h * 3600) - (min * 60)) * 100) / 100).toFixed(2);
+  if (min > 0 && s.length === 4) {
+    s = '0' + s.toString();
+  }
   return `${h ? h + ':' : ''}${h || min ? min + ':' : ''}${s}`;
 };
 
@@ -22,11 +27,7 @@ const averageOfFiveCalculator = times => {
   if (times.filter(a => !isNaN(a) && a > 0).length === 5) {
     times.sort((a, b) => a - b).shift();
     times.pop();
-    const average = Math.round((times.reduce((a, b) => a + b) / 3) * 100) / 100;
-    if (average === Infinity) {
-      return 'DNF';
-    }
-    return average;
+    return Math.round((times.reduce((a, b) => a + b) / 3) * 100) / 100;
   }
   return 'You must give an array of 5 positive numbers';
 };

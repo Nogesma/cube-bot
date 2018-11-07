@@ -19,14 +19,14 @@ const insertNewTimes = async (date, author, event, solves) => {
   }
   const times = solves.map(timeToSeconds);
   const average = averageOfFiveCalculator(times);
-  if (typeof average !== 'number' && average !== 'DNF') {
+  if (typeof average !== 'number') {
     return 'Veuillez entrer des temps valides';
   }
 
   await new Cube({
     author,
     solves,
-    time: average,
+    time: secondsToTime(average),
     date,
     event
   }).save();
@@ -36,7 +36,7 @@ const insertNewTimes = async (date, author, event, solves) => {
 /**
  * Compute the daily standings and saves them to db
  * @param {String} date - Format : YYYY-MM-DD
- * @param {String} event - 333, 444 the event for which we compete
+ * @param {String} event - 333 the event for which we compete
  */
 const updateStandings = async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');
