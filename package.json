@@ -1,10 +1,11 @@
 {
   "name": "cube-bot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
     "start": "node index-cube.js",
+    "init-db": "node init.js",
     "test": "mocha --recursive",
     "code-style": "xo"
   },
@@ -22,7 +23,8 @@
     "ramda-fantasy": "^0.8.0",
     "request": "^2.87.0",
     "scrambow": "^1.0.2",
-    "winston": "^3.0.0"
+    "winston": "^3.0.0",
+    "bluebird": "latest"
   },
   "devDependencies": {
     "chai": "^4.1.2",
@@ -36,9 +38,6 @@
     "sinon": "^6.1.5",
     "sinon-chai": "^3.0.0",
     "time-grunt": "^1.4.0"
-  },
-  "init-db": {
-    
   },
   "pre-commit": [
     "code-style",

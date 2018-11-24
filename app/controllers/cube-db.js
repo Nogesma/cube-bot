@@ -81,13 +81,13 @@ const haveTimesForToday = async (date, author, event) => Boolean(
   await Cube.findOne({author, date, event}).exec());
 
 const addNotifSquad = (author, event) =>
-  Squad.findOneAndUpdate({event}, {$addToSet: {author}}).exec();
+  Squad.findOneAndUpdate({event}, {$addToSet: {authors: author}}).exec();
 
 const deleteNotifSquad = (author, event) =>
-  Squad.findOneAndUpdate({event}, {$pull: {author}}).exec();
+  Squad.findOneAndUpdate({event}, {$pull: {authors: author}}).exec();
 
 const getNotifSquad = event => {
-  return Squad.find({event}).exec();
+  return Squad.findOne({event}).exec();
 };
 
 module.exports = {

@@ -65,9 +65,9 @@ const startCron = bot => {
     onTick: async () => {
       const channelSpam = bot.channels.get(process.env.CHANNEL_SPAM);
       await getNotifSquad('333')
-        .then(author =>
+        .then(doc =>
           channelSpam.send(
-            `Faites votre 333 !`, author));
+            `Faites votre 333 ! ${doc.authors.map(x => `<@${x}>`).join(' ')}`));
     },
     start: false,
     timeZone: 'Europe/Paris'

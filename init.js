@@ -1,7 +1,9 @@
-const R = require('ramda');
 const mongoose = require('mongoose');
+const Bromise = require('bluebird');
 const {events} = require('./app/config');
-mongoose.Promise = require('bluebird');
+const {Squad} = require('./app/models/notif');
+
+mongoose.Promise = Bromise;
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
@@ -9,9 +11,10 @@ if (process.env.NODE_ENV === 'development') {
   require('dotenv').config();
 }
 
-mongoose.connect(process.env.MONGO_DB, {useNewUrlParser: true});
+mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true});
 
 const myEvents = events.map(event => ({event, authorList: []}));
 
-R.map(saveCustomFields, cf);
-setTimeout(() => mongoose.disconnect(), 10000);
+const saveEvents = events => new Squad(events).save();
+
+Bromise.map(myEvents, saveEvents).then(() => mongoose.disconnect());
