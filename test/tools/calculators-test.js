@@ -1,7 +1,9 @@
 const chai = require('chai');
 const {
   averageOfFiveCalculator,
-  computeScore
+  computeScore,
+  timeToSeconds,
+  secondsToTime
 } = require('../../app/tools/calculators');
 
 chai.should();
@@ -34,11 +36,15 @@ describe('app/tools/calculators.js', () => {
     context('When array contains string of numbers', () => {
       it('should return the average', () => {
         averageOfFiveCalculator(['13', '4', '5', '3', '6']).should.be
-          .equal(5.000);
+          .equal(5.00);
         averageOfFiveCalculator(['12.34', '0.05', '78.32', '34.21', '9.95'])
           .should.be.equal(18.83);
         averageOfFiveCalculator(['12', '13', '17', '15', '22']).should.be
-          .equal(15);
+          .equal(15.00);
+        averageOfFiveCalculator(['DNF', '4', 'DNF', '3', '6']).should.be
+          .equal(Infinity);
+        averageOfFiveCalculator(['15', 'DNF', '5', '3', '6']).should.be
+          .equal(8.66);
       });
     });
 
@@ -72,6 +78,26 @@ describe('app/tools/calculators.js', () => {
         computeScore(3, 1).should.be.equal(75);
         computeScore(10, 5).should.be.equal(73);
         computeScore(301, 122).should.be.equal(80);
+      });
+    });
+  });
+
+  describe('#timeToSeconds()', () => {
+    context('Convert mm:ss in seconds', () => {
+      it('should return the time in seconds', () => {
+        timeToSeconds('DNF').should.be.equal(Infinity);
+        timeToSeconds('12+').should.be.equal(12);
+        timeToSeconds('1:34.23').should.be.equal(94.23);
+      });
+    });
+  });
+
+  describe('#secondsToTime()', () => {
+    context('Convert seconds in mm:ss', () => {
+      it('should return the time in mm:ss', () => {
+        secondsToTime(Infinity).should.be.equal('DNF');
+        secondsToTime(94.23).should.be.equal('1:34.23');
+        secondsToTime(14.56).should.be.equal('14.56');
       });
     });
   });

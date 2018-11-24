@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
-const {averageOfFiveCalculator, computeScore} = require('../tools/calculators');
+const {
+  averageOfFiveCalculator,
+  timeToSeconds,
+  secondsToTime,
+  computeScore
+} = require('../tools/calculators');
 const {Cube} = require('../models/cubes');
 const {Squad} = require('../models/notif');
 const {Ranking} = require('../models/rankings');
@@ -12,31 +17,26 @@ const insertNewTimes = async (date, author, event, solves) => {
   if (solves.length !== 5) {
     return 'Veuillez entrer 5 temps';
   }
-
-  const averageOfFive = averageOfFiveCalculator(solves);
-  if (typeof averageOfFive !== 'number') {
+  const times = solves.map(timeToSeconds);
+  const average = averageOfFiveCalculator(times);
+  if (typeof average !== 'number') {
     return 'Veuillez entrer des temps valides';
-  }
-
-  const entry = await Cube.findOne({author, date, event}).exec();
-  if (entry) {
-    return 'Vous avez déjà soumis vos temps.';
   }
 
   await new Cube({
     author,
     solves,
-    time: averageOfFive,
+    time: secondsToTime(average),
     date,
     event
   }).save();
-  return `Vos temps ont bien étés enregistrés ! ao5: ${averageOfFive}s`;
+  return `Vos temps ont bien étés enregistrés ! ao5: ${secondsToTime(average)}`;
 };
 
 /**
  * Compute the daily standings and saves them to db
  * @param {String} date - Format : YYYY-MM-DD
- * @param {String} event - 333, 444 the event for which we compete
+ * @param {String} event - 333 the event for which we compete
  */
 const updateStandings = async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');
