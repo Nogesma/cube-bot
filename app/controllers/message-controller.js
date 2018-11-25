@@ -6,7 +6,9 @@ const {
   newTimesCommand,
   dailyRanksCommand,
   monthlyRanksCommand,
-  dididoCommand
+  dididoCommand,
+  idoCommand,
+  idonotdoCommand
 } = require('../helpers/messages-handler');
 
 const messageIsCommand = content => (content.indexOf('?') === 0);
@@ -18,6 +20,8 @@ const commandChoose = cond([
   [propEq('command', '?classement'), dailyRanksCommand],
   [propEq('command', '?classementmois'), monthlyRanksCommand],
   [propEq('command', '?didido'), dididoCommand],
+  [propEq('command', '?ido'), idoCommand],
+  [propEq('command', '?idonotdo'), idonotdoCommand],
   [T, () => {
   }]
 ]);

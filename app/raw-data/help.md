@@ -9,3 +9,6 @@ Donnera le classement du 03 mai 2018 (spoiler, y en a pas)
 # Afficher le classement pour le mois en cours : ?classementmois <event>
 
 # Afficher votre participation d'aujourd'hui : ?didido <event>
+
+# Recevoir une notification si vous n'avez pas encore participé : ?ido <event>
+# Ne plus recevoir de notifications si vous n'avez pas encore participé : ?idonotdo <event>
