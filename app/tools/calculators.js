@@ -5,7 +5,8 @@ const timeToSeconds = t => {
   if (t.match(/\+$/g) !== null) {
     t = t.slice(0, -1);
   }
-  t = t.split(':').reduce((acc, t) => (60 * Number(acc)) + Number(t), 0);
+  t = Math.round(t.split(':')
+    .reduce((acc, t) => (60 * Number(acc)) + Number(t), 0) * 100) / 100;
   return t;
 };
 

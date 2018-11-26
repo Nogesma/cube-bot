@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
+const R = require('ramda');
 const {
   averageOfFiveCalculator,
   timeToSeconds,
@@ -86,8 +87,10 @@ const addNotifSquad = (author, event) =>
 const deleteNotifSquad = (author, event) =>
   Squad.findOneAndUpdate({event}, {$pull: {authors: author}}).exec();
 
-const getNotifSquad = event => {
-  return Squad.findOne({event}).exec();
+const getNotifSquad = async (event, date) => {
+  const {authors: eventSquad} = await Squad.findOne({event}).exec();
+  const todayCubers = R.pluck('author', await Cube.find({event, date}).exec());
+  return R.filter(R.complement(R.includes)(R.__, todayCubers), eventSquad);
 };
 
 module.exports = {
