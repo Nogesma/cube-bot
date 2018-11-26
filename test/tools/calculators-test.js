@@ -41,10 +41,10 @@ describe('app/tools/calculators.js', () => {
           .should.be.equal(18.83);
         averageOfFiveCalculator(['12', '13', '17', '15', '22']).should.be
           .equal(15.00);
-        averageOfFiveCalculator(['DNF', '4', 'DNF', '3', '6']).should.be
+        averageOfFiveCalculator([Infinity, '4', Infinity, '3', '6']).should.be
           .equal(Infinity);
-        averageOfFiveCalculator(['15', 'DNF', '5', '3', '6']).should.be
-          .equal(8.66);
+        averageOfFiveCalculator(['15', Infinity, '5', '3', '6']).should.be
+          .equal(8.67);
       });
     });
 

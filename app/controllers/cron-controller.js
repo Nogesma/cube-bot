@@ -63,11 +63,12 @@ const startCron = bot => {
   cronList_.push(new CronJob({
     cronTime: '00 00 18 * * *',
     onTick: async () => {
+      const date = moment().format('YYYY-MM-DD');
       const channelSpam = bot.channels.get(process.env.CHANNEL_SPAM);
-      await getNotifSquad('333')
+      await getNotifSquad('333', date)
         .then(doc =>
           channelSpam.send(
-            `Faites votre 333 ! ${doc.authors.map(x => `<@${x}>`).join(' ')}`));
+            `Faites votre 333 ! ${doc.map(x => `<@${x}>`).join(' ')}`));
     },
     start: false,
     timeZone: 'Europe/Paris'
