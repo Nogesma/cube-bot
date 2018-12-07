@@ -11,6 +11,8 @@ if (process.env.NODE_ENV === 'development') {
   require('dotenv').config();
 }
 
+mongoose.set('useCreateIndex', true);
+
 mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true});
 
 const myEvents = events.map(event => ({event, authorList: []}));

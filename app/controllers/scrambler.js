@@ -3,6 +3,9 @@ const {Scrambow} = require('scrambow');
 
 const event333 = async () => R.pluck('scramble_string', new Scrambow().get(5));
 
+const event222 = async () =>
+  R.pluck('scramble_string', new Scrambow().setType('222').get(5));
+
 const sendScrambles = async (chan, header, scrambles) => {
   await chan.send(header);
   scrambles.forEach(async s => {
@@ -10,4 +13,4 @@ const sendScrambles = async (chan, header, scrambles) => {
   });
 };
 
-module.exports = {event333, sendScrambles};
+module.exports = {event333, event222, sendScrambles};
