@@ -69,7 +69,7 @@ const startCron = bot => {
       getMonthStandings(date, '222')
         .then(ranks => {
           channel222.send(
-            monthlyRankingsFormat(channel333, '222', date, ranks));
+            monthlyRankingsFormat(channel222, '222', date, ranks));
         });
     },
     start: false,
