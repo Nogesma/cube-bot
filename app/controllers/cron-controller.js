@@ -13,7 +13,8 @@ const {
 } = require('./cube-db');
 const {
   sendScrambles,
-  event333
+  event333,
+  event222
 } = require('./scrambler');
 
 const cronList_ = [];
@@ -23,11 +24,16 @@ const startCron = bot => {
     cronTime: '00 59 23 * * *',
     onTick: async () => {
       const channel333 = bot.channels.get(process.env.CHANNEL_333);
+      const channel222 = bot.channels.get(process.env.CHANNEL_222);
       const date = moment().format('YYYY-MM-DD');
       await updateStandings(date, '333')
         .then(() => getDayStandings(date, '333'))
         .then(ranks => channel333.send(
           dailyRankingsFormat(channel333, date, ranks)));
+      await updateStandings(date, '222')
+        .then(() => getDayStandings(date, '222'))
+        .then(ranks => channel222.send(
+          dailyRankingsFormat(channel222, date, ranks)));
     },
     start: false,
     timeZone: 'Europe/Paris'
@@ -40,6 +46,10 @@ const startCron = bot => {
         bot.channels.get(process.env.CHANNEL_333),
         `Scrambles 3x3x3 (${moment().format('YYYY-MM-DD')}) : `,
         scrambles));
+      await event222().then(scrambles => sendScrambles(
+        bot.channels.get(process.env.CHANNEL_222),
+        `Scrambles 2x2x2 (${moment().format('YYYY-MM-DD')}) : `,
+        scrambles));
     },
     start: false,
     timeZone: 'Europe/Paris'
@@ -49,11 +59,17 @@ const startCron = bot => {
     cronTime: '1 0 0 1 * *',
     onTick: async () => {
       const channel333 = bot.channels.get(process.env.CHANNEL_333);
+      const channel222 = bot.channels.get(process.env.CHANNEL_222);
       const date = moment().subtract(1, 'months').format('YYYY-MM-DD');
       getMonthStandings(date, '333')
         .then(ranks => {
           channel333.send(
             monthlyRankingsFormat(channel333, '333', date, ranks));
+        });
+      getMonthStandings(date, '222')
+        .then(ranks => {
+          channel222.send(
+            monthlyRankingsFormat(channel222, '222', date, ranks));
         });
     },
     start: false,

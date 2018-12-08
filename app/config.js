@@ -1,3 +1,3 @@
 module.exports = {
-  events: ['333']
+  events: ['333', '222']
 };
