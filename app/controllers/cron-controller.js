@@ -85,6 +85,10 @@ const startCron = bot => {
         .then(doc =>
           channelSpam.send(
             `Faites votre 333 ! ${doc.map(x => `<@${x}>`).join(' ')}`));
+      await getNotifSquad('222', date)
+        .then(doc =>
+          channelSpam.send(
+            `Faites votre 222 ! ${doc.map(x => `<@${x}>`).join(' ')}`));
     },
     start: false,
     timeZone: 'Europe/Paris'
