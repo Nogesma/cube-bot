@@ -29,13 +29,13 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
     return 'Veuillez entrer des temps valides';
   }
 
-  const entry = await Cube.findOne({author, date, event}).exec();
+  const entry = await Cube.findOne({author: author.id, date, event}).exec();
   if (entry) {
     return 'Vous avez déjà soumis vos temps.';
   }
 
   await new Cube({
-    author,
+    author: author.id,
     solves,
     time: secondsToTime(average),
     date,
