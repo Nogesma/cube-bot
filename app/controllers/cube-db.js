@@ -11,10 +11,15 @@ const {Cube} = require('../models/cubes');
 const {Squad} = require('../models/notif');
 const {Ranking} = require('../models/rankings');
 
+mongoose.set('useCreateIndex', true);
+
 mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/test',
   {useNewUrlParser: true});
 
-const insertNewTimes = async (date, author, event, solves) => {
+const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
+  if (channel.type !== 'dm') {
+    return 'Veuillez envoyer vos temps en message privé';
+  }
   if (solves.length !== 5) {
     return 'Veuillez entrer 5 temps';
   }

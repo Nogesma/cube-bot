@@ -1,4 +1,4 @@
-const {curry, pipeP, not} = require('ramda');
+const R = require('ramda');
 const {
   insertNewTimes,
   getDayStandings,
@@ -15,24 +15,23 @@ const {
   monthlyRankingsFormat
 } = require('./messages-helpers');
 
-const sendMessageToChannel = curry((channel, msg) => channel.send(msg));
+const sendMessageToChannel = R.curry((channel, msg) => channel.send(msg));
 
-const helpCommand = async ({channel}) => pipeP(helpMessage,
+const helpCommand = async ({channel}) => R.pipeP(helpMessage,
   sendMessageToChannel(channel))();
 
-const newTimesCommand = async ({channel, date, author, event, args}) => pipeP(
+const newTimesCommand = x => R.pipe(
   insertNewTimes,
-  sendMessageToChannel(channel)
-)(date, author.id, event, args);
-
+  R.then(sendMessageToChannel(R.prop('channel', x)))
+)(x);
 const dailyRanksCommand = async ({channel, event, args}) => {
   const date = ensureDay(args[0]);
   const messageSender = sendMessageToChannel(channel);
-  return not(availableEvents.includes(event)) ?
+  return R.not(availableEvents.includes(event)) ?
     messageSender('Merci de préciser l\'event') :
-    pipeP(
+    R.pipeP(
       getDayStandings,
-      curry(dailyRankingsFormat)(channel, date),
+      R.curry(dailyRankingsFormat)(channel, date),
       messageSender
     )(date, event);
 };
@@ -43,20 +42,20 @@ const monthlyRanksCommand = async ({
   args: [date = new Date()]
 }) => {
   const messageSender = sendMessageToChannel(channel);
-  return not(availableEvents.includes(event)) ?
+  return R.not(availableEvents.includes(event)) ?
     messageSender('Merci de préciser l\'event') :
-    pipeP(
+    R.pipeP(
       getMonthStandings,
-      curry(monthlyRankingsFormat)(channel, event, date),
+      R.curry(monthlyRankingsFormat)(channel, event, date),
       messageSender
     )(date, event);
 };
 
 const dididoCommand = async ({date, author, event, channel}) => {
   const messageSender = sendMessageToChannel(channel);
-  return not(availableEvents.includes(event)) ?
+  return R.not(availableEvents.includes(event)) ?
     messageSender('Merci de préciser l\'event') :
-    pipeP(
+    R.pipeP(
       haveTimesForToday,
       participation => participation ? 'Oui' : 'Non',
       messageSender
@@ -65,7 +64,7 @@ const dididoCommand = async ({date, author, event, channel}) => {
 
 const idoCommand = async ({author, event, channel}) => {
   const messageSender = sendMessageToChannel(channel);
-  return not(availableEvents.includes(event)) ?
+  return R.not(availableEvents.includes(event)) ?
     messageSender('Merci de préciser l\'event') :
     addNotifSquad(author.id, event)
       .then(messageSender('Vous avez bien été ajouté a la notif squad !'));
@@ -73,7 +72,7 @@ const idoCommand = async ({author, event, channel}) => {
 
 const idonotdoCommand = async ({author, event, channel}) => {
   const messageSender = sendMessageToChannel(channel);
-  return not(availableEvents.includes(event)) ?
+  return R.not(availableEvents.includes(event)) ?
     messageSender('Merci de préciser l\'event') :
     deleteNotifSquad(author.id, event)
       .then(messageSender('Vous avez bien été supprimé de la notif squad !'));
