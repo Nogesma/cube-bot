@@ -24,6 +24,7 @@ const newTimesCommand = x => R.pipe(
   insertNewTimes,
   R.then(sendMessageToChannel(R.prop('channel', x)))
 )(x);
+
 const dailyRanksCommand = async ({channel, event, args}) => {
   const date = ensureDay(args[0]);
   const messageSender = sendMessageToChannel(channel);
