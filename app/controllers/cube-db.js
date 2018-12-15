@@ -41,7 +41,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
     date,
     event
   }).save();
-  return `Vos temps ont bien étés enregistrés ! ao5: ${secondsToTime(average)}`;
+  return `Vos temps ont bien été enregistrés ! ao5: ${secondsToTime(average)}`;
 };
 
 /**
