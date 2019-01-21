@@ -115,3 +115,8 @@ typings/
 
 # User specific
 tmp/
+
+# MacOS
+
+.DS_Store
+app/.DS_Store
