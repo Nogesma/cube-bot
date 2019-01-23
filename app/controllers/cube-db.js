@@ -37,7 +37,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
   await new Cube({
     author: author.id,
     solves,
-    time: secondsToTime(average),
+    time: average,
     date,
     event
   }).save();
@@ -76,10 +76,10 @@ const updateStandings = async (date, event) => {
   await Promise.all(promisesUpdate);
 };
 
-const getDayStandings = async (date, event) => {
-  return (await Cube.find({date, event}).exec())
-    .sort((a, b) => a.time - b.time);
-};
+const getDayStandings = async (date, event) =>
+  (await Cube.find({date, event}).exec())
+    .sort((a, b) => a.time - b.time)
+    .map(x => R.over(R.lensProp('time'), secondsToTime, x));
 
 const getMonthStandings = async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');

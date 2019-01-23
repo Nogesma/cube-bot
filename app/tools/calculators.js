@@ -11,6 +11,7 @@ const timeToSeconds = t => {
 };
 
 const secondsToTime = t => {
+  t = Number(t);
   if (t === Infinity) {
     return 'DNF';
   }
