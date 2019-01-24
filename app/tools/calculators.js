@@ -11,12 +11,13 @@ const timeToSeconds = t => {
 };
 
 const secondsToTime = t => {
-  if (t === Infinity) {
+  const time = Number(t);
+  if (time === Infinity) {
     return 'DNF';
   }
-  const h = Math.floor(t / 3600);
-  const min = Math.floor((t - (h * 3600)) / 60);
-  let s = (Math.round((t - (h * 3600) - (min * 60)) * 100) / 100).toFixed(2);
+  const h = Math.floor(time / 3600);
+  const min = Math.floor((time - (h * 3600)) / 60);
+  let s = (Math.round((time - (h * 3600) - (min * 60)) * 100) / 100).toFixed(2);
   if (min > 0 && s.length === 4) {
     s = '0' + s.toString();
   }
