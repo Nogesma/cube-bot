@@ -25,7 +25,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
   }
   const times = solves.map(timeToSeconds);
   const average = averageOfFiveCalculator(times);
-  if (typeof average !== 'number') {
+  if (average < 0) {
     return 'Veuillez entrer des temps valides';
   }
 

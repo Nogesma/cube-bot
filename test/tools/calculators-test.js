@@ -13,23 +13,23 @@ describe('app/tools/calculators.js', () => {
     context('when wrong letters in array', () => {
       it('should return error message', () => {
         averageOfFiveCalculator(['2', '3', '4', '6', 'aze']).should.be
-          .equal('You must give an array of 5 positive numbers');
+          .equal(-Infinity);
       });
     });
 
     context('when array is not the good size', () => {
       it('should return error message', () => {
         averageOfFiveCalculator(['2', '3', '4', '5']).should.be
-          .equal('You must give an array of 5 positive numbers');
+          .equal(-Infinity);
         averageOfFiveCalculator(['2', '3', '4', '5', '6', '7']).should.be
-          .equal('You must give an array of 5 positive numbers');
+          .equal(-Infinity);
       });
     });
 
     context('when negative number in array', () => {
       it('should return error message', () => {
         averageOfFiveCalculator(['-2', '3', '4', '5', '6']).should.be
-          .equal('You must give an array of 5 positive numbers');
+          .equal(-Infinity);
       });
     });
 
