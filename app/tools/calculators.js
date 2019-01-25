@@ -24,14 +24,13 @@ const secondsToTime = t => {
   return `${h ? h + ':' : ''}${h || min ? min + ':' : ''}${s}`;
 };
 
-const averageOfFiveCalculator = times => {
-  times = times.map(a => Number(a));
+const averageOfFiveCalculator = t => {
+  let times = t.map(a => Number(a));
   if (times.filter(a => !isNaN(a) && a > 0).length === 5) {
-    times.sort((a, b) => a - b).shift();
-    times.pop();
+    times = times.sort((a, b) => a - b).slice(1, -1);
     return Math.round((times.reduce((a, b) => a + b) / 3) * 100) / 100;
   }
-  return 'You must give an array of 5 positive numbers';
+  return -Infinity;
 };
 
 const computeScore = (numberOfContestants, rank) => {

@@ -40,22 +40,6 @@ const startCron = bot => {
   }));
 
   cronList_.push(new CronJob({
-    cronTime: '00 01 00 * * *',
-    onTick: async () => {
-      await event333().then(scrambles => sendScrambles(
-        bot.channels.get(process.env.CHANNEL_333),
-        `Scrambles 3x3x3 (${moment().format('YYYY-MM-DD')}) : `,
-        scrambles));
-      await event222().then(scrambles => sendScrambles(
-        bot.channels.get(process.env.CHANNEL_222),
-        `Scrambles 2x2x2 (${moment().format('YYYY-MM-DD')}) : `,
-        scrambles));
-    },
-    start: false,
-    timeZone: 'Europe/Paris'
-  }));
-
-  cronList_.push(new CronJob({
     cronTime: '1 0 0 1 * *',
     onTick: async () => {
       const channel333 = bot.channels.get(process.env.CHANNEL_333);
@@ -71,6 +55,21 @@ const startCron = bot => {
           channel222.send(
             monthlyRankingsFormat(channel222, '222', date, ranks));
         });
+    },
+    start: false,
+    timeZone: 'Europe/Paris'
+  }));
+
+  cronList_.push(new CronJob({
+    cronTime: '00 01 00 * * *',
+    onTick: async () => {
+      const date = moment().format('YYYY-MM-DD');
+      await event333().then(scrambles => sendScrambles(
+        bot.channels.get(process.env.CHANNEL_333),
+        '333', date, scrambles));
+      await event222().then(scrambles => sendScrambles(
+        bot.channels.get(process.env.CHANNEL_222),
+        '2x2x2', date, scrambles));
     },
     start: false,
     timeZone: 'Europe/Paris'
