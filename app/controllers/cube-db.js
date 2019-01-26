@@ -10,6 +10,7 @@ const {
 const {Cube} = require('../models/cubes');
 const {Squad} = require('../models/notif');
 const {Ranking} = require('../models/rankings');
+const {events: availableEvents} = require('../config.js');
 
 mongoose.set('useCreateIndex', true);
 
@@ -22,6 +23,9 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
   }
   if (solves.length !== 5) {
     return 'Veuillez entrer 5 temps';
+  }
+  if (availableEvents.indexOf(event) < 0) {
+    return `Veuillez entrer un event valide : ${availableEvents}`;
   }
   const times = solves.map(timeToSeconds);
   const average = averageOfFiveCalculator(times);

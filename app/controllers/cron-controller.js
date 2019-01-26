@@ -25,6 +25,7 @@ const startCron = bot => {
     onTick: async () => {
       const channel333 = bot.channels.get(process.env.CHANNEL_333);
       const channel222 = bot.channels.get(process.env.CHANNEL_222);
+      const channel3BLD = bot.channels.get(process.env.CHANNEL_3BLD);
       const date = moment().format('YYYY-MM-DD');
       await updateStandings(date, '333')
         .then(() => getDayStandings(date, '333'))
@@ -34,6 +35,10 @@ const startCron = bot => {
         .then(() => getDayStandings(date, '222'))
         .then(ranks => channel222.send(
           dailyRankingsFormat(channel222, date, ranks)));
+      await updateStandings(date, '3BLD')
+        .then(() => getDayStandings(date, '3BLD'))
+        .then(ranks => channel3BLD.send(
+          dailyRankingsFormat(channel3BLD, date, ranks)));
     },
     start: false,
     timeZone: 'Europe/Paris'
@@ -44,6 +49,7 @@ const startCron = bot => {
     onTick: async () => {
       const channel333 = bot.channels.get(process.env.CHANNEL_333);
       const channel222 = bot.channels.get(process.env.CHANNEL_222);
+      const channel3BLD = bot.channels.get(process.env.CHANNEL_3BLD);
       const date = moment().subtract(1, 'months').format('YYYY-MM-DD');
       getMonthStandings(date, '333')
         .then(ranks => {
@@ -54,6 +60,11 @@ const startCron = bot => {
         .then(ranks => {
           channel222.send(
             monthlyRankingsFormat(channel222, '222', date, ranks));
+        });
+      getMonthStandings(date, '3BLD')
+        .then(ranks => {
+          channel3BLD.send(
+            monthlyRankingsFormat(channel3BLD, '3BLD', date, ranks));
         });
     },
     start: false,
@@ -70,6 +81,9 @@ const startCron = bot => {
       await event222().then(scrambles => sendScrambles(
         bot.channels.get(process.env.CHANNEL_222),
         '2x2x2', date, scrambles));
+      await event333().then(scrambles => sendScrambles(
+        bot.channels.get(process.env.CHANNEL_3BLD),
+        '3BLD', date, scrambles));
     },
     start: false,
     timeZone: 'Europe/Paris'
