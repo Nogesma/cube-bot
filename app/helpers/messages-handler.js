@@ -17,8 +17,9 @@ const {
 
 const sendMessageToChannel = R.curry((channel, msg) => channel.send(msg));
 
-const helpCommand = async ({channel}) => R.pipeP(helpMessage,
-  sendMessageToChannel(channel))();
+const helpCommand = async ({channel}) => R.pipe(
+  helpMessage,
+  R.then(sendMessageToChannel(channel)))();
 
 const newTimesCommand = x => R.pipe(
   insertNewTimes,
@@ -30,10 +31,10 @@ const dailyRanksCommand = async ({channel, event, args}) => {
   const messageSender = sendMessageToChannel(channel);
   return R.not(availableEvents.includes(event)) ?
     messageSender('Merci de préciser l\'event') :
-    R.pipeP(
+    R.pipe(
       getDayStandings,
-      R.curry(dailyRankingsFormat)(channel, date),
-      messageSender
+      R.then(R.curry(dailyRankingsFormat)(channel, date)),
+      R.then(messageSender)
     )(date, event);
 };
 
@@ -45,10 +46,10 @@ const monthlyRanksCommand = async ({
   const messageSender = sendMessageToChannel(channel);
   return R.not(availableEvents.includes(event)) ?
     messageSender('Merci de préciser l\'event') :
-    R.pipeP(
+    R.pipe(
       getMonthStandings,
-      R.curry(monthlyRankingsFormat)(channel, event, date),
-      messageSender
+      R.then(R.curry(monthlyRankingsFormat)(channel, event, date)),
+      R.then(messageSender)
     )(date, event);
 };
 
@@ -56,10 +57,10 @@ const dididoCommand = async ({date, author, event, channel}) => {
   const messageSender = sendMessageToChannel(channel);
   return R.not(availableEvents.includes(event)) ?
     messageSender('Merci de préciser l\'event') :
-    R.pipeP(
+    R.pipe(
       haveTimesForToday,
-      participation => participation ? 'Oui' : 'Non',
-      messageSender
+      R.then(participation => participation ? 'Oui' : 'Non'),
+      R.then(messageSender)
     )(date, author.id, event);
 };
 

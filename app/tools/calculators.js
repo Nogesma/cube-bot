@@ -1,3 +1,5 @@
+const R = require('ramda');
+
 const timeToSeconds = t => {
   if (t === 'DNF') {
     return Infinity;
@@ -33,6 +35,8 @@ const averageOfFiveCalculator = t => {
   return -Infinity;
 };
 
+const getBestTime = times => times.reduce((a, b) => R.min(a, b));
+
 const computeScore = (numberOfContestants, rank) => {
   if (numberOfContestants === 1) {
     return 100;
@@ -45,5 +49,6 @@ module.exports = {
   averageOfFiveCalculator,
   timeToSeconds,
   secondsToTime,
-  computeScore
+  computeScore,
+  getBestTime
 };
