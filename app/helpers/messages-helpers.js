@@ -16,7 +16,7 @@ const dailyRankingsFormat = (channel, date, ranks) => [
       const user = channel.client.users.get(cuber.author);
       const name = user ? user.username : 'RAGE-QUITTER';
       return [
-        `#${idx + 1} ${name}: ${cuber.time} ao5`,
+        `#${idx + 1} ${name}: ${cuber.time} ao5, ${cuber.best} single`,
         `[${cuber.solves.join(', ')}]`
       ].join('\n');
     }),

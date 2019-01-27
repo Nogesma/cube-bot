@@ -5,7 +5,8 @@ const {
   averageOfFiveCalculator,
   timeToSeconds,
   secondsToTime,
-  computeScore
+  computeScore,
+  getBestTime
 } = require('../tools/calculators');
 const {Cube} = require('../models/cubes');
 const {Squad} = require('../models/notif');
@@ -29,6 +30,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
   }
   const times = solves.map(timeToSeconds);
   const average = averageOfFiveCalculator(times);
+  const best = getBestTime(times);
   if (average < 0) {
     return 'Veuillez entrer des temps valides';
   }
@@ -42,6 +44,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
     author: author.id,
     solves,
     time: average,
+    best,
     date,
     event
   }).save();
@@ -57,7 +60,11 @@ const updateStandings = async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');
   const todayStandings = await Cube.find({date, event});
   const promisesUpdate = [];
-  todayStandings.sort((a, b) => a.time - b.time);
+  if (event === '3BLD') {
+    todayStandings.sort((a, b) => a.best - b.best);
+  } else {
+    todayStandings.sort((a, b) => a.time - b.time);
+  }
   todayStandings.forEach((entry, index) => {
     promisesUpdate.push(
       Ranking.findOne({date: monthDate, author: entry.author, event})
@@ -80,10 +87,16 @@ const updateStandings = async (date, event) => {
   await Promise.all(promisesUpdate);
 };
 
-const getDayStandings = async (date, event) =>
-  (await Cube.find({date, event}).exec())
+const getDayStandings = async (date, event) => {
+  if (event === '3BLD') {
+    return (await Cube.find({date, event}).exec())
+      .sort((a, b) => a.best - b.best)
+      .map(x => R.over(R.lensProp('best'), secondsToTime, x));
+  }
+  return (await Cube.find({date, event}).exec())
     .sort((a, b) => a.time - b.time)
     .map(x => R.over(R.lensProp('time'), secondsToTime, x));
+};
 
 const getMonthStandings = async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');
