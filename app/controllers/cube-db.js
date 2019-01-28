@@ -31,6 +31,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
   const times = solves.map(timeToSeconds);
   const average = averageOfFiveCalculator(times);
   const best = getBestTime(times);
+
   if (average < 0) {
     return 'Veuillez entrer des temps valides';
   }
@@ -42,7 +43,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
 
   await new Cube({
     author: author.id,
-    solves,
+    solves: times.map(a => secondsToTime(a)), // +2 doesn't get preserved
     time: average,
     best,
     date,
@@ -88,14 +89,15 @@ const updateStandings = async (date, event) => {
 };
 
 const getDayStandings = async (date, event) => {
+  const results = (await Cube.find({date, event}).exec());
   if (event === '3BLD') {
-    return (await Cube.find({date, event}).exec())
-      .sort((a, b) => a.best - b.best)
-      .map(x => R.over(R.lensProp('best'), secondsToTime, x));
+    results.sort((a, b) => a.best - b.best);
+  } else {
+    results.sort((a, b) => a.time - b.time);
   }
-  return (await Cube.find({date, event}).exec())
-    .sort((a, b) => a.time - b.time)
-    .map(x => R.over(R.lensProp('time'), secondsToTime, x));
+  return results.map(
+    x => R.over(R.lensProp('time'), secondsToTime)(
+      R.over(R.lensProp('best'), secondsToTime)(x)));
 };
 
 const getMonthStandings = async (date, event) => {
