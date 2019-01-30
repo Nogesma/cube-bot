@@ -1,6 +1,7 @@
 const {memoizeWith, identity} = require('ramda');
 const moment = require('moment');
 const fs = require('fs-extra');
+const {computeScore} = require('../tools/calculators');
 
 const helpMessage = async () => [
   '```Markdown',
@@ -15,8 +16,10 @@ const dailyRankingsFormat = (channel, date, ranks) => [
     (cuber, idx) => {
       const user = channel.client.users.get(cuber.author);
       const name = user ? user.username : 'RAGE-QUITTER';
+      const pts = computeScore(ranks.length, idx);
       return [
-        `#${idx + 1} ${name}: ${cuber.time} ao5, ${cuber.best} single`,
+        `#${idx + 1} ${name}: ${cuber.time} ao5, ${cuber.best} single, ` +
+        `${pts} pts`,
         `[${cuber.solves.join(', ')}]`
       ].join('\n');
     }),

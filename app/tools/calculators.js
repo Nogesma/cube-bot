@@ -37,13 +37,9 @@ const averageOfFiveCalculator = t => {
 
 const getBestTime = times => times.reduce((a, b) => R.min(a, b));
 
-const computeScore = (numberOfContestants, rank) => {
-  if (numberOfContestants === 1) {
-    return 100;
-  }
-  const a = -50 / (numberOfContestants - 1);
-  return Math.ceil(a * rank) + 100;
-};
+const computeScore = (numberOfContestants, rank) => R.min(
+  100,
+  Math.ceil(-50 / (numberOfContestants - 1) * rank) + 100);
 
 module.exports = {
   averageOfFiveCalculator,
