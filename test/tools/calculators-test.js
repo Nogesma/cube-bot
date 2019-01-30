@@ -3,7 +3,8 @@ const {
   averageOfFiveCalculator,
   computeScore,
   timeToSeconds,
-  secondsToTime
+  secondsToTime,
+  getBestTime
 } = require('../../app/tools/calculators');
 
 chai.should();
@@ -98,6 +99,16 @@ describe('app/tools/calculators.js', () => {
         secondsToTime(Infinity).should.be.equal('DNF');
         secondsToTime(94.23).should.be.equal('1:34.23');
         secondsToTime(14.56).should.be.equal('14.56');
+      });
+    });
+  });
+
+  describe('#getBestTime()', () => {
+    context('Get the best time of the array', () => {
+      it('should return the lowest time', () => {
+        getBestTime([13, 4, 5, 3, 6]).should.be.equal(3);
+        getBestTime([12.34, 0.05, 78.32, Infinity, 9.95])
+          .should.be.equal(0.05);
       });
     });
   });
