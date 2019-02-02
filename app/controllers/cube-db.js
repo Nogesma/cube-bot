@@ -91,8 +91,10 @@ const updateStandings = async (date, event) => {
 const getDayStandings = async (date, event) => {
   const results = (await Cube.find({date, event}).exec());
   if (event === '3BLD') {
+    results.sort((a, b) => a.time - b.time);
     results.sort((a, b) => a.best - b.best);
   } else {
+    results.sort((a, b) => a.best - b.best);
     results.sort((a, b) => a.time - b.time);
   }
   return results.map(

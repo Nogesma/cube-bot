@@ -16,3 +16,5 @@ Exemple : ?ido 333
 
 # Ne plus recevoir de notifications si vous n'avez pas encore participé : ?idonotdo <event>
 Exemple : ?idonotdo 333
+
+# Events disponibles : 333, 222, 3BLD
