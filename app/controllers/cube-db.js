@@ -6,7 +6,8 @@ const {
   timeToSeconds,
   secondsToTime,
   computeScore,
-  getBestTime
+  getBestTime,
+  sortRankings
 } = require('../tools/calculators');
 const {Cube} = require('../models/cubes');
 const {Squad} = require('../models/notif');
@@ -59,13 +60,8 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
  */
 const updateStandings = async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');
-  const todayStandings = await Cube.find({date, event});
+  const todayStandings = sortRankings(await Cube.find({date, event}));
   const promisesUpdate = [];
-  if (event === '3BLD') {
-    todayStandings.sort((a, b) => a.best - b.best);
-  } else {
-    todayStandings.sort((a, b) => a.time - b.time);
-  }
   todayStandings.forEach((entry, index) => {
     promisesUpdate.push(
       Ranking.findOne({date: monthDate, author: entry.author, event})
@@ -88,19 +84,10 @@ const updateStandings = async (date, event) => {
   await Promise.all(promisesUpdate);
 };
 
-const getDayStandings = async (date, event) => {
-  const results = (await Cube.find({date, event}).exec());
-  if (event === '3BLD') {
-    results.sort((a, b) => a.time - b.time);
-    results.sort((a, b) => a.best - b.best);
-  } else {
-    results.sort((a, b) => a.best - b.best);
-    results.sort((a, b) => a.time - b.time);
-  }
-  return results.map(
+const getDayStandings = async (date, event) =>
+  sortRankings(await Cube.find({date, event}).exec()).map(
     x => R.over(R.lensProp('time'), secondsToTime)(
       R.over(R.lensProp('best'), secondsToTime)(x)));
-};
 
 const getMonthStandings = async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');
