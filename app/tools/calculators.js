@@ -41,10 +41,20 @@ const computeScore = (numberOfContestants, rank) => R.min(
   100,
   Math.ceil(-50 / (numberOfContestants - 1) * rank) + 100);
 
+const sortRankings = ranks => {
+  const sorter = [R.ascend(R.prop('time')), R.ascend(R.prop('best'))];
+  return R.ifElse(
+    R.pipe(R.path([0, 'event']), R.equals('3BLD')),
+    R.sortWith(R.reverse(sorter)),
+    R.sortWith(sorter)
+  )(ranks);
+};
+
 module.exports = {
   averageOfFiveCalculator,
   timeToSeconds,
   secondsToTime,
   computeScore,
-  getBestTime
+  getBestTime,
+  sortRankings
 };
