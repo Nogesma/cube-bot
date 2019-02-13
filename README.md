@@ -43,5 +43,5 @@ MONGO_URL=mongodb://localhost:27017/test
 
 
 - Start the database : `mongod`
-- Init : `node init.js`
+- Init : `node init.js 333 222 444 3BLD MEGA OH SQ1`
 - Start the bot : `grunt`
