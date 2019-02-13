@@ -27,7 +27,7 @@ const dailyRankingsFormat = (channel, date, ranks) => [
 ].join('\n');
 
 const getMonthDateFormat_ = memoizeWith(identity,
-  date => moment(date).format('YYYY-MM'));
+  date => moment(date).format('YYYY-MM-DD'));
 
 const isCurrentMonth_ = date => getMonthDateFormat_(date) ===
   getMonthDateFormat_();
@@ -37,7 +37,7 @@ const displayMonthDate_ = date => isCurrentMonth_(date) ? 'en cours' :
 
 const monthlyRankingsFormat = (channel, event, date, ranks) => [
   '```xl',
-  `Classement ${event} du mois (${displayMonthDate_(date)}) :`,
+  `Classement de ${event} du mois (${displayMonthDate_(date)}) :`,
   ...ranks.map(
     (cuber, idx) => {
       const user = channel.client.users.get(cuber.author);

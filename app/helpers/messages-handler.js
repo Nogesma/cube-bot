@@ -29,7 +29,7 @@ const newTimesCommand = x => R.pipe(
 const dailyRanksCommand = async ({channel, event, args}) => {
   const date = ensureDay(args[0]);
   const messageSender = sendMessageToChannel(channel);
-  return R.not(availableEvents.includes(event)) ?
+  return R.not(availableEvents.includes(event.toUpperCase())) ?
     messageSender('Merci de préciser l\'event') :
     R.pipe(
       getDayStandings,
@@ -44,39 +44,43 @@ const monthlyRanksCommand = async ({
   args: [date = new Date()]
 }) => {
   const messageSender = sendMessageToChannel(channel);
-  return R.not(availableEvents.includes(event)) ?
+  const eventUpper = event.toUpperCase();
+  return R.not(availableEvents.includes(eventUpper)) ?
     messageSender('Merci de préciser l\'event') :
     R.pipe(
       getMonthStandings,
-      R.then(R.curry(monthlyRankingsFormat)(channel, event, date)),
+      R.then(R.curry(monthlyRankingsFormat)(channel, eventUpper, date)),
       R.then(messageSender)
-    )(date, event);
+    )(date, eventUpper);
 };
 
 const dididoCommand = async ({date, author, event, channel}) => {
   const messageSender = sendMessageToChannel(channel);
-  return R.not(availableEvents.includes(event)) ?
+  const eventUpper = event.toUpperCase();
+  return R.not(availableEvents.includes(eventUpper)) ?
     messageSender('Merci de préciser l\'event') :
     R.pipe(
       haveTimesForToday,
       R.then(participation => participation ? 'Oui' : 'Non'),
       R.then(messageSender)
-    )(date, author.id, event);
+    )(date, author.id, eventUpper);
 };
 
 const idoCommand = async ({author, event, channel}) => {
   const messageSender = sendMessageToChannel(channel);
-  return R.not(availableEvents.includes(event)) ?
+  const eventUpper = event.toUpperCase();
+  return R.not(availableEvents.includes(eventUpper)) ?
     messageSender('Merci de préciser l\'event') :
-    addNotifSquad(author.id, event)
+    addNotifSquad(author.id, eventUpper)
       .then(messageSender('Vous avez bien été ajouté a la notif squad !'));
 };
 
 const idonotdoCommand = async ({author, event, channel}) => {
   const messageSender = sendMessageToChannel(channel);
-  return R.not(availableEvents.includes(event)) ?
+  const eventUpper = event.toUpperCase();
+  return R.not(availableEvents.includes(eventUpper)) ?
     messageSender('Merci de préciser l\'event') :
-    deleteNotifSquad(author.id, event)
+    deleteNotifSquad(author.id, eventUpper)
       .then(messageSender('Vous avez bien été supprimé de la notif squad !'));
 };
 
