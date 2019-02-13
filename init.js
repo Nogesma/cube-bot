@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const Bromise = require('bluebird');
-const {events} = require('./app/config');
 const {Squad} = require('./app/models/notif');
+
+const events = process.argv.slice(2);
 
 mongoose.Promise = Bromise;
 
