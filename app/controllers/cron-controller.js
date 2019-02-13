@@ -149,7 +149,7 @@ const startCron = bot => {
   }));
 
   cronList_.push(new CronJob({
-    cronTime: '00 14 14 * * *',
+    cronTime: '00 00 18 * * *',
     onTick: async () => {
       const date = moment().format('YYYY-MM-DD');
       const channelSpam = bot.channels.get(process.env.CHANNEL_SPAM);
