@@ -25,8 +25,21 @@ const eventMega = async () => R.pipe(
   R.join('``````')
 )(new Scrambow().setType('minx').get(5));
 
+const eventSQ1 = async () => R.pipe(
+  R.pluck('scramble_string'),
+  R.map(R.trim),
+  R.join('``````')
+)(new Scrambow().setType('sq1').get(5));
+
 const sendScrambles = (chan, event, date, scrambles) =>
   chan.send(`**Scrambles de ${event} du ${date}:**\n\`\`\`` +
     scrambles + '```');
 
-module.exports = {event333, event222, event444, eventMega, sendScrambles};
+module.exports = {
+  event333,
+  event222,
+  event444,
+  eventMega,
+  eventSQ1,
+  sendScrambles
+};
