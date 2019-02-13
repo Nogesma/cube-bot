@@ -16,7 +16,8 @@ const {
   event333,
   event222,
   event444,
-  eventMega
+  eventMega,
+  eventSQ1
 } = require('./scrambler');
 
 const cronList_ = [];
@@ -31,6 +32,7 @@ const startCron = bot => {
       const channel3BLD = bot.channels.get(process.env.CHANNEL_3BLD);
       const channelOH = bot.channels.get(process.env.CHANNEL_OH);
       const channelMEGA = bot.channels.get(process.env.CHANNEL_MEGA);
+      const channelSQ1 = bot.channels.get(process.env.CHANNEL_SQ1);
       const date = moment().format('YYYY-MM-DD');
       await updateStandings(date, '333')
         .then(() => getDayStandings(date, '333'))
@@ -56,6 +58,10 @@ const startCron = bot => {
         .then(() => getDayStandings(date, 'MEGA'))
         .then(ranks => channelMEGA.send(
           dailyRankingsFormat(channelMEGA, date, ranks)));
+      await updateStandings(date, 'SQ1')
+        .then(() => getDayStandings(date, 'SQ1'))
+        .then(ranks => channelSQ1.send(
+          dailyRankingsFormat(channelSQ1, date, ranks)));
     },
     start: false,
     timeZone: 'Europe/Paris'
@@ -70,6 +76,7 @@ const startCron = bot => {
       const channel3BLD = bot.channels.get(process.env.CHANNEL_3BLD);
       const channelOH = bot.channels.get(process.env.CHANNEL_OH);
       const channelMEGA = bot.channels.get(process.env.CHANNEL_MEGA);
+      const channelSQ1 = bot.channels.get(process.env.CHANNEL_SQ1);
       const date = moment().subtract(1, 'months').format('YYYY-MM-DD');
       getMonthStandings(date, '333')
         .then(ranks => {
@@ -101,6 +108,11 @@ const startCron = bot => {
           channelMEGA.send(
             monthlyRankingsFormat(channelMEGA, 'Megaminx', date, ranks));
         });
+      getMonthStandings(date, 'SQ1')
+        .then(ranks => {
+          channelSQ1.send(
+            monthlyRankingsFormat(channelSQ1, 'Square-1', date, ranks));
+        });
     },
     start: false,
     timeZone: 'Europe/Paris'
@@ -128,13 +140,16 @@ const startCron = bot => {
       await eventMega().then(scrambles => sendScrambles(
         bot.channels.get(process.env.CHANNEL_MEGA),
         'Megaminx', date, scrambles));
+      await eventSQ1().then(scrambles => sendScrambles(
+        bot.channels.get(process.env.CHANNEL_SQ1),
+        'Square-1', date, scrambles));
     },
     start: false,
     timeZone: 'Europe/Paris'
   }));
 
   cronList_.push(new CronJob({
-    cronTime: '00 00 18 * * *',
+    cronTime: '00 14 14 * * *',
     onTick: async () => {
       const date = moment().format('YYYY-MM-DD');
       const channelSpam = bot.channels.get(process.env.CHANNEL_SPAM);
@@ -162,6 +177,10 @@ const startCron = bot => {
         .then(doc =>
           channelSpam.send(
             `Faites votre Megaminx ! ${doc.map(x => `<@${x}>`).join(' ')}`));
+      await getNotifSquad('SQ1', date)
+        .then(doc =>
+          channelSpam.send(
+            `Faites votre Square-1 ! ${doc.map(x => `<@${x}>`).join(' ')}`));
     },
     start: false,
     timeZone: 'Europe/Paris'
