@@ -32,31 +32,30 @@ const startCron = bot => {
       const channelOH = bot.channels.get(process.env.CHANNEL_OH);
       const channelMEGA = bot.channels.get(process.env.CHANNEL_MEGA);
       const date = moment().format('YYYY-MM-DD');
-      const niceDate = moment().format('DD-MM-YY');
       await updateStandings(date, '333')
         .then(() => getDayStandings(date, '333'))
         .then(ranks => channel333.send(
-          dailyRankingsFormat(channel333, niceDate, ranks)));
+          dailyRankingsFormat(channel333, date, ranks)));
       await updateStandings(date, '222')
         .then(() => getDayStandings(date, '222'))
         .then(ranks => channel222.send(
-          dailyRankingsFormat(channel222, niceDate, ranks)));
+          dailyRankingsFormat(channel222, date, ranks)));
       await updateStandings(date, '444')
         .then(() => getDayStandings(date, '444'))
         .then(ranks => channel444.send(
-          dailyRankingsFormat(channel444, niceDate, ranks)));
+          dailyRankingsFormat(channel444, date, ranks)));
       await updateStandings(date, '3BLD')
         .then(() => getDayStandings(date, '3BLD'))
         .then(ranks => channel3BLD.send(
-          dailyRankingsFormat(channel3BLD, niceDate, ranks)));
+          dailyRankingsFormat(channel3BLD, date, ranks)));
       await updateStandings(date, 'OH')
         .then(() => getDayStandings(date, 'OH'))
         .then(ranks => channelOH.send(
-          dailyRankingsFormat(channelOH, niceDate, ranks)));
+          dailyRankingsFormat(channelOH, date, ranks)));
       await updateStandings(date, 'MEGA')
         .then(() => getDayStandings(date, 'MEGA'))
         .then(ranks => channelMEGA.send(
-          dailyRankingsFormat(channelMEGA, niceDate, ranks)));
+          dailyRankingsFormat(channelMEGA, date, ranks)));
     },
     start: false,
     timeZone: 'Europe/Paris'
@@ -110,7 +109,7 @@ const startCron = bot => {
   cronList_.push(new CronJob({
     cronTime: '00 01 00 * * *',
     onTick: async () => {
-      const date = moment().format('DD-MM-YY');
+      const date = moment().format('YYYY-MM-DD');
       await event333().then(scrambles => sendScrambles(
         bot.channels.get(process.env.CHANNEL_333),
         '3x3x3', date, scrambles));

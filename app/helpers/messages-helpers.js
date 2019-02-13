@@ -27,7 +27,7 @@ const dailyRankingsFormat = (channel, date, ranks) => [
 ].join('\n');
 
 const getMonthDateFormat_ = memoizeWith(identity,
-  date => moment(date).format('DD-MM-YY'));
+  date => moment(date).format('YYYY-MM-DD'));
 
 const isCurrentMonth_ = date => getMonthDateFormat_(date) ===
   getMonthDateFormat_();
