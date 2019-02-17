@@ -23,9 +23,9 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
   if (channel.type !== 'dm') {
     return 'Veuillez envoyer vos temps en message privé';
   }
-  const hour = moment().format('HH:mm');
-  if (['23:59', '00:00'].includes(hour)) {
-    return 'Vous ne pouvez pas soumettre vos temps entre 23h59 et 00h01';
+  if (moment().isBetween(moment('23:55', 'HH:mm'), moment('00:05', 'HH:mm')
+    .add(1, 'days'))) {
+    return 'Vous ne pouvez pas soumettre vos temps entre 23h55 et 00h05';
   }
   if (solves.length !== 5) {
     return 'Veuillez entrer 5 temps';
