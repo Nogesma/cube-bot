@@ -38,6 +38,11 @@
 TOKEN=xyz
 CHANNEL_333=1234
 CHANNEL_222=1234
+CHANNEL_444=1234
+CHANNEL_OH=1234
+CHANNEL_3BLD=1234
+CHANNEL_MEGA=1234
+CHANNEL_SQ1=1234
 MONGO_URL=mongodb://localhost:27017/test
 ```
 
@@ -45,3 +50,9 @@ MONGO_URL=mongodb://localhost:27017/test
 - Start the database : `mongod`
 - Init : `node init.js 333 222 444 3BLD MEGA OH SQ1`
 - Start the bot : `grunt`
+
+## Contribute
+
+- Create a new branch (feature/, fix/, update/, refactor/)(name)
+- Push your changes to the branch
+- Create a pull request
