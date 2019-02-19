@@ -63,7 +63,7 @@ const dididoCommand = async ({date, author, event, channel}) => {
       haveTimesForToday,
       R.then(participation => participation ? 'Oui' : 'Non'),
       R.then(messageSender)
-    )(date, author.id, eventUpper);
+    )(date.format('YYYY-MM-DD'), author.id, eventUpper);
 };
 
 const idoCommand = async ({author, event, channel}) => {

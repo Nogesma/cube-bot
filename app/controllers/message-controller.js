@@ -27,7 +27,7 @@ const commandChoose = cond([
 ]);
 
 const applyCommand = message => {
-  const date = moment().format('YYYY-MM-DD');
+  const date = moment();
   const {author} = message;
   const {channel} = message;
   const [command, event, ...args] = message.content.split(' ');
