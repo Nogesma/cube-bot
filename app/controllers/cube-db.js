@@ -23,8 +23,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
   if (channel.type !== 'dm') {
     return 'Veuillez envoyer vos temps en message privé';
   }
-  if (moment().isBetween(moment('23:55', 'HH:mm'), moment('00:05', 'HH:mm')
-    .add(1, 'days'))) {
+  if (date.diff(moment('00:00', 'HH:mm'), 'minutes') < 5) {
     return 'Vous ne pouvez pas soumettre vos temps entre 23h55 et 00h05';
   }
   if (solves.length !== 5) {
@@ -53,7 +52,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
     solves: times.map(a => secondsToTime(a)), // +2 doesn't get preserved
     time: average,
     best,
-    date,
+    date: date.format('YYYY-MM-DD'),
     event: eventUpper
   }).save();
   return `Vos temps ont bien été enregistrés ! ao5: ${secondsToTime(average)}`;
