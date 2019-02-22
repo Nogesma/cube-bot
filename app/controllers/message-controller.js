@@ -11,7 +11,7 @@ const {
   idonotdoCommand
 } = require('../helpers/messages-handler');
 
-const messageIsCommand = content => (content.indexOf('?') === 0);
+const messageIsCommand = content => content.indexOf('?') === 0;
 
 const commandChoose = cond([
   [propEq('command', '?t'), newTimesCommand],
@@ -22,8 +22,7 @@ const commandChoose = cond([
   [propEq('command', '?didido'), dididoCommand],
   [propEq('command', '?ido'), idoCommand],
   [propEq('command', '?idonotdo'), idonotdoCommand],
-  [T, () => {
-  }]
+  [T, () => {}]
 ]);
 
 const applyCommand = message => {
@@ -35,7 +34,7 @@ const applyCommand = message => {
   return commandChoose({date, author, channel, command, event, args});
 };
 
-const incomingMessage = message => messageIsCommand(message.content) ?
-  applyCommand(message) : Maybe.Nothing;
+const incomingMessage = message =>
+  messageIsCommand(message.content) ? applyCommand(message) : Maybe.Nothing;
 
 module.exports = {incomingMessage};

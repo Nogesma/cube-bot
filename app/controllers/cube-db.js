@@ -16,8 +16,9 @@ const {events: availableEvents} = require('../config.js');
 
 mongoose.set('useCreateIndex', true);
 
-mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/test',
-  {useNewUrlParser: true});
+mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/test', {
+  useNewUrlParser: true
+});
 
 const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
   if (channel.type !== 'dm') {
@@ -41,8 +42,11 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
     return 'Veuillez entrer des temps valides';
   }
 
-  const entry = await Cube.findOne(
-    {author: author.id, date, eventUpper}).exec();
+  const entry = await Cube.findOne({
+    author: author.id,
+    date,
+    eventUpper
+  }).exec();
   if (entry) {
     return 'Vous avez déjà soumis vos temps.';
   }
@@ -90,9 +94,11 @@ const updateStandings = async (date, event) => {
 };
 
 const getDayStandings = async (date, event) =>
-  sortRankings(await Cube.find({date, event}).exec()).map(
-    x => R.over(R.lensProp('time'), secondsToTime)(
-      R.over(R.lensProp('best'), secondsToTime)(x)));
+  sortRankings(await Cube.find({date, event}).exec()).map(x =>
+    R.over(R.lensProp('time'), secondsToTime)(
+      R.over(R.lensProp('best'), secondsToTime)(x)
+    )
+  );
 
 const getMonthStandings = async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');
@@ -101,8 +107,8 @@ const getMonthStandings = async (date, event) => {
   return monthStandings;
 };
 
-const haveTimesForToday = async (date, author, event) => Boolean(
-  await Cube.findOne({author, date, event}).exec());
+const haveTimesForToday = async (date, author, event) =>
+  Boolean(await Cube.findOne({author, date, event}).exec());
 
 const addNotifSquad = (author, event) =>
   Squad.findOneAndUpdate({event}, {$addToSet: {authors: author}}).exec();

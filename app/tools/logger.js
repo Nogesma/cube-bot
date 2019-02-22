@@ -31,10 +31,7 @@ const myFormat = printf(info => {
 });
 
 const wl = createLogger({
-  format: combine(
-    timestamp(),
-    myFormat
-  ),
+  format: combine(timestamp(), myFormat),
   transports: [new transports.Console()]
 });
 

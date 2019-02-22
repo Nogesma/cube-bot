@@ -20,8 +20,7 @@ chai.should();
 
 describe.skip('app/controllers/message-controller.js', () => {
   describe('#incomingMessage()', () => {
-    before(() => {
-    });
+    before(() => {});
 
     after(async () => {
       const mongoose = require('mongoose');
@@ -32,21 +31,24 @@ describe.skip('app/controllers/message-controller.js', () => {
       await incomingMessage({
         content: '?t 333 12 13 14 15 16',
         channel: {
-          send: () => {
-          }
+          send: () => {}
         },
         author: {id: 'author'}
       });
-      stub.should.have.been.calledWith('2018-01-01', 'author', '333',
-        ['12', '13', '14', '15', '16']);
+      stub.should.have.been.calledWith('2018-01-01', 'author', '333', [
+        '12',
+        '13',
+        '14',
+        '15',
+        '16'
+      ]);
     });
 
     it('should call helpCommand', async () => {
       await incomingMessage({
         content: '?h' || '?help',
         channel: {
-          send: () => {
-          }
+          send: () => {}
         }
       });
     });
@@ -55,8 +57,7 @@ describe.skip('app/controllers/message-controller.js', () => {
       await incomingMessage({
         content: '?classement 333 2018-01-01',
         channel: {
-          send: () => {
-          }
+          send: () => {}
         }
       });
       stub.should.have.been.calledWith('333', '2018-01-01');
@@ -66,8 +67,7 @@ describe.skip('app/controllers/message-controller.js', () => {
       await incomingMessage({
         content: '?classementmois 333 2018-01',
         channel: {
-          send: () => {
-          }
+          send: () => {}
         }
       });
       stub.should.have.been.calledWith('333', '2018-01');
@@ -77,8 +77,7 @@ describe.skip('app/controllers/message-controller.js', () => {
       await incomingMessage({
         content: '?didido 333',
         channel: {
-          send: () => {
-          }
+          send: () => {}
         },
         author: {id: 'author'}
       });

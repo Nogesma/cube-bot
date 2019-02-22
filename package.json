@@ -45,20 +45,15 @@
   ],
   "xo": {
     "esnext": true,
+    "prettier": true,
     "envs": [
       "node",
       "mocha"
     ],
-    "space": 2,
-    "rules": {
-      "max-len": [
-        "error",
-        80,
-        2
-      ]
-    },
-    "ignores": [
-      "Gruntfile.js"
-    ]
+    "space": 2
+  },
+  "prettier": {
+    "bracketSpacing": false,
+    "singleQuote": true
   }
 }

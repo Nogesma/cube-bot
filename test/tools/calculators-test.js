@@ -13,50 +13,74 @@ describe('app/tools/calculators.js', () => {
   describe('#averageOfFiveCalculator()', () => {
     context('when wrong letters in array', () => {
       it('should return error message', () => {
-        averageOfFiveCalculator(['2', '3', '4', '6', 'aze']).should.be
-          .equal(-Infinity);
+        averageOfFiveCalculator(['2', '3', '4', '6', 'aze']).should.be.equal(
+          -Infinity
+        );
       });
     });
 
     context('when array is not the good size', () => {
       it('should return error message', () => {
-        averageOfFiveCalculator(['2', '3', '4', '5']).should.be
-          .equal(-Infinity);
-        averageOfFiveCalculator(['2', '3', '4', '5', '6', '7']).should.be
-          .equal(-Infinity);
+        averageOfFiveCalculator(['2', '3', '4', '5']).should.be.equal(
+          -Infinity
+        );
+        averageOfFiveCalculator(['2', '3', '4', '5', '6', '7']).should.be.equal(
+          -Infinity
+        );
       });
     });
 
     context('when negative number in array', () => {
       it('should return error message', () => {
-        averageOfFiveCalculator(['-2', '3', '4', '5', '6']).should.be
-          .equal(-Infinity);
+        averageOfFiveCalculator(['-2', '3', '4', '5', '6']).should.be.equal(
+          -Infinity
+        );
       });
     });
 
     context('When array contains string of numbers', () => {
       it('should return the average', () => {
-        averageOfFiveCalculator(['13', '4', '5', '3', '6']).should.be
-          .equal(5.00);
-        averageOfFiveCalculator(['12.34', '0.05', '78.32', '34.21', '9.95'])
-          .should.be.equal(18.83);
-        averageOfFiveCalculator(['12', '13', '17', '15', '22']).should.be
-          .equal(15.00);
-        averageOfFiveCalculator([Infinity, '4', Infinity, '3', '6']).should.be
-          .equal(Infinity);
-        averageOfFiveCalculator(['15', Infinity, '5', '3', '6']).should.be
-          .equal(8.67);
+        averageOfFiveCalculator(['13', '4', '5', '3', '6']).should.be.equal(
+          5.0
+        );
+        averageOfFiveCalculator([
+          '12.34',
+          '0.05',
+          '78.32',
+          '34.21',
+          '9.95'
+        ]).should.be.equal(18.83);
+        averageOfFiveCalculator(['12', '13', '17', '15', '22']).should.be.equal(
+          15.0
+        );
+        averageOfFiveCalculator([
+          Infinity,
+          '4',
+          Infinity,
+          '3',
+          '6'
+        ]).should.be.equal(Infinity);
+        averageOfFiveCalculator([
+          '15',
+          Infinity,
+          '5',
+          '3',
+          '6'
+        ]).should.be.equal(8.67);
       });
     });
 
     context('When array contains numbers', () => {
       it('should return the average', () => {
-        averageOfFiveCalculator([13, 4, 5, 3, 6]).should.be
-          .equal(5);
-        averageOfFiveCalculator([12.34, 0.05, 78.32, 34.21, 9.95])
-          .should.be.equal(18.83);
-        averageOfFiveCalculator([12, 13, 17, 15, 22]).should.be
-          .equal(15);
+        averageOfFiveCalculator([13, 4, 5, 3, 6]).should.be.equal(5);
+        averageOfFiveCalculator([
+          12.34,
+          0.05,
+          78.32,
+          34.21,
+          9.95
+        ]).should.be.equal(18.83);
+        averageOfFiveCalculator([12, 13, 17, 15, 22]).should.be.equal(15);
       });
     });
   });
@@ -107,8 +131,7 @@ describe('app/tools/calculators.js', () => {
     context('Get the best time of the array', () => {
       it('should return the lowest time', () => {
         getBestTime([13, 4, 5, 3, 6]).should.be.equal(3);
-        getBestTime([12.34, 0.05, 78.32, Infinity, 9.95])
-          .should.be.equal(0.05);
+        getBestTime([12.34, 0.05, 78.32, Infinity, 9.95]).should.be.equal(0.05);
       });
     });
   });
