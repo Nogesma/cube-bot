@@ -32,8 +32,8 @@ const newTimesCommand = x =>
 const dailyRanksCommand = async ({channel, event, args}) => {
   const date = ensureDay(args[0]);
   const messageSender = sendMessageToChannel(channel);
-  return R.not(availableEvents.includes(event.toUpperCase()))
-    ? messageSender("Merci de préciser l'event")
+  return R.not(availableEvents.includes(event))
+    ? messageSender(`Veuillez entrer un event valide : ${availableEvents}`)
     : R.pipe(
         getDayStandings,
         R.then(R.curry(dailyRankingsFormat)(channel, date)),
@@ -47,44 +47,40 @@ const monthlyRanksCommand = async ({
   args: [date = new Date()]
 }) => {
   const messageSender = sendMessageToChannel(channel);
-  const eventUpper = event.toUpperCase();
-  return R.not(availableEvents.includes(eventUpper))
-    ? messageSender("Merci de préciser l'event")
+  return R.not(availableEvents.includes(event))
+    ? messageSender(`Veuillez entrer un event valide : ${availableEvents}`)
     : R.pipe(
         getMonthStandings,
-        R.then(R.curry(monthlyRankingsFormat)(channel, eventUpper, date)),
+        R.then(R.curry(monthlyRankingsFormat)(channel, event, date)),
         R.then(messageSender)
-      )(date, eventUpper);
+      )(date, event);
 };
 
 const dididoCommand = async ({date, author, event, channel}) => {
   const messageSender = sendMessageToChannel(channel);
-  const eventUpper = event.toUpperCase();
-  return R.not(availableEvents.includes(eventUpper))
-    ? messageSender("Merci de préciser l'event")
+  return R.not(availableEvents.includes(event))
+    ? messageSender(`Veuillez entrer un event valide : ${availableEvents}`)
     : R.pipe(
         haveTimesForToday,
         R.then(participation => (participation ? 'Oui' : 'Non')),
         R.then(messageSender)
-      )(date.format('YYYY-MM-DD'), author.id, eventUpper);
+      )(date.format('YYYY-MM-DD'), author.id, event);
 };
 
 const idoCommand = async ({author, event, channel}) => {
   const messageSender = sendMessageToChannel(channel);
-  const eventUpper = event.toUpperCase();
-  return R.not(availableEvents.includes(eventUpper))
-    ? messageSender("Merci de préciser l'event")
-    : addNotifSquad(author.id, eventUpper).then(
+  return R.not(availableEvents.includes(event))
+    ? messageSender(`Veuillez entrer un event valide : ${availableEvents}`)
+    : addNotifSquad(author.id, event).then(
         messageSender('Vous avez bien été ajouté a la notif squad !')
       );
 };
 
 const idonotdoCommand = async ({author, event, channel}) => {
   const messageSender = sendMessageToChannel(channel);
-  const eventUpper = event.toUpperCase();
-  return R.not(availableEvents.includes(eventUpper))
-    ? messageSender("Merci de préciser l'event")
-    : deleteNotifSquad(author.id, eventUpper).then(
+  return R.not(availableEvents.includes(event))
+    ? messageSender(`Veuillez entrer un event valide : ${availableEvents}`)
+    : deleteNotifSquad(author.id, event).then(
         messageSender('Vous avez bien été supprimé de la notif squad !')
       );
 };

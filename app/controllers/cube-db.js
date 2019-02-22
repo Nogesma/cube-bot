@@ -30,8 +30,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
   if (solves.length !== 5) {
     return 'Veuillez entrer 5 temps';
   }
-  const eventUpper = event.toUpperCase();
-  if (availableEvents.indexOf(eventUpper) < 0) {
+  if (availableEvents.indexOf(event) < 0) {
     return `Veuillez entrer un event valide : ${availableEvents}`;
   }
   const times = solves.map(timeToSeconds);
@@ -45,7 +44,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
   const entry = await Cube.findOne({
     author: author.id,
     date,
-    eventUpper
+    event
   }).exec();
   if (entry) {
     return 'Vous avez déjà soumis vos temps.';
@@ -57,7 +56,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
     time: average,
     best,
     date: date.format('YYYY-MM-DD'),
-    event: eventUpper
+    event
   }).save();
   return `Vos temps ont bien été enregistrés ! ao5: ${secondsToTime(average)}`;
 };

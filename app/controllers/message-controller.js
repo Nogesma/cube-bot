@@ -31,7 +31,14 @@ const applyCommand = message => {
   const {channel} = message;
   const [command, event, ...args] = message.content.split(' ');
 
-  return commandChoose({date, author, channel, command, event, args});
+  return commandChoose({
+    date,
+    author,
+    channel,
+    command,
+    event: event.toUpperCase(),
+    args
+  });
 };
 
 const incomingMessage = message =>
