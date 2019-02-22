@@ -7,8 +7,10 @@ const timeToSeconds = t => {
   if (t.match(/\+$/g) !== null) {
     t = t.slice(0, -1);
   }
-  t = Math.round(t.split(':')
-    .reduce((acc, t) => (60 * Number(acc)) + Number(t), 0) * 100) / 100;
+  t =
+    Math.round(
+      t.split(':').reduce((acc, t) => 60 * Number(acc) + Number(t), 0) * 100
+    ) / 100;
   return t;
 };
 
@@ -18,8 +20,8 @@ const secondsToTime = t => {
     return 'DNF';
   }
   const h = Math.floor(time / 3600);
-  const min = Math.floor((time - (h * 3600)) / 60);
-  let s = (Math.round((time - (h * 3600) - (min * 60)) * 100) / 100).toFixed(2);
+  const min = Math.floor((time - h * 3600) / 60);
+  let s = (Math.round((time - h * 3600 - min * 60) * 100) / 100).toFixed(2);
   if (min > 0 && s.length === 4) {
     s = '0' + s.toString();
   }
@@ -37,14 +39,16 @@ const averageOfFiveCalculator = t => {
 
 const getBestTime = times => times.reduce((a, b) => R.min(a, b));
 
-const computeScore = (numberOfContestants, rank) => R.min(
-  100,
-  Math.ceil(-50 / (numberOfContestants - 1) * rank) + 100);
+const computeScore = (numberOfContestants, rank) =>
+  R.min(100, Math.ceil((-50 / (numberOfContestants - 1)) * rank) + 100);
 
 const sortRankings = ranks => {
   const sorter = [R.ascend(R.prop('time')), R.ascend(R.prop('best'))];
   return R.ifElse(
-    R.pipe(R.path([0, 'event']), R.equals('3BLD')),
+    R.pipe(
+      R.path([0, 'event']),
+      R.equals('3BLD')
+    ),
     R.sortWith(R.reverse(sorter)),
     R.sortWith(sorter)
   )(ranks);

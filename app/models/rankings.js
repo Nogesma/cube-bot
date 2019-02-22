@@ -10,4 +10,3 @@ const rankingsSchema = new mongoose.Schema({
 });
 
 module.exports = {Ranking: mongoose.model('Ranking', rankingsSchema)};
-
