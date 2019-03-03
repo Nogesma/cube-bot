@@ -27,8 +27,7 @@ const commandChoose = cond([
 
 const applyCommand = message => {
   const date = moment();
-  const {author} = message;
-  const {channel} = message;
+  const {author, channel} = message;
   const [command, event, ...args] = message.content.split(' ');
 
   return commandChoose({
@@ -36,7 +35,7 @@ const applyCommand = message => {
     author,
     channel,
     command,
-    event: event.toUpperCase(),
+    event: event ? event.toUpperCase() : '',
     args
   });
 };
