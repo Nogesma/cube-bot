@@ -70,7 +70,8 @@ const dididoCommand = async ({date, author, event, channel}) => {
       )(date.format('YYYY-MM-DD'), author.id, event);
 };
 
-const idoCommand = async ({author, event: time, channel}) => {
+const idoCommand = async ({author, event, channel}) => {
+  const time = Number(event);
   const messageSender = sendMessageToChannel(channel);
   return R.not(availableTimes.includes(time))
     ? messageSender(`Veuillez entrer une heure valide : ${availableTimes}`)
@@ -79,7 +80,8 @@ const idoCommand = async ({author, event: time, channel}) => {
       );
 };
 
-const idonotdoCommand = async ({author, event: time, channel}) => {
+const idonotdoCommand = async ({author, event, channel}) => {
+  const time = Number(event);
   const messageSender = sendMessageToChannel(channel);
   return R.not(availableTimes.includes(time))
     ? messageSender(`Veuillez entrer une heure valide : ${availableTimes}`)

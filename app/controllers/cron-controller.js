@@ -1,10 +1,12 @@
 const moment = require('moment');
 const {CronJob} = require('cron');
+const R = require('ramda');
 const logger = require('../tools/logger');
 const {
   monthlyRankingsFormat,
   dailyRankingsFormat
 } = require('../helpers/messages-helpers');
+const {hours} = require('../config');
 const {
   updateStandings,
   getMonthStandings,
@@ -151,77 +153,17 @@ const startCron = bot => {
 
   cronList_.push(
     new CronJob({
-      cronTime: '00 00 17 * * *',
+      cronTime: '00 00 * * * *',
       onTick: async () => {
-        const channelSpam = bot.channels.get(process.env.CHANNEL_SPAM);
-        await getNotifSquad('17').then(doc =>
-          channelSpam.send(
-            `Participez au tournoi ! ${doc.map(x => `<@${x}>`).join(' ')}`
-          )
-        );
-      },
-      start: false,
-      timeZone: 'Europe/Paris'
-    })
-  );
-  cronList_.push(
-    new CronJob({
-      cronTime: '00 00 18 * * *',
-      onTick: async () => {
-        const channelSpam = bot.channels.get(process.env.CHANNEL_SPAM);
-        await getNotifSquad('18').then(doc => {
-          return channelSpam.send(
-            `Participez au tournoi ! ${doc.map(x => `<@${x}>`).join(' ')}`
+        const time = moment().hour();
+        if (R.includes(time, hours)) {
+          const channelSpam = bot.channels.get(process.env.CHANNEL_SPAM);
+          await getNotifSquad(time).then(doc =>
+            channelSpam.send(
+              `Participez au tournoi ! ${doc.map(x => `<@${x}>`).join(' ')}`
+            )
           );
-        });
-      },
-      start: false,
-      timeZone: 'Europe/Paris'
-    })
-  );
-
-  cronList_.push(
-    new CronJob({
-      cronTime: '00 00 19 * * *',
-      onTick: async () => {
-        const channelSpam = bot.channels.get(process.env.CHANNEL_SPAM);
-        await getNotifSquad('19').then(doc =>
-          channelSpam.send(
-            `Participez au tournoi ! ${doc.map(x => `<@${x}>`).join(' ')}`
-          )
-        );
-      },
-      start: false,
-      timeZone: 'Europe/Paris'
-    })
-  );
-
-  cronList_.push(
-    new CronJob({
-      cronTime: '00 00 20 * * *',
-      onTick: async () => {
-        const channelSpam = bot.channels.get(process.env.CHANNEL_SPAM);
-        await getNotifSquad('20').then(doc =>
-          channelSpam.send(
-            `Participez au tournoi ! ${doc.map(x => `<@${x}>`).join(' ')}`
-          )
-        );
-      },
-      start: false,
-      timeZone: 'Europe/Paris'
-    })
-  );
-
-  cronList_.push(
-    new CronJob({
-      cronTime: '00 00 21 * * *',
-      onTick: async () => {
-        const channelSpam = bot.channels.get(process.env.CHANNEL_SPAM);
-        await getNotifSquad('21').then(doc =>
-          channelSpam.send(
-            `Participez au tournoi ! ${doc.map(x => `<@${x}>`).join(' ')}`
-          )
-        );
+        }
       },
       start: false,
       timeZone: 'Europe/Paris'
