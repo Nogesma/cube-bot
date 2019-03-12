@@ -7,7 +7,10 @@ const {
   addNotifSquad,
   deleteNotifSquad
 } = require('../controllers/cube-db');
-const {events: availableEvents} = require('../config.js');
+const {
+  events: availableEvents,
+  hours: availableTimes
+} = require('../config.js');
 const {
   helpMessage,
   ensureDay,
@@ -68,19 +71,21 @@ const dididoCommand = async ({date, author, event, channel}) => {
 };
 
 const idoCommand = async ({author, event, channel}) => {
+  const time = Number(event);
   const messageSender = sendMessageToChannel(channel);
-  return R.not(availableEvents.includes(event))
-    ? messageSender(`Veuillez entrer un event valide : ${availableEvents}`)
-    : addNotifSquad(author.id, event).then(
+  return R.not(availableTimes.includes(time))
+    ? messageSender(`Veuillez entrer une heure valide : ${availableTimes}`)
+    : addNotifSquad(author.id, time).then(
         messageSender('Vous avez bien été ajouté a la notif squad !')
       );
 };
 
 const idonotdoCommand = async ({author, event, channel}) => {
+  const time = Number(event);
   const messageSender = sendMessageToChannel(channel);
-  return R.not(availableEvents.includes(event))
-    ? messageSender(`Veuillez entrer un event valide : ${availableEvents}`)
-    : deleteNotifSquad(author.id, event).then(
+  return R.not(availableTimes.includes(time))
+    ? messageSender(`Veuillez entrer une heure valide : ${availableTimes}`)
+    : deleteNotifSquad(author.id, time).then(
         messageSender('Vous avez bien été supprimé de la notif squad !')
       );
 };

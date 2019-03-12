@@ -1,24 +1,19 @@
 const moment = require('moment');
 const {CronJob} = require('cron');
+const R = require('ramda');
 const logger = require('../tools/logger');
 const {
   monthlyRankingsFormat,
   dailyRankingsFormat
 } = require('../helpers/messages-helpers');
+const {hours} = require('../config');
 const {
   updateStandings,
   getMonthStandings,
   getDayStandings,
   getNotifSquad
 } = require('./cube-db');
-const {
-  sendScrambles,
-  event333,
-  event222,
-  event444,
-  eventMega,
-  eventSQ1
-} = require('./scrambler');
+const {sendScrambles, event333, event222, eventSQ1} = require('./scrambler');
 
 const cronList_ = [];
 
@@ -29,10 +24,8 @@ const startCron = bot => {
       onTick: async () => {
         const channel333 = bot.channels.get(process.env.CHANNEL_333);
         const channel222 = bot.channels.get(process.env.CHANNEL_222);
-        const channel444 = bot.channels.get(process.env.CHANNEL_444);
         const channel3BLD = bot.channels.get(process.env.CHANNEL_3BLD);
         const channelOH = bot.channels.get(process.env.CHANNEL_OH);
-        const channelMEGA = bot.channels.get(process.env.CHANNEL_MEGA);
         const channelSQ1 = bot.channels.get(process.env.CHANNEL_SQ1);
         const date = moment().format('YYYY-MM-DD');
         await updateStandings(date, '333')
@@ -45,11 +38,6 @@ const startCron = bot => {
           .then(ranks =>
             channel222.send(dailyRankingsFormat(channel222, date, ranks))
           );
-        await updateStandings(date, '444')
-          .then(() => getDayStandings(date, '444'))
-          .then(ranks =>
-            channel444.send(dailyRankingsFormat(channel444, date, ranks))
-          );
         await updateStandings(date, '3BLD')
           .then(() => getDayStandings(date, '3BLD'))
           .then(ranks =>
@@ -59,11 +47,6 @@ const startCron = bot => {
           .then(() => getDayStandings(date, 'OH'))
           .then(ranks =>
             channelOH.send(dailyRankingsFormat(channelOH, date, ranks))
-          );
-        await updateStandings(date, 'MEGA')
-          .then(() => getDayStandings(date, 'MEGA'))
-          .then(ranks =>
-            channelMEGA.send(dailyRankingsFormat(channelMEGA, date, ranks))
           );
         await updateStandings(date, 'SQ1')
           .then(() => getDayStandings(date, 'SQ1'))
@@ -82,10 +65,8 @@ const startCron = bot => {
       onTick: async () => {
         const channel333 = bot.channels.get(process.env.CHANNEL_333);
         const channel222 = bot.channels.get(process.env.CHANNEL_222);
-        const channel444 = bot.channels.get(process.env.CHANNEL_444);
         const channel3BLD = bot.channels.get(process.env.CHANNEL_3BLD);
         const channelOH = bot.channels.get(process.env.CHANNEL_OH);
-        const channelMEGA = bot.channels.get(process.env.CHANNEL_MEGA);
         const channelSQ1 = bot.channels.get(process.env.CHANNEL_SQ1);
         const date = moment()
           .subtract(1, 'months')
@@ -100,11 +81,6 @@ const startCron = bot => {
             monthlyRankingsFormat(channel222, '2x2x2', date, ranks)
           );
         });
-        getMonthStandings(date, '444').then(ranks => {
-          channel444.send(
-            monthlyRankingsFormat(channel444, '4x4x4', date, ranks)
-          );
-        });
         getMonthStandings(date, '3BLD').then(ranks => {
           channel3BLD.send(
             monthlyRankingsFormat(channel3BLD, '3BLD', date, ranks)
@@ -112,11 +88,6 @@ const startCron = bot => {
         });
         getMonthStandings(date, 'OH').then(ranks => {
           channelOH.send(monthlyRankingsFormat(channelOH, 'OH', date, ranks));
-        });
-        getMonthStandings(date, 'MEGA').then(ranks => {
-          channelMEGA.send(
-            monthlyRankingsFormat(channelMEGA, 'Megaminx', date, ranks)
-          );
         });
         getMonthStandings(date, 'SQ1').then(ranks => {
           channelSQ1.send(
@@ -150,14 +121,6 @@ const startCron = bot => {
             scrambles
           )
         );
-        await event444().then(scrambles =>
-          sendScrambles(
-            bot.channels.get(process.env.CHANNEL_444),
-            '4x4x4',
-            date,
-            scrambles
-          )
-        );
         await event333().then(scrambles =>
           sendScrambles(
             bot.channels.get(process.env.CHANNEL_3BLD),
@@ -170,14 +133,6 @@ const startCron = bot => {
           sendScrambles(
             bot.channels.get(process.env.CHANNEL_OH),
             'OH',
-            date,
-            scrambles
-          )
-        );
-        await eventMega().then(scrambles =>
-          sendScrambles(
-            bot.channels.get(process.env.CHANNEL_MEGA),
-            'Megaminx',
             date,
             scrambles
           )
@@ -198,45 +153,17 @@ const startCron = bot => {
 
   cronList_.push(
     new CronJob({
-      cronTime: '00 00 18 * * *',
+      cronTime: '00 00 * * * *',
       onTick: async () => {
-        const date = moment().format('YYYY-MM-DD');
-        const channelSpam = bot.channels.get(process.env.CHANNEL_SPAM);
-        await getNotifSquad('333', date).then(doc =>
-          channelSpam.send(
-            `Faites votre 3x3x3 ! ${doc.map(x => `<@${x}>`).join(' ')}`
-          )
-        );
-        await getNotifSquad('222', date).then(doc =>
-          channelSpam.send(
-            `Faites votre 2x2x2 ! ${doc.map(x => `<@${x}>`).join(' ')}`
-          )
-        );
-        await getNotifSquad('444', date).then(doc =>
-          channelSpam.send(
-            `Faites votre 4x4x4 ! ${doc.map(x => `<@${x}>`).join(' ')}`
-          )
-        );
-        await getNotifSquad('3BLD', date).then(doc =>
-          channelSpam.send(
-            `Faites votre 3BLD ! ${doc.map(x => `<@${x}>`).join(' ')}`
-          )
-        );
-        await getNotifSquad('OH', date).then(doc =>
-          channelSpam.send(
-            `Faites votre 3x3x3 OH ! ${doc.map(x => `<@${x}>`).join(' ')}`
-          )
-        );
-        await getNotifSquad('MEGA', date).then(doc =>
-          channelSpam.send(
-            `Faites votre Megaminx ! ${doc.map(x => `<@${x}>`).join(' ')}`
-          )
-        );
-        await getNotifSquad('SQ1', date).then(doc =>
-          channelSpam.send(
-            `Faites votre Square-1 ! ${doc.map(x => `<@${x}>`).join(' ')}`
-          )
-        );
+        const time = moment().hour();
+        if (R.includes(time, hours)) {
+          const channelSpam = bot.channels.get(process.env.CHANNEL_SPAM);
+          await getNotifSquad(time).then(doc =>
+            channelSpam.send(
+              `Participez au tournoi ! ${doc.map(x => `<@${x}>`).join(' ')}`
+            )
+          );
+        }
       },
       start: false,
       timeZone: 'Europe/Paris'
