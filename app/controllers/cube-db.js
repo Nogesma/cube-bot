@@ -47,7 +47,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
 
   const entry = await Cube.findOne({
     author: author.id,
-    date,
+    date: date.format('YYYY-MM-DD'),
     event
   }).exec();
   if (entry) {
