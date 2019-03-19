@@ -112,44 +112,39 @@ const startCron = bot => {
       cronTime: '00 01 00 * * *',
       onTick: async () => {
         const date = moment().format('YYYY-MM-DD');
-        await scrambles('333').then(scrambles =>
+        await scrambles('333').then(s =>
           sendScrambles(
             bot.channels.get(process.env.CHANNEL_333),
             '3x3x3',
             date,
-            scrambles
+            s
           )
         );
-        await scrambles('222').then(scrambles =>
+        await scrambles('222').then(s =>
           sendScrambles(
             bot.channels.get(process.env.CHANNEL_222),
             '2x2x2',
             date,
-            scrambles
+            s
           )
         );
-        await scrambles('333').then(scrambles =>
+        await scrambles('333').then(s =>
           sendScrambles(
             bot.channels.get(process.env.CHANNEL_3BLD),
             '3BLD',
             date,
-            scrambles
+            s
           )
         );
-        await scrambles('333').then(scrambles =>
-          sendScrambles(
-            bot.channels.get(process.env.CHANNEL_OH),
-            'OH',
-            date,
-            scrambles
-          )
+        await scrambles('333').then(s =>
+          sendScrambles(bot.channels.get(process.env.CHANNEL_OH), 'OH', date, s)
         );
-        await scrambles('sq1').then(scrambles =>
+        await scrambles('sq1').then(s =>
           sendScrambles(
             bot.channels.get(process.env.CHANNEL_SQ1),
             'Square-1',
             date,
-            scrambles
+            s
           )
         );
       },
