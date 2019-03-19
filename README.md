@@ -30,7 +30,7 @@
 
 - Install modules : `yarn install`
 
- - Create a file named `.env` in the root directory. You will need to have the bot token, the database url, and the channels ID.
+ - Create a file named `.env` in the root directory. You will need to have the bot token, the database url, the channels ID, the server ID, and the ID of the 'Champion' role'.
  
 #### Example :
 
@@ -38,11 +38,11 @@
 TOKEN=xyz
 CHANNEL_333=1234
 CHANNEL_222=1234
-CHANNEL_444=1234
 CHANNEL_OH=1234
 CHANNEL_3BLD=1234
-CHANNEL_MEGA=1234
 CHANNEL_SQ1=1234
+ROLE_ID=1234
+GUILD_ID=1234
 MONGO_URL=mongodb://localhost:27017/test
 ```
 
