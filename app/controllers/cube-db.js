@@ -1,6 +1,10 @@
-const mongoose = require('mongoose');
 const moment = require('moment');
+const mongoose = require('mongoose');
 const R = require('ramda');
+const {events: availableEvents} = require('../config');
+const {Cube} = require('../models/cubes');
+const {Squad} = require('../models/notif');
+const {Ranking} = require('../models/rankings');
 const {
   averageOfFiveCalculator,
   timeToSeconds,
@@ -9,10 +13,6 @@ const {
   getBestTime,
   sortRankings
 } = require('../tools/calculators');
-const {Cube} = require('../models/cubes');
-const {Squad} = require('../models/notif');
-const {Ranking} = require('../models/rankings');
-const {events: availableEvents} = require('../config.js');
 
 mongoose.set('useCreateIndex', true);
 
@@ -47,7 +47,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
 
   const entry = await Cube.findOne({
     author: author.id,
-    date,
+    date: date.format('YYYY-MM-DD'),
     event
   }).exec();
   if (entry) {

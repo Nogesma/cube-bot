@@ -9,7 +9,7 @@ const {
 
 chai.should();
 
-describe('app/tools/calculators.js', () => {
+describe('app/tools/calculators', () => {
   describe('#averageOfFiveCalculator()', () => {
     context('when wrong letters in array', () => {
       it('should return error message', () => {

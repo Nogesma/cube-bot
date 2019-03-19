@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {events: availableEvents} = require('../config.js');
+const {events: availableEvents} = require('../config');
 
 const cubeSchema = new mongoose.Schema({
   date: {type: Date, default: Date.now},
