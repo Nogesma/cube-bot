@@ -1,6 +1,6 @@
+const moment = require('moment');
 const {T, cond, propEq} = require('ramda');
 const {Maybe} = require('ramda-fantasy');
-const moment = require('moment');
 const {
   helpCommand,
   newTimesCommand,

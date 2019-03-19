@@ -1,4 +1,5 @@
 const R = require('ramda');
+const {events: availableEvents, hours: availableTimes} = require('../config');
 const {
   insertNewTimes,
   getDayStandings,
@@ -7,10 +8,6 @@ const {
   addNotifSquad,
   deleteNotifSquad
 } = require('../controllers/cube-db');
-const {
-  events: availableEvents,
-  hours: availableTimes
-} = require('../config.js');
 const {
   helpMessage,
   ensureDay,

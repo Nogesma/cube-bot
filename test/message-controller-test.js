@@ -1,8 +1,8 @@
 const chai = require('chai');
+const moment = require('moment');
+const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
-const proxyquire = require('proxyquire');
-const moment = require('moment');
 
 const stub = sinon.stub().resolves();
 
@@ -18,7 +18,7 @@ const {incomingMessage} = proxyquire('../app/controllers/message-controller', {
 chai.use(sinonChai);
 chai.should();
 
-describe.skip('app/controllers/message-controller.js', () => {
+describe.skip('app/controllers/message-controller', () => {
   describe('#incomingMessage()', () => {
     before(() => {});
 

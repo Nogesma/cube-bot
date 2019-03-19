@@ -1,19 +1,19 @@
-const moment = require('moment');
 const {CronJob} = require('cron');
+const moment = require('moment');
 const R = require('ramda');
-const logger = require('../tools/logger');
+const {hours} = require('../config');
 const {
   monthlyRankingsFormat,
   dailyRankingsFormat
 } = require('../helpers/messages-helpers');
-const {hours} = require('../config');
+const logger = require('../tools/logger');
 const {
   updateStandings,
   getMonthStandings,
   getDayStandings,
   getNotifSquad
 } = require('./cube-db');
-const {sendScrambles, event333, event222, eventSQ1} = require('./scrambler');
+const {sendScrambles, scrambles} = require('./scrambler');
 
 const cronList_ = [];
 
@@ -105,7 +105,7 @@ const startCron = bot => {
       cronTime: '00 01 00 * * *',
       onTick: async () => {
         const date = moment().format('YYYY-MM-DD');
-        await event333().then(scrambles =>
+        await scrambles('333').then(scrambles =>
           sendScrambles(
             bot.channels.get(process.env.CHANNEL_333),
             '3x3x3',
@@ -113,7 +113,7 @@ const startCron = bot => {
             scrambles
           )
         );
-        await event222().then(scrambles =>
+        await scrambles('222').then(scrambles =>
           sendScrambles(
             bot.channels.get(process.env.CHANNEL_222),
             '2x2x2',
@@ -121,7 +121,7 @@ const startCron = bot => {
             scrambles
           )
         );
-        await event333().then(scrambles =>
+        await scrambles('333').then(scrambles =>
           sendScrambles(
             bot.channels.get(process.env.CHANNEL_3BLD),
             '3BLD',
@@ -129,7 +129,7 @@ const startCron = bot => {
             scrambles
           )
         );
-        await event333().then(scrambles =>
+        await scrambles('333').then(scrambles =>
           sendScrambles(
             bot.channels.get(process.env.CHANNEL_OH),
             'OH',
@@ -137,7 +137,7 @@ const startCron = bot => {
             scrambles
           )
         );
-        await eventSQ1().then(scrambles =>
+        await scrambles('sq1').then(scrambles =>
           sendScrambles(
             bot.channels.get(process.env.CHANNEL_SQ1),
             'Square-1',

@@ -1,6 +1,6 @@
-const {memoizeWith, identity} = require('ramda');
-const moment = require('moment');
 const fs = require('fs-extra');
+const moment = require('moment');
+const {memoizeWith, identity} = require('ramda');
 const {computeScore} = require('../tools/calculators');
 
 const helpMessage = async () => [

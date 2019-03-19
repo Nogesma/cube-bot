@@ -1,6 +1,10 @@
-const mongoose = require('mongoose');
 const moment = require('moment');
+const mongoose = require('mongoose');
 const R = require('ramda');
+const {events: availableEvents} = require('../config');
+const {Cube} = require('../models/cubes');
+const {Squad} = require('../models/notif');
+const {Ranking} = require('../models/rankings');
 const {
   averageOfFiveCalculator,
   timeToSeconds,
@@ -9,10 +13,6 @@ const {
   getBestTime,
   sortRankings
 } = require('../tools/calculators');
-const {Cube} = require('../models/cubes');
-const {Squad} = require('../models/notif');
-const {Ranking} = require('../models/rankings');
-const {events: availableEvents} = require('../config.js');
 
 mongoose.set('useCreateIndex', true);
 
