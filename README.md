@@ -48,7 +48,7 @@ MONGO_URL=mongodb://localhost:27017/test
 
 
 - Start the database : `mongod`
-- Init : `node init.js 333 222 444 3BLD MEGA OH SQ1`
+- Init : `node init.js 17 18 19 20 21`
 - Start the bot : `grunt`
 
 ## Contribute
@@ -56,3 +56,5 @@ MONGO_URL=mongodb://localhost:27017/test
 - Create a new branch (feature/, fix/, update/, refactor/)(name)
 - Push your changes to the branch
 - Create a pull request
+
+It is recommended to use the prettier extension
