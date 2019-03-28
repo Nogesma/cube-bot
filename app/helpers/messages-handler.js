@@ -36,7 +36,7 @@ const dailyRanksCommand = async ({channel, event, args}) => {
     ? messageSender(`Veuillez entrer un event valide : ${availableEvents}`)
     : R.pipe(
         getDayStandings,
-        R.then(R.curry(dailyRankingsFormat)(channel, date)),
+        R.then(dailyRankingsFormat(date, channel)),
         R.then(messageSender)
       )(date, event);
 };
@@ -51,7 +51,7 @@ const monthlyRanksCommand = async ({
     ? messageSender(`Veuillez entrer un event valide : ${availableEvents}`)
     : R.pipe(
         getMonthStandings,
-        R.then(R.curry(monthlyRankingsFormat)(channel, event, date)),
+        R.then(monthlyRankingsFormat(date, channel)),
         R.then(messageSender)
       )(date, event);
 };

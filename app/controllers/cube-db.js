@@ -70,7 +70,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
  * @param {String} date - Format : YYYY-MM-DD
  * @param {String} event - 333 the event for which we compete
  */
-const updateStandings = async (date, event) => {
+const updateStandings = R.curry(async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');
   const todayStandings = sortRankings(await Cube.find({date, event}));
   const promisesUpdate = [];
@@ -94,21 +94,22 @@ const updateStandings = async (date, event) => {
     );
   });
   await Promise.all(promisesUpdate);
-};
+});
 
-const getDayStandings = async (date, event) =>
+const getDayStandings = R.curry(async (date, event) =>
   sortRankings(await Cube.find({date, event}).exec()).map(x =>
     R.over(R.lensProp('time'), secondsToTime)(
       R.over(R.lensProp('best'), secondsToTime)(x)
     )
-  );
+  )
+);
 
-const getMonthStandings = async (date, event) => {
+const getMonthStandings = R.curry(async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');
   const monthStandings = await Ranking.find({date: monthDate, event}).exec();
   monthStandings.sort((a, b) => b.score - a.score);
   return monthStandings;
-};
+});
 
 const haveTimesForToday = async (date, author, event) =>
   Boolean(await Cube.findOne({author, date, event}).exec());
@@ -119,8 +120,9 @@ const addNotifSquad = (author, time) =>
 const deleteNotifSquad = (author, time) =>
   Squad.findOneAndUpdate({event: time}, {$pull: {authors: author}}).exec();
 
-const getNotifSquad = async time =>
-  R.prop('authors', await Squad.findOne({event: time}).exec());
+const getNotifSquad = R.curry(async time =>
+  R.prop('authors', await Squad.findOne({event: time}).exec())
+);
 
 module.exports = {
   insertNewTimes,
