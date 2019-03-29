@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const moment = require('moment');
-const {memoizeWith, identity} = require('ramda');
+const R = require('ramda');
 const {computeScore} = require('../tools/calculators');
 
 const helpMessage = async () => [
@@ -9,7 +9,7 @@ const helpMessage = async () => [
   '```'
 ];
 
-const dailyRankingsFormat = (channel, date, ranks) =>
+const dailyRankingsFormat = R.curry((date, channel, ranks) =>
   [
     '```glsl',
     `Classement du ${date} :`,
@@ -24,10 +24,11 @@ const dailyRankingsFormat = (channel, date, ranks) =>
       ].join('\n');
     }),
     '```'
-  ].join('\n');
+  ].join('\n')
+);
 
-const getMonthDateFormat_ = memoizeWith(identity, date =>
-  moment(date).format('YYYY-MM-DD')
+const getMonthDateFormat_ = R.memoizeWith(R.identity, date =>
+  moment(date).format('YYYY-MM')
 );
 
 const isCurrentMonth_ = date =>
@@ -36,17 +37,18 @@ const isCurrentMonth_ = date =>
 const displayMonthDate_ = date =>
   isCurrentMonth_(date) ? 'en cours' : getMonthDateFormat_(date);
 
-const monthlyRankingsFormat = (channel, event, date, ranks) =>
+const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
   [
     '```xl',
-    `Classement de ${event} du mois (${displayMonthDate_(date)}) :`,
+    `Classement du mois (${displayMonthDate_(date)}) :`,
     ...ranks.map((cuber, idx) => {
       const user = channel.client.users.get(cuber.author);
       const name = user ? user.username : 'RAGE-QUITTER';
       return `#${idx + 1} ${name} : ${cuber.score} pts (${cuber.attendances})`;
     }),
     '```'
-  ].join('\n');
+  ].join('\n')
+);
 
 const ensureDay = date => {
   const minDate = moment().subtract(1, 'days');

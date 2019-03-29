@@ -1,7 +1,7 @@
 const {CronJob} = require('cron');
 const moment = require('moment');
 const R = require('ramda');
-const {hours} = require('../config');
+const {events, hours} = require('../config');
 const {
   monthlyRankingsFormat,
   dailyRankingsFormat
@@ -23,37 +23,25 @@ const startCron = bot => {
     new CronJob({
       cronTime: '00 59 23 * * *',
       onTick: async () => {
-        const channel333 = bot.channels.get(process.env.CHANNEL_333);
-        const channel222 = bot.channels.get(process.env.CHANNEL_222);
-        const channel3BLD = bot.channels.get(process.env.CHANNEL_3BLD);
-        const channelOH = bot.channels.get(process.env.CHANNEL_OH);
-        const channelSQ1 = bot.channels.get(process.env.CHANNEL_SQ1);
         const date = moment().format('YYYY-MM-DD');
-        await updateStandings(date, '333')
-          .then(() => getDayStandings(date, '333'))
-          .then(ranks =>
-            channel333.send(dailyRankingsFormat(channel333, date, ranks))
-          );
-        await updateStandings(date, '222')
-          .then(() => getDayStandings(date, '222'))
-          .then(ranks =>
-            channel222.send(dailyRankingsFormat(channel222, date, ranks))
-          );
-        await updateStandings(date, '3BLD')
-          .then(() => getDayStandings(date, '3BLD'))
-          .then(ranks =>
-            channel3BLD.send(dailyRankingsFormat(channel3BLD, date, ranks))
-          );
-        await updateStandings(date, 'OH')
-          .then(() => getDayStandings(date, 'OH'))
-          .then(ranks =>
-            channelOH.send(dailyRankingsFormat(channelOH, date, ranks))
-          );
-        await updateStandings(date, 'SQ1')
-          .then(() => getDayStandings(date, 'SQ1'))
-          .then(ranks =>
-            channelSQ1.send(dailyRankingsFormat(channelSQ1, date, ranks))
-          );
+
+        const update = updateStandings(date);
+        const standings = getDayStandings(date);
+        const rankings = dailyRankingsFormat(date);
+
+        const dailyRankings = async event => {
+          const chan = bot.channels.get(R.path(['env', event], process));
+
+          await update(event);
+
+          R.pipe(
+            standings,
+            R.then(rankings(chan)),
+            R.then(x => chan.send(x))
+          )(event);
+        };
+
+        R.map(dailyRankings, events);
       },
       start: false,
       timeZone: 'Europe/Paris'
@@ -64,43 +52,29 @@ const startCron = bot => {
     new CronJob({
       cronTime: '1 0 0 1 * *',
       onTick: async () => {
-        const channel333 = bot.channels.get(process.env.CHANNEL_333);
-        const channel222 = bot.channels.get(process.env.CHANNEL_222);
-        const channel3BLD = bot.channels.get(process.env.CHANNEL_3BLD);
-        const channelOH = bot.channels.get(process.env.CHANNEL_OH);
-        const channelSQ1 = bot.channels.get(process.env.CHANNEL_SQ1);
         const date = moment()
           .subtract(1, 'months')
           .format('YYYY-MM-DD');
+
         supRole(bot);
-        getMonthStandings(date, '333').then(ranks => {
-          addRole(bot, ranks);
-          channel333.send(
-            monthlyRankingsFormat(channel333, '3x3x3', date, ranks)
-          );
-        });
-        getMonthStandings(date, '222').then(ranks => {
-          addRole(bot, ranks);
-          channel222.send(
-            monthlyRankingsFormat(channel222, '2x2x2', date, ranks)
-          );
-        });
-        getMonthStandings(date, '3BLD').then(ranks => {
-          addRole(bot, ranks);
-          channel3BLD.send(
-            monthlyRankingsFormat(channel3BLD, '3BLD', date, ranks)
-          );
-        });
-        getMonthStandings(date, 'OH').then(ranks => {
-          addRole(bot, ranks);
-          channelOH.send(monthlyRankingsFormat(channelOH, 'OH', date, ranks));
-        });
-        getMonthStandings(date, 'SQ1').then(ranks => {
-          addRole(bot, ranks);
-          channelSQ1.send(
-            monthlyRankingsFormat(channelSQ1, 'Square-1', date, ranks)
-          );
-        });
+
+        const standings = getMonthStandings(date);
+        const rankings = monthlyRankingsFormat(date);
+
+        const monthStandings = event => {
+          const chan = bot.channels.get(R.path(['env', event], process));
+
+          R.pipe(
+            standings,
+            R.then(ranks => {
+              addRole(bot, ranks);
+              return rankings(chan, ranks);
+            }),
+            R.then(x => chan.send(x))
+          )(event);
+        };
+
+        R.map(monthStandings, events);
       },
       start: false,
       timeZone: 'Europe/Paris'
@@ -110,43 +84,27 @@ const startCron = bot => {
   cronList_.push(
     new CronJob({
       cronTime: '00 01 00 * * *',
-      onTick: async () => {
+      onTick: () => {
         const date = moment().format('YYYY-MM-DD');
-        await scrambles('333').then(scramblesList =>
-          sendScrambles(
-            bot.channels.get(process.env.CHANNEL_333),
-            '3x3x3',
-            date,
-            scramblesList
-          )
+
+        const send = sendScrambles(date);
+
+        const formatNameForScrambow = R.ifElse(
+          R.includes(R.__, ['3BLD', 'OH']),
+          R.always('333'),
+          R.toLower
         );
-        await scrambles('222').then(scramblesList =>
-          sendScrambles(
-            bot.channels.get(process.env.CHANNEL_222),
-            '2x2x2',
-            date,
-            scramblesList
-          )
-        );
-        await scrambles('333').then(scramblesList =>
-          sendScrambles(
-            bot.channels.get(process.env.CHANNEL_3BLD),
-            '3BLD',
-            date,
-            scramblesList
-          )
-        );
-        await scrambles('333').then(scramblesList =>
-          sendScrambles(bot.channels.get(process.env.CHANNEL_OH), 'OH', date, scramblesList)
-        );
-        await scrambles('sq1').then(scramblesList =>
-          sendScrambles(
-            bot.channels.get(process.env.CHANNEL_SQ1),
-            'Square-1',
-            date,
-            scramblesList
-          )
-        );
+
+        const scrambleSend = event => {
+          const chan = bot.channels.get(R.path(['env', event], process));
+
+          R.pipe(
+            scrambles,
+            send(chan)
+          )(formatNameForScrambow(event));
+        };
+
+        R.map(scrambleSend, events);
       },
       start: false,
       timeZone: 'Europe/Paris'
@@ -156,15 +114,19 @@ const startCron = bot => {
   cronList_.push(
     new CronJob({
       cronTime: '00 00 * * * *',
-      onTick: async () => {
+      onTick: () => {
         const time = moment().hour();
         if (R.includes(time, hours)) {
-          const channelSpam = bot.channels.get(process.env.CHANNEL_SPAM);
-          await getNotifSquad(time).then(doc =>
-            channelSpam.send(
-              `Participez au tournoi ! ${doc.map(x => `<@${x}>`).join(' ')}`
+          const chan = bot.channels.get(process.env.CHANNEL_SPAM);
+
+          R.pipe(
+            getNotifSquad,
+            R.then(doc =>
+              chan.send(
+                `Participez au tournoi ! ${doc.map(x => `<@${x}>`).join(' ')}`
+              )
             )
-          );
+          )(time);
         }
       },
       start: false,

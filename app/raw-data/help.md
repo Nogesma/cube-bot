@@ -11,10 +11,11 @@ Exemple : ?classementmois 333 2018-05
 # Afficher votre participation d'aujourd'hui : ?didido <event>
 Exemple : ?didido 333
 
-# Recevoir une notification si vous n'avez pas encore participé : ?ido <event>
-Exemple : ?ido 333
+# Recevoir une notification pour vous rappeler de participer : ?ido <heure>
+Exemple : ?ido 19
+Vous pouvez rentrer des heures de 17 à 21h inclus
 
-# Ne plus recevoir de notifications si vous n'avez pas encore participé : ?idonotdo <event>
-Exemple : ?idonotdo 333
+# Ne plus recevoir de notifications si vous n'avez pas encore participé : ?idonotdo <heure>
+Exemple : ?idonotdo 19
 
-# Events disponibles : 333, 222, 444, 3bld, mega, oh, sq1
+# Events disponibles : 333, 222, 3bld, oh, sq1
