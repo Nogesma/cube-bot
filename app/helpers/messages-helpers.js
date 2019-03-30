@@ -3,11 +3,12 @@ const moment = require('moment');
 const R = require('ramda');
 const {computeScore} = require('../tools/calculators');
 
-const helpMessage = async () => [
-  '```Markdown',
-  await fs.readFile('./app/raw-data/help.md', 'utf8'),
-  '```'
-];
+const helpMessage = async () =>
+  [
+    '```Markdown',
+    await fs.readFile('./app/raw-data/help.md', 'utf8'),
+    '```'
+  ].join('\n');
 
 const dailyRankingsFormat = R.curry((date, channel, ranks) =>
   [

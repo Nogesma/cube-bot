@@ -17,7 +17,23 @@ const {
 
 const sendMessageToChannel = R.curry((channel, msg) => channel.send(msg));
 
-const helpCommand = async ({channel}) =>
+const includesEvent = (event, channel, func) =>
+  R.includes(event, availableEvents)
+    ? func(event)
+    : sendMessageToChannel(
+        channel,
+        `Veuillez entrer un event valide : ${availableEvents}`
+      );
+
+const includesTime = (time, channel, func) =>
+  R.includes(time, availableTimes)
+    ? func()
+    : sendMessageToChannel(
+        channel,
+        `Veuillez entrer une heure valide : ${availableTimes}`
+      );
+
+const helpCommand = ({channel}) =>
   R.pipe(
     helpMessage,
     R.then(sendMessageToChannel(channel))
@@ -29,62 +45,60 @@ const newTimesCommand = x =>
     R.then(sendMessageToChannel(R.prop('channel', x)))
   )(x);
 
-const dailyRanksCommand = async ({channel, event, args}) => {
+const dailyRanksCommand = ({channel, event, args}) => {
   const date = ensureDay(args[0]);
   const messageSender = sendMessageToChannel(channel);
-  return R.not(availableEvents.includes(event))
-    ? messageSender(`Veuillez entrer un event valide : ${availableEvents}`)
-    : R.pipe(
-        getDayStandings,
-        R.then(dailyRankingsFormat(date, channel)),
-        R.then(messageSender)
-      )(date, event);
+  return includesEvent(event, channel, e =>
+    R.pipe(
+      getDayStandings,
+      R.then(dailyRankingsFormat(date, channel)),
+      R.then(messageSender)
+    )(date, e)
+  );
 };
 
-const monthlyRanksCommand = async ({
-  channel,
-  event,
-  args: [date = new Date()]
-}) => {
+const monthlyRanksCommand = ({channel, event, args: [date = new Date()]}) => {
   const messageSender = sendMessageToChannel(channel);
-  return R.not(availableEvents.includes(event))
-    ? messageSender(`Veuillez entrer un event valide : ${availableEvents}`)
-    : R.pipe(
-        getMonthStandings,
-        R.then(monthlyRankingsFormat(date, channel)),
-        R.then(messageSender)
-      )(date, event);
+  return includesEvent(event, channel, e =>
+    R.pipe(
+      getMonthStandings,
+      R.then(monthlyRankingsFormat(date, channel)),
+      R.then(messageSender)
+    )(date, e)
+  );
 };
 
-const dididoCommand = async ({date, author, event, channel}) => {
+const dididoCommand = ({date, author, event, channel}) => {
   const messageSender = sendMessageToChannel(channel);
-  return R.not(availableEvents.includes(event))
-    ? messageSender(`Veuillez entrer un event valide : ${availableEvents}`)
-    : R.pipe(
-        haveTimesForToday,
-        R.then(participation => (participation ? 'Oui' : 'Non')),
-        R.then(messageSender)
-      )(date.format('YYYY-MM-DD'), author.id, event);
+  return includesEvent(event, channel, e =>
+    R.pipe(
+      haveTimesForToday,
+      R.then(participation => (participation ? 'Oui' : 'Non')),
+      R.then(messageSender)
+    )(date.format('YYYY-MM-DD'), author.id, e)
+  );
 };
 
-const idoCommand = async ({author, event, channel}) => {
+const idoCommand = ({author, event, channel}) => {
   const time = Number(event);
   const messageSender = sendMessageToChannel(channel);
-  return R.not(availableTimes.includes(time))
-    ? messageSender(`Veuillez entrer une heure valide : ${availableTimes}`)
-    : addNotifSquad(author.id, time).then(
-        messageSender('Vous avez bien été ajouté a la notif squad !')
-      );
+  return includesTime(time, channel, () =>
+    R.pipe(
+      addNotifSquad,
+      R.then(messageSender('Vous avez bien été ajouté a la notif squad !'))
+    )(author.id, time)
+  );
 };
 
-const idonotdoCommand = async ({author, event, channel}) => {
+const idonotdoCommand = ({author, event, channel}) => {
   const time = Number(event);
   const messageSender = sendMessageToChannel(channel);
-  return R.not(availableTimes.includes(time))
-    ? messageSender(`Veuillez entrer une heure valide : ${availableTimes}`)
-    : deleteNotifSquad(author.id, time).then(
-        messageSender('Vous avez bien été supprimé de la notif squad !')
-      );
+  return includesTime(time, channel, () =>
+    R.pipe(
+      deleteNotifSquad,
+      R.then(messageSender('Vous avez bien été supprimé de la notif squad !'))
+    )(author.id, time)
+  );
 };
 
 module.exports = {

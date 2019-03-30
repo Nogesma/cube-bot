@@ -1,26 +1,18 @@
 const chalk = require('chalk');
+const R = require('ramda');
 const {createLogger, format, transports} = require('winston');
 
 const {combine, timestamp, printf} = format;
 
-const chooseColor = level => {
-  switch (level) {
-    case 'silly':
-      return chalk.gray;
-    case 'debug':
-      return chalk.yellow;
-    case 'verbose':
-      return chalk.green;
-    case 'info':
-      return chalk.blue;
-    case 'warn':
-      return chalk.magenta;
-    case 'error':
-      return chalk.red;
-    default:
-      return chalk.white;
-  }
-};
+const chooseColor = R.cond([
+  [R.equals('silly'), R.always(chalk.gray)],
+  [R.equals('debug'), R.always(chalk.yellow)],
+  [R.equals('verbose'), R.always(chalk.green)],
+  [R.equals('info'), R.always(chalk.blue)],
+  [R.equals('warn'), R.always(chalk.magenta)],
+  [R.equals('error'), R.always(chalk.red)],
+  [R.T, () => chalk.white]
+]);
 
 const myFormat = printf(info => {
   const color = chooseColor(info.level);

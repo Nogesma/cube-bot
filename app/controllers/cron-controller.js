@@ -22,7 +22,7 @@ const startCron = bot => {
   cronList_.push(
     new CronJob({
       cronTime: '00 59 23 * * *',
-      onTick: async () => {
+      onTick: () => {
         const date = moment().format('YYYY-MM-DD');
 
         const update = updateStandings(date);
@@ -51,7 +51,7 @@ const startCron = bot => {
   cronList_.push(
     new CronJob({
       cronTime: '1 0 0 1 * *',
-      onTick: async () => {
+      onTick: () => {
         const date = moment()
           .subtract(1, 'months')
           .format('YYYY-MM-DD');
