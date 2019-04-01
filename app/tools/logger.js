@@ -11,7 +11,7 @@ const chooseColor = R.cond([
   [R.equals('info'), R.always(chalk.blue)],
   [R.equals('warn'), R.always(chalk.magenta)],
   [R.equals('error'), R.always(chalk.red)],
-  [R.T, () => chalk.white]
+  [R.T, R.always(chalk.white)]
 ]);
 
 const myFormat = printf(info => {
