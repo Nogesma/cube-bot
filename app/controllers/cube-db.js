@@ -17,7 +17,8 @@ const {
 mongoose.set('useCreateIndex', true);
 
 mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/test', {
-  useNewUrlParser: true
+  useNewUrlParser: true,
+  useFindAndModify: false
 });
 
 const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
@@ -33,11 +34,11 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
     return 'Veuillez entrer 5 temps';
   }
 
-  if (availableEvents.indexOf(event) < 0) {
+  if (R.not(R.includes(event, availableEvents))) {
     return `Veuillez entrer un event valide : ${availableEvents}`;
   }
 
-  const times = solves.map(timeToSeconds);
+  const times = R.map(timeToSeconds, solves);
   const average = averageOfFiveCalculator(times);
   const best = getBestTime(times);
 
@@ -56,7 +57,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
 
   await new Cube({
     author: author.id,
-    solves: times.map(a => secondsToTime(a)), // +2 doesn't get preserved
+    solves: R.map(secondsToTime, times),
     time: average,
     best,
     date: date.format('YYYY-MM-DD'),
