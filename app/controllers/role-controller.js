@@ -1,10 +1,4 @@
-const supRole = bot => {
-  const role = bot.guilds
-    .get(process.env.GUILD_ID)
-    .roles.get(process.env.ROLE_ID);
-
-  role.members.map(member => member.removeRole(role));
-};
+const R = require('ramda');
 
 const addRole = (bot, ranks) => {
   const guild = bot.guilds.get(process.env.GUILD_ID);
@@ -13,4 +7,12 @@ const addRole = (bot, ranks) => {
   guild.member(ranks[0].author).addRole(role);
 };
 
-module.exports = {supRole, addRole};
+const supRole = bot => {
+  const role = bot.guilds
+    .get(process.env.GUILD_ID)
+    .roles.get(process.env.ROLE_ID);
+
+  R.map(member => member.removeRole(role), role.members);
+};
+
+module.exports = {addRole, supRole};

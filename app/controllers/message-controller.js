@@ -1,6 +1,6 @@
 const moment = require('moment');
-const {T, cond, propEq} = require('ramda');
-const {Maybe} = require('ramda-fantasy');
+const R = require('ramda');
+const {Nothing} = require('sanctuary-maybe');
 const {
   helpCommand,
   newTimesCommand,
@@ -13,34 +13,33 @@ const {
 
 const messageIsCommand = content => content.indexOf('?') === 0;
 
-const commandChoose = cond([
-  [propEq('command', '?t'), newTimesCommand],
-  [propEq('command', '?h'), helpCommand],
-  [propEq('command', '?help'), helpCommand],
-  [propEq('command', '?classement'), dailyRanksCommand],
-  [propEq('command', '?classementmois'), monthlyRanksCommand],
-  [propEq('command', '?didido'), dididoCommand],
-  [propEq('command', '?ido'), idoCommand],
-  [propEq('command', '?idonotdo'), idonotdoCommand],
-  [T, () => {}]
+const commandChoose = R.cond([
+  [R.propEq('command', '?t'), newTimesCommand],
+  [R.propSatisfies(R.includes(R.__, ['?h', '?help']), 'command'), helpCommand],
+  [R.propEq('command', '?classement'), dailyRanksCommand],
+  [R.propEq('command', '?classementmois'), monthlyRanksCommand],
+  [R.propEq('command', '?didido'), dididoCommand],
+  [R.propEq('command', '?ido'), idoCommand],
+  [R.propEq('command', '?idonotdo'), idonotdoCommand],
+  [R.T, () => {}]
 ]);
 
 const applyCommand = message => {
   const date = moment();
   const {author, channel} = message;
-  const [command, event, ...args] = message.content.split(' ');
+  const [command, event, ...args] = R.split(' ', message.content);
 
   return commandChoose({
     date,
     author,
     channel,
     command,
-    event: event ? event.toUpperCase() : '',
+    event: event ? R.toUpper(event) : '',
     args
   });
 };
 
 const incomingMessage = message =>
-  messageIsCommand(message.content) ? applyCommand(message) : Maybe.Nothing;
+  messageIsCommand(message.content) ? applyCommand(message) : Nothing;
 
 module.exports = {incomingMessage};

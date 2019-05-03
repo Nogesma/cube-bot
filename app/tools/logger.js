@@ -16,10 +16,10 @@ const chooseColor = R.cond([
 
 const myFormat = printf(info => {
   const color = chooseColor(info.level);
-  return [
-    color(`[${info.timestamp}] ${info.level.toUpperCase()}:`),
+  return R.join(' ', [
+    color(`[${info.timestamp}] ${R.toUpper(info.level)}:`),
     info.message
-  ].join(' ');
+  ]);
 });
 
 const wl = createLogger({
