@@ -11,7 +11,7 @@ const {
   idonotdoCommand
 } = require('../helpers/messages-handler');
 
-const messageIsCommand = content => content.indexOf('?') === 0;
+const messageIsCommand = R.startsWith('?');
 
 const commandChoose = R.cond([
   [R.propEq('command', '?t'), newTimesCommand],
@@ -27,7 +27,10 @@ const commandChoose = R.cond([
 const applyCommand = message => {
   const date = moment();
   const {author, channel} = message;
-  const [command, event, ...args] = R.split(' ', message.content);
+  const [command, event, ...args] = R.pipe(
+    R.prop('content'),
+    R.split(' ')
+  )(message);
 
   return commandChoose({
     date,

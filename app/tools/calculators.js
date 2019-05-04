@@ -5,8 +5,8 @@ const timeToSeconds = t => {
     return Infinity;
   }
 
-  if (t.match(/\+$/g) !== null) {
-    t = t.slice(0, -1);
+  if (R.test(/\+$/g, t)) {
+    t = R.init(t);
   }
 
   return Number(
@@ -40,22 +40,25 @@ const averageOfFiveCalculator = t => {
   return -Infinity;
 };
 
-const getBestTime = times => times.reduce(R.min);
+const getBestTime = R.reduce(R.min, Infinity);
 
 const computeScore = (numberOfContestants, rank) =>
   R.min(100, Math.ceil((-50 / (numberOfContestants - 1)) * rank) + 100);
 
-const sortRankings = ranks => {
-  const sorter = [R.ascend(R.prop('time')), R.ascend(R.prop('best'))];
-  return R.ifElse(
-    R.pipe(
-      R.path([0, 'event']),
-      R.equals('3BLD')
-    ),
-    R.sortWith(R.reverse(sorter)),
-    R.sortWith(sorter)
-  )(ranks);
-};
+const sorter = R.map(x => R.ascend(R.prop(x)), ['time', 'best']);
+
+const sortRankings = ranks =>
+  R.sortWith(
+    R.ifElse(
+      R.pipe(
+        R.path([0, 'event']),
+        R.equals('3BLD')
+      ),
+      R.always(R.reverse(sorter)),
+      R.always(sorter)
+    )(ranks),
+    ranks
+  );
 
 module.exports = {
   averageOfFiveCalculator,
