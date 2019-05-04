@@ -100,18 +100,19 @@ const updateStandings = R.curry(async (date, event) => {
 });
 
 const getDayStandings = R.curry(async (date, event) =>
-  sortRankings(await Cube.find({date, event}).exec()).map(x =>
-    R.over(R.lensProp('time'), secondsToTime)(
-      R.over(R.lensProp('best'), secondsToTime)(x)
-    )
+  R.map(
+    x =>
+      R.over(R.lensProp('time'), secondsToTime)(
+        R.over(R.lensProp('best'), secondsToTime)(x)
+      ),
+    sortRankings(await Cube.find({date, event}).exec())
   )
 );
 
 const getMonthStandings = R.curry(async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');
   const monthStandings = await Ranking.find({date: monthDate, event}).exec();
-  R.sort(R.subtract, monthStandings);
-  return monthStandings;
+  return R.sort(R.subtract, monthStandings);
 });
 
 const haveTimesForToday = async (date, author, event) =>
