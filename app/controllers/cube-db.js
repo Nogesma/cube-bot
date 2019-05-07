@@ -51,6 +51,7 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
     date: date.format('YYYY-MM-DD'),
     event
   }).exec();
+
   if (entry) {
     return 'Vous avez déjà soumis vos temps.';
   }
@@ -75,7 +76,8 @@ const updateStandings = R.curry(async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');
   const todayStandings = sortRankings(await Cube.find({date, event}));
   const promisesUpdate = [];
-  todayStandings.forEach((entry, index) => {
+
+  R.addIndex(R.forEach)((entry, index) => {
     promisesUpdate.push(
       Ranking.findOne({date: monthDate, author: entry.author, event})
         .then(currentStanding => {
@@ -93,23 +95,24 @@ const updateStandings = R.curry(async (date, event) => {
           }).save();
         })
     );
-  });
+  }, todayStandings);
   await Promise.all(promisesUpdate);
 });
 
 const getDayStandings = R.curry(async (date, event) =>
-  sortRankings(await Cube.find({date, event}).exec()).map(x =>
-    R.over(R.lensProp('time'), secondsToTime)(
-      R.over(R.lensProp('best'), secondsToTime)(x)
-    )
+  R.map(
+    x =>
+      R.over(R.lensProp('time'), secondsToTime)(
+        R.over(R.lensProp('best'), secondsToTime)(x)
+      ),
+    sortRankings(await Cube.find({date, event}).exec())
   )
 );
 
 const getMonthStandings = R.curry(async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');
   const monthStandings = await Ranking.find({date: monthDate, event}).exec();
-  monthStandings.sort((a, b) => b.score - a.score);
-  return monthStandings;
+  return R.sort(R.subtract, monthStandings);
 });
 
 const haveTimesForToday = async (date, author, event) =>

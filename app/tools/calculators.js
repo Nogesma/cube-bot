@@ -5,15 +5,13 @@ const timeToSeconds = t => {
     return Infinity;
   }
 
-  if (t.match(/\+$/g) !== null) {
-    t = t.slice(0, -1);
+  if (R.test(/\+$/g, t)) {
+    t = R.init(t);
   }
 
-  t =
-    Math.round(
-      t.split(':').reduce((acc, t) => 60 * Number(acc) + Number(t), 0) * 100
-    ) / 100;
-  return t;
+  return Number(
+    R.reduce((acc, t) => 60 * acc + Number(t), 0, R.split(':', t)).toFixed(2)
+  );
 };
 
 const secondsToTime = t => {
@@ -24,40 +22,43 @@ const secondsToTime = t => {
 
   const h = Math.floor(time / 3600);
   const min = Math.floor((time - h * 3600) / 60);
-  let s = (Math.round((time - h * 3600 - min * 60) * 100) / 100).toFixed(2);
+  let s = (time - h * 3600 - min * 60).toFixed(2);
   if (min > 0 && s.length === 4) {
-    s = '0' + s.toString();
+    s = '0' + s;
   }
 
   return `${h ? h + ':' : ''}${h || min ? min + ':' : ''}${s}`;
 };
 
 const averageOfFiveCalculator = t => {
-  let times = t.map(a => Number(a));
-  if (times.filter(a => !isNaN(a) && a > 0).length === 5) {
-    times = times.sort((a, b) => a - b).slice(1, -1);
-    return Math.round((times.reduce((a, b) => a + b) / 3) * 100) / 100;
+  let times = R.map(Number, t);
+  if (R.length(R.filter(R.lt(0), times)) === 5) {
+    times = R.slice(1, -1, R.sort(R.subtract, times));
+    return Number((R.sum(times) / 3).toFixed(2));
   }
 
   return -Infinity;
 };
 
-const getBestTime = times => times.reduce((a, b) => R.min(a, b));
+const getBestTime = R.reduce(R.min, Infinity);
 
 const computeScore = (numberOfContestants, rank) =>
   R.min(100, Math.ceil((-50 / (numberOfContestants - 1)) * rank) + 100);
 
-const sortRankings = ranks => {
-  const sorter = [R.ascend(R.prop('time')), R.ascend(R.prop('best'))];
-  return R.ifElse(
-    R.pipe(
-      R.path([0, 'event']),
-      R.equals('3BLD')
-    ),
-    R.sortWith(R.reverse(sorter)),
-    R.sortWith(sorter)
-  )(ranks);
-};
+const sorter = R.map(x => R.ascend(R.prop(x)), ['time', 'best']);
+
+const sortRankings = ranks =>
+  R.sortWith(
+    R.ifElse(
+      R.pipe(
+        R.path([0, 'event']),
+        R.equals('3BLD')
+      ),
+      R.always(R.reverse(sorter)),
+      R.always(sorter)
+    )(ranks),
+    ranks
+  );
 
 module.exports = {
   averageOfFiveCalculator,

@@ -56,10 +56,8 @@ const startCron = bot => {
           .subtract(1, 'months')
           .format('YYYY-MM-DD');
 
-        supRole(bot);
-
-        const standings = getMonthStandings(date);
         const rankings = monthlyRankingsFormat(date);
+        const standings = getMonthStandings(date);
 
         const monthStandings = event => {
           const chan = bot.channels.get(R.path(['env', event], process));
@@ -73,6 +71,8 @@ const startCron = bot => {
             R.then(x => chan.send(x))
           )(event);
         };
+
+        supRole(bot);
 
         R.map(monthStandings, events);
       },
@@ -123,7 +123,10 @@ const startCron = bot => {
             getNotifSquad,
             R.then(doc =>
               chan.send(
-                `Participez au tournoi ! ${doc.map(x => `<@${x}>`).join(' ')}`
+                `Participez au tournoi ! ${R.join(
+                  ' ',
+                  R.map(x => `<@${x}>`, doc)
+                )}`
               )
             )
           )(time);

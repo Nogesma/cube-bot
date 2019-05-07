@@ -9,7 +9,7 @@ const scrambles = event =>
 
 const sendScrambles = R.curry((date, chan, scrambles) =>
   chan.send(
-    R.join('', [`**Scrambles du ${date}:**\n`, '```', scrambles, '```'])
+    R.join('\n', [`**Scrambles du ${date}:**`, '```', scrambles, '```'])
   )
 );
 

@@ -48,9 +48,8 @@ MONGO_URL=mongodb://localhost:27017/test
 ```
 
 
-- Start the database : `mongod`
 - Init : `node init.js 17 18 19 20 21`
-- Start the bot : `grunt`
+- Start the bot: `gulp`
 
 ## Contribute
 
