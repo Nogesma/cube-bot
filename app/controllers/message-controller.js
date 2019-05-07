@@ -21,7 +21,7 @@ const commandChoose = R.cond([
   [R.propEq('command', '?didido'), dididoCommand],
   [R.propEq('command', '?ido'), idoCommand],
   [R.propEq('command', '?idonotdo'), idonotdoCommand],
-  [R.T, () => {}]
+  [R.T, Nothing]
 ]);
 
 const applyCommand = message => {

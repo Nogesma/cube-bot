@@ -12,7 +12,7 @@ const supRole = bot => {
     .get(process.env.GUILD_ID)
     .roles.get(process.env.ROLE_ID);
 
-  R.map(member => member.removeRole(role), role.members);
+  R.forEach(member => member.removeRole(role), role.members);
 };
 
 module.exports = {addRole, supRole};

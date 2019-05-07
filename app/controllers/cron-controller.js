@@ -123,7 +123,10 @@ const startCron = bot => {
             getNotifSquad,
             R.then(doc =>
               chan.send(
-                `Participez au tournoi ! ${doc.map(x => `<@${x}>`).join(' ')}`
+                `Participez au tournoi ! ${R.join(
+                  ' ',
+                  R.map(x => `<@${x}>`, doc)
+                )}`
               )
             )
           )(time);
