@@ -112,7 +112,7 @@ const getDayStandings = R.curry(async (date, event) =>
 const getMonthStandings = R.curry(async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');
   const monthStandings = await Ranking.find({date: monthDate, event}).exec();
-  return R.sort(R.subtract, monthStandings);
+  return R.sort(R.descend(R.prop('score')), monthStandings);
 });
 
 const haveTimesForToday = async (date, author, event) =>
