@@ -72,5 +72,5 @@ module.exports = {
   secondsToTime,
   computeScore,
   getBestTime,
-  sortRankings
+  sortRankings,
 };

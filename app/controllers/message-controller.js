@@ -1,6 +1,5 @@
 const moment = require('moment');
 const R = require('ramda');
-const {Nothing} = require('sanctuary-maybe');
 const {
   helpCommand,
   newTimesCommand,
@@ -8,7 +7,7 @@ const {
   monthlyRanksCommand,
   dididoCommand,
   idoCommand,
-  idonotdoCommand
+  idonotdoCommand,
 } = require('../helpers/messages-handler');
 
 const messageIsCommand = R.startsWith('?');
@@ -21,12 +20,11 @@ const commandChoose = R.cond([
   [R.propEq('command', '?didido'), dididoCommand],
   [R.propEq('command', '?ido'), idoCommand],
   [R.propEq('command', '?idonotdo'), idonotdoCommand],
-  [R.T, Nothing]
 ]);
 
 const applyCommand = message => {
   const date = moment();
-  const {author, channel} = message;
+  const { author, channel } = message;
   const [command, event, ...args] = R.pipe(
     R.prop('content'),
     R.split(' ')
@@ -37,12 +35,17 @@ const applyCommand = message => {
     author,
     channel,
     command,
-    event: event ? R.toUpper(event) : '',
-    args
+    event: R.when(R.identity, R.toUpper)(event),
+    args,
   });
 };
 
-const incomingMessage = message =>
-  messageIsCommand(message.content) ? applyCommand(message) : Nothing;
+const incomingMessage = R.when(
+  R.pipe(
+    R.prop('content'),
+    messageIsCommand
+  ),
+  applyCommand
+);
 
-module.exports = {incomingMessage};
+module.exports = { incomingMessage };

@@ -40,9 +40,7 @@ describe('app/tools/calculators', () => {
 
     context('When array contains string of numbers', () => {
       it('should return the average', () => {
-        averageOfFiveCalculator(['13', '4', '5', '3', '6']).should.be.equal(
-          5.0
-        );
+        averageOfFiveCalculator(['13', '4', '5', '3', '6']).should.be.equal(5);
         averageOfFiveCalculator([
           '12.34',
           '0.05',
@@ -51,7 +49,7 @@ describe('app/tools/calculators', () => {
           '9.95'
         ]).should.be.equal(18.83);
         averageOfFiveCalculator(['12', '13', '17', '15', '22']).should.be.equal(
-          15.0
+          15
         );
         averageOfFiveCalculator([
           Infinity,

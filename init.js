@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Bromise = require('bluebird');
-const {Squad} = require('./app/models/notif');
+const { Squad } = require('./app/models/notif');
 
 const events = process.argv.slice(2);
 
@@ -14,9 +14,9 @@ if (process.env.NODE_ENV === 'development') {
 
 mongoose.set('useCreateIndex', true);
 
-mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true});
+mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true });
 
-const myEvents = events.map(event => ({event, authorList: []}));
+const myEvents = events.map(event => ({ event, authorList: [] }));
 
 const saveEvents = events => new Squad(events).save();
 

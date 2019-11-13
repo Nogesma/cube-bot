@@ -1,18 +1,19 @@
 const R = require('ramda');
 
 const addRole = (bot, ranks) => {
-  const guild = bot.guilds.get(process.env.GUILD_ID);
-  const role = guild.roles.get(process.env.ROLE_ID);
+  const guild = R.prop('guilds', bot).get(process.env.GUILD_ID);
+  const role = R.prop('roles', guild).get(process.env.ROLE_ID);
 
-  guild.member(ranks[0].author).addRole(role);
+  guild.member(R.prop('author', R.head(ranks))).addRole(role);
 };
 
-const supRole = bot => {
-  const role = bot.guilds
-    .get(process.env.GUILD_ID)
-    .roles.get(process.env.ROLE_ID);
+const removeRole = bot => {
+  const role = R.prop(
+    'roles',
+    R.prop('guilds', bot).get(process.env.GUILD_ID)
+  ).get(process.env.ROLE_ID);
 
-  R.forEach(member => member.removeRole(role), role.members);
+  R.forEach(member => member.removeRole(role), R.prop('members', role));
 };
 
-module.exports = {addRole, supRole};
+module.exports = { addRole, removeRole };

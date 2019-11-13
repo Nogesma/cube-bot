@@ -1,27 +1,33 @@
 const moment = require('moment');
 const mongoose = require('mongoose');
 const R = require('ramda');
-const {events: availableEvents} = require('../config');
-const {Cube} = require('../models/cubes');
-const {Squad} = require('../models/notif');
-const {Ranking} = require('../models/rankings');
+const { events: availableEvents } = require('../config');
+const { Cube } = require('../models/cubes');
+const { Squad } = require('../models/notif');
+const { Ranking } = require('../models/rankings');
 const {
   averageOfFiveCalculator,
   timeToSeconds,
   secondsToTime,
   computeScore,
   getBestTime,
-  sortRankings
+  sortRankings,
 } = require('../tools/calculators');
 
-mongoose.set('useCreateIndex', true);
+mongoose.set('useCreateIndex', true).set('useUnifiedTopology', true);
 
 mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/test', {
   useNewUrlParser: true,
-  useFindAndModify: false
+  useFindAndModify: false,
 });
 
-const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
+const insertNewTimes = async ({
+  channel,
+  date,
+  author,
+  event,
+  args: solves,
+}) => {
   if (channel.type !== 'dm') {
     return 'Veuillez envoyer vos temps en message privé';
   }
@@ -47,9 +53,9 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
   }
 
   const entry = await Cube.findOne({
-    author: author.id,
+    author: R.prop('id', author),
     date: date.format('YYYY-MM-DD'),
-    event
+    event,
   }).exec();
 
   if (entry) {
@@ -57,12 +63,12 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
   }
 
   await new Cube({
-    author: author.id,
+    author: R.prop('id', author),
     solves: R.map(secondsToTime, times),
     time: average,
     best,
     date: date.format('YYYY-MM-DD'),
-    event
+    event,
   }).save();
   return `Vos temps ont bien été enregistrés ! ao5: ${secondsToTime(average)}`;
 };
@@ -74,12 +80,12 @@ const insertNewTimes = async ({channel, date, author, event, args: solves}) => {
  */
 const updateStandings = R.curry(async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');
-  const todayStandings = sortRankings(await Cube.find({date, event}));
+  const todayStandings = sortRankings(await Cube.find({ date, event }));
   const promisesUpdate = [];
 
   R.addIndex(R.forEach)((entry, index) => {
     promisesUpdate.push(
-      Ranking.findOne({date: monthDate, author: entry.author, event})
+      Ranking.findOne({ date: monthDate, author: entry.author, event })
         .then(currentStanding => {
           currentStanding.score += computeScore(todayStandings.length, index);
           currentStanding.attendances++;
@@ -91,7 +97,7 @@ const updateStandings = R.curry(async (date, event) => {
             author: entry.author,
             score: computeScore(todayStandings.length, index),
             attendances: 1,
-            event
+            event,
           }).save();
         })
     );
@@ -105,27 +111,33 @@ const getDayStandings = R.curry(async (date, event) =>
       R.over(R.lensProp('time'), secondsToTime)(
         R.over(R.lensProp('best'), secondsToTime)(x)
       ),
-    sortRankings(await Cube.find({date, event}).exec())
+    sortRankings(await Cube.find({ date, event }).exec())
   )
 );
 
 const getMonthStandings = R.curry(async (date, event) => {
   const monthDate = moment(date).format('YYYY-MM');
-  const monthStandings = await Ranking.find({date: monthDate, event}).exec();
+  const monthStandings = await Ranking.find({ date: monthDate, event }).exec();
   return R.sort(R.descend(R.prop('score')), monthStandings);
 });
 
 const haveTimesForToday = async (date, author, event) =>
-  Boolean(await Cube.findOne({author, date, event}).exec());
+  Boolean(await Cube.findOne({ author, date, event }).exec());
 
 const addNotifSquad = (author, time) =>
-  Squad.findOneAndUpdate({event: time}, {$addToSet: {authors: author}}).exec();
+  Squad.findOneAndUpdate(
+    { event: time },
+    { $addToSet: { authors: author } }
+  ).exec();
 
 const deleteNotifSquad = (author, time) =>
-  Squad.findOneAndUpdate({event: time}, {$pull: {authors: author}}).exec();
+  Squad.findOneAndUpdate(
+    { event: time },
+    { $pull: { authors: author } }
+  ).exec();
 
 const getNotifSquad = R.curry(async time =>
-  R.prop('authors', await Squad.findOne({event: time}).exec())
+  R.prop('authors', await Squad.findOne({ event: time }).exec())
 );
 
 module.exports = {
@@ -136,5 +148,5 @@ module.exports = {
   haveTimesForToday,
   addNotifSquad,
   deleteNotifSquad,
-  getNotifSquad
+  getNotifSquad,
 };

@@ -6,14 +6,17 @@ const sinonChai = require('sinon-chai');
 
 const stub = sinon.stub().resolves();
 
-const {incomingMessage} = proxyquire('../app/controllers/message-controller', {
-  './cube-db': {
-    insertNewTimes: stub
-  },
-  moment: () => {
-    return moment('2018-01-01');
+const { incomingMessage } = proxyquire(
+  '../app/controllers/message-controller',
+  {
+    './cube-db': {
+      insertNewTimes: stub
+    },
+    moment: () => {
+      return moment('2018-01-01');
+    }
   }
-});
+);
 
 chai.use(sinonChai);
 chai.should();
@@ -33,7 +36,7 @@ describe.skip('app/controllers/message-controller', () => {
         channel: {
           send: () => {}
         },
-        author: {id: 'author'}
+        author: { id: 'author' }
       });
       stub.should.have.been.calledWith('2018-01-01', 'author', '333', [
         '12',
@@ -79,7 +82,7 @@ describe.skip('app/controllers/message-controller', () => {
         channel: {
           send: () => {}
         },
-        author: {id: 'author'}
+        author: { id: 'author' }
       });
       stub.should.have.been.calledWith('author', '333');
     });

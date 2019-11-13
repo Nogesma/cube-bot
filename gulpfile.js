@@ -1,5 +1,5 @@
-const {spawn} = require('child_process');
-const {src, watch, series, parallel} = require('gulp');
+const { spawn } = require('child_process');
+const { src, watch, series, parallel } = require('gulp');
 const xo = require('gulp-xo');
 
 const files = ['index-cube.js', 'app/**/*.js'];
@@ -11,18 +11,16 @@ const runXO = () =>
     .pipe(xo.format())
     .pipe(xo.failAfterError());
 
-const startDB = () => spawn('mongod');
-
 const spawnBot = cb => {
   if (node) {
     node.kill();
   }
 
-  node = spawn('node', ['index-cube.js'], {stdio: 'inherit'});
+  node = spawn('node', ['index-cube.js'], { stdio: 'inherit' });
   return cb();
 };
 
 const watcher = () => watch(files, series(runXO, spawnBot));
 
-exports.default = series(runXO, parallel(startDB, watcher, spawnBot));
-exports.n = parallel(startDB, watcher, spawnBot);
+exports.default = series(runXO, parallel(watcher, spawnBot));
+exports.n = parallel(watcher, spawnBot);

@@ -1,20 +1,20 @@
-const {CronJob} = require('cron');
+const { CronJob } = require('cron');
 const moment = require('moment');
 const R = require('ramda');
-const {events, hours} = require('../config');
+const { events, hours } = require('../config');
 const {
   monthlyRankingsFormat,
-  dailyRankingsFormat
+  dailyRankingsFormat,
 } = require('../helpers/messages-helpers');
 const logger = require('../tools/logger');
 const {
   updateStandings,
   getMonthStandings,
   getDayStandings,
-  getNotifSquad
+  getNotifSquad,
 } = require('./cube-db');
-const {supRole, addRole} = require('./role-controller');
-const {sendScrambles, scrambles} = require('./scrambler');
+const { removeRole, addRole } = require('./role-controller');
+const { sendScrambles, scrambles } = require('./scrambler');
 
 const cronList_ = [];
 
@@ -44,7 +44,7 @@ const startCron = bot => {
         R.map(dailyRankings, events);
       },
       start: false,
-      timeZone: 'Europe/Paris'
+      timeZone: 'Europe/Paris',
     })
   );
 
@@ -72,12 +72,12 @@ const startCron = bot => {
           )(event);
         };
 
-        supRole(bot);
+        removeRole(bot);
 
         R.map(monthStandings, events);
       },
       start: false,
-      timeZone: 'Europe/Paris'
+      timeZone: 'Europe/Paris',
     })
   );
 
@@ -107,7 +107,7 @@ const startCron = bot => {
         R.map(scrambleSend, events);
       },
       start: false,
-      timeZone: 'Europe/Paris'
+      timeZone: 'Europe/Paris',
     })
   );
 
@@ -133,7 +133,7 @@ const startCron = bot => {
         }
       },
       start: false,
-      timeZone: 'Europe/Paris'
+      timeZone: 'Europe/Paris',
     })
   );
 
@@ -146,4 +146,4 @@ const stopCron = () => {
   logger.log('info', 'Cron Stopped');
 };
 
-module.exports = {startCron, stopCron};
+module.exports = { startCron, stopCron };

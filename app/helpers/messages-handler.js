@@ -1,39 +1,33 @@
 const R = require('ramda');
-const {events: availableEvents, hours: availableTimes} = require('../config');
+const { events: availableEvents, hours: availableTimes } = require('../config');
 const {
   insertNewTimes,
   getDayStandings,
   getMonthStandings,
   haveTimesForToday,
   addNotifSquad,
-  deleteNotifSquad
+  deleteNotifSquad,
 } = require('../controllers/cube-db');
 const {
   helpMessage,
   ensureDay,
   dailyRankingsFormat,
-  monthlyRankingsFormat
+  monthlyRankingsFormat,
 } = require('./messages-helpers');
 
 const sendMessageToChannel = R.curry((channel, msg) => channel.send(msg));
 
-const includesEvent = (event, channel, func) =>
+const includesEvent = (event, messageSender, func) =>
   R.includes(event, availableEvents)
-    ? func(event)
-    : sendMessageToChannel(
-        channel,
-        `Veuillez entrer un event valide : ${availableEvents}`
-      );
+    ? func()
+    : messageSender(`Veuillez entrer un event valide : ${availableEvents}`);
 
-const includesTime = (time, channel, func) =>
+const includesTime = (time, messageSender, func) =>
   R.includes(time, availableTimes)
     ? func()
-    : sendMessageToChannel(
-        channel,
-        `Veuillez entrer une heure valide : ${availableTimes}`
-      );
+    : messageSender(`Veuillez entrer une heure valide : ${availableTimes}`);
 
-const helpCommand = ({channel}) =>
+const helpCommand = ({ channel }) =>
   R.pipe(
     helpMessage,
     R.then(sendMessageToChannel(channel))
@@ -45,59 +39,59 @@ const newTimesCommand = x =>
     R.then(sendMessageToChannel(R.prop('channel', x)))
   )(x);
 
-const dailyRanksCommand = ({channel, event, args}) => {
+const dailyRanksCommand = ({ channel, event, args }) => {
   const date = ensureDay(args[0]);
   const messageSender = sendMessageToChannel(channel);
-  return includesEvent(event, channel, e =>
+  return includesEvent(event, messageSender, () =>
     R.pipe(
       getDayStandings,
       R.then(dailyRankingsFormat(date, channel)),
       R.then(messageSender)
-    )(date, e)
+    )(date, event)
   );
 };
 
-const monthlyRanksCommand = ({channel, event, args: [date = new Date()]}) => {
+const monthlyRanksCommand = ({ channel, event, args: [date = new Date()] }) => {
   const messageSender = sendMessageToChannel(channel);
-  return includesEvent(event, channel, e =>
+  return includesEvent(event, messageSender, () =>
     R.pipe(
       getMonthStandings,
       R.then(monthlyRankingsFormat(date, channel)),
       R.then(messageSender)
-    )(date, e)
+    )(date, event)
   );
 };
 
-const dididoCommand = ({date, author, event, channel}) => {
+const dididoCommand = ({ date, author, event, channel }) => {
   const messageSender = sendMessageToChannel(channel);
-  return includesEvent(event, channel, e =>
+  return includesEvent(event, messageSender, () =>
     R.pipe(
       haveTimesForToday,
       R.then(participation => (participation ? 'Oui' : 'Non')),
       R.then(messageSender)
-    )(date.format('YYYY-MM-DD'), author.id, e)
+    )(date.format('YYYY-MM-DD'), R.prop('id', author), event)
   );
 };
 
-const idoCommand = ({author, event, channel}) => {
+const idoCommand = ({ author, event, channel }) => {
   const time = Number(event);
   const messageSender = sendMessageToChannel(channel);
-  return includesTime(time, channel, () =>
+  return includesTime(time, messageSender, () =>
     R.pipe(
       addNotifSquad,
       R.then(messageSender('Vous avez bien été ajouté a la notif squad !'))
-    )(author.id, time)
+    )(R.prop('id', author), time)
   );
 };
 
-const idonotdoCommand = ({author, event, channel}) => {
+const idonotdoCommand = ({ author, event, channel }) => {
   const time = Number(event);
   const messageSender = sendMessageToChannel(channel);
-  return includesTime(time, channel, () =>
+  return includesTime(time, messageSender, () =>
     R.pipe(
       deleteNotifSquad,
       R.then(messageSender('Vous avez bien été supprimé de la notif squad !'))
-    )(author.id, time)
+    )(R.prop('id', author), time)
   );
 };
 
@@ -108,5 +102,5 @@ module.exports = {
   monthlyRanksCommand,
   dididoCommand,
   idoCommand,
-  idonotdoCommand
+  idonotdoCommand,
 };
