@@ -4,7 +4,7 @@ const {
   computeScore,
   timeToSeconds,
   secondsToTime,
-  getBestTime
+  getBestTime,
 } = require('../../app/tools/calculators');
 
 chai.should();
@@ -40,32 +40,30 @@ describe('app/tools/calculators', () => {
 
     context('When array contains string of numbers', () => {
       it('should return the average', () => {
-        averageOfFiveCalculator(['13', '4', '5', '3', '6']).should.be.equal(
-          5.0
-        );
+        averageOfFiveCalculator(['13', '4', '5', '3', '6']).should.be.equal(5);
         averageOfFiveCalculator([
           '12.34',
           '0.05',
           '78.32',
           '34.21',
-          '9.95'
+          '9.95',
         ]).should.be.equal(18.83);
         averageOfFiveCalculator(['12', '13', '17', '15', '22']).should.be.equal(
-          15.0
+          15
         );
         averageOfFiveCalculator([
           Infinity,
           '4',
           Infinity,
           '3',
-          '6'
+          '6',
         ]).should.be.equal(Infinity);
         averageOfFiveCalculator([
           '15',
           Infinity,
           '5',
           '3',
-          '6'
+          '6',
         ]).should.be.equal(8.67);
       });
     });
@@ -78,7 +76,7 @@ describe('app/tools/calculators', () => {
           0.05,
           78.32,
           34.21,
-          9.95
+          9.95,
         ]).should.be.equal(18.83);
         averageOfFiveCalculator([12, 13, 17, 15, 22]).should.be.equal(15);
       });

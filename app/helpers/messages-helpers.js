@@ -1,13 +1,13 @@
 const fs = require('fs-extra');
 const moment = require('moment');
 const R = require('ramda');
-const {computeScore} = require('../tools/calculators');
+const { computeScore } = require('../tools/calculators');
 
 const helpMessage = async () =>
   R.join('\n', [
     '```Markdown',
     await fs.readFile('./app/raw-data/help.md', 'utf8'),
-    '```'
+    '```',
   ]);
 
 const dailyRankingsFormat = R.curry((date, channel, ranks) =>
@@ -22,10 +22,10 @@ const dailyRankingsFormat = R.curry((date, channel, ranks) =>
         `#${idx + 1} ${name}: ${cuber.time} ao5, ${
           cuber.best
         } single, ${pts} pts`,
-        `[${R.join(', ', cuber.solves)}]`
+        `[${R.join(', ', cuber.solves)}]`,
       ]);
     }),
-    '```'
+    '```',
   ])
 );
 
@@ -48,7 +48,7 @@ const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
       const name = user ? user.username : 'RAGE-QUITTER';
       return `#${idx + 1} ${name} : ${cuber.score} pts (${cuber.attendances})`;
     }),
-    '```'
+    '```',
   ])
 );
 
@@ -62,5 +62,5 @@ module.exports = {
   helpMessage,
   dailyRankingsFormat,
   monthlyRankingsFormat,
-  ensureDay
+  ensureDay,
 };
