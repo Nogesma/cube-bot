@@ -28,16 +28,10 @@ const includesTime = (time, messageSender, func) =>
     : messageSender(`Veuillez entrer une heure valide : ${availableTimes}`);
 
 const helpCommand = ({ channel }) =>
-  R.pipe(
-    helpMessage,
-    R.then(sendMessageToChannel(channel))
-  )();
+  R.pipe(helpMessage, R.then(sendMessageToChannel(channel)))();
 
 const newTimesCommand = x =>
-  R.pipe(
-    insertNewTimes,
-    R.then(sendMessageToChannel(R.prop('channel', x)))
-  )(x);
+  R.pipe(insertNewTimes, R.then(sendMessageToChannel(R.prop('channel', x))))(x);
 
 const dailyRanksCommand = ({ channel, event, args }) => {
   const date = ensureDay(args[0]);

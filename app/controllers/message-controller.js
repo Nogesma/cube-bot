@@ -41,10 +41,7 @@ const applyCommand = message => {
 };
 
 const incomingMessage = R.when(
-  R.pipe(
-    R.prop('content'),
-    messageIsCommand
-  ),
+  R.pipe(R.prop('content'), messageIsCommand),
   applyCommand
 );
 

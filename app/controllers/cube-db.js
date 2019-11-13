@@ -108,9 +108,10 @@ const updateStandings = R.curry(async (date, event) => {
 const getDayStandings = R.curry(async (date, event) =>
   R.map(
     x =>
-      R.over(R.lensProp('time'), secondsToTime)(
-        R.over(R.lensProp('best'), secondsToTime)(x)
-      ),
+      R.over(
+        R.lensProp('time'),
+        secondsToTime
+      )(R.over(R.lensProp('best'), secondsToTime)(x)),
     sortRankings(await Cube.find({ date, event }).exec())
   )
 );

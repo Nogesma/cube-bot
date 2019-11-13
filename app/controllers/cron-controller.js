@@ -98,10 +98,7 @@ const startCron = bot => {
         const scrambleSend = event => {
           const chan = bot.channels.get(R.path(['env', event], process));
 
-          R.pipe(
-            scrambles,
-            send(chan)
-          )(formatNameForScrambow(event));
+          R.pipe(scrambles, send(chan))(formatNameForScrambow(event));
         };
 
         R.map(scrambleSend, events);

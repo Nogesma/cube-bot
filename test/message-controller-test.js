@@ -10,11 +10,11 @@ const { incomingMessage } = proxyquire(
   '../app/controllers/message-controller',
   {
     './cube-db': {
-      insertNewTimes: stub
+      insertNewTimes: stub,
     },
     moment: () => {
       return moment('2018-01-01');
-    }
+    },
   }
 );
 
@@ -34,16 +34,16 @@ describe.skip('app/controllers/message-controller', () => {
       await incomingMessage({
         content: '?t 333 12 13 14 15 16',
         channel: {
-          send: () => {}
+          send: () => {},
         },
-        author: { id: 'author' }
+        author: { id: 'author' },
       });
       stub.should.have.been.calledWith('2018-01-01', 'author', '333', [
         '12',
         '13',
         '14',
         '15',
-        '16'
+        '16',
       ]);
     });
 
@@ -51,8 +51,8 @@ describe.skip('app/controllers/message-controller', () => {
       await incomingMessage({
         content: '?h' || '?help',
         channel: {
-          send: () => {}
-        }
+          send: () => {},
+        },
       });
     });
 
@@ -60,8 +60,8 @@ describe.skip('app/controllers/message-controller', () => {
       await incomingMessage({
         content: '?classement 333 2018-01-01',
         channel: {
-          send: () => {}
-        }
+          send: () => {},
+        },
       });
       stub.should.have.been.calledWith('333', '2018-01-01');
     });
@@ -70,8 +70,8 @@ describe.skip('app/controllers/message-controller', () => {
       await incomingMessage({
         content: '?classementmois 333 2018-01',
         channel: {
-          send: () => {}
-        }
+          send: () => {},
+        },
       });
       stub.should.have.been.calledWith('333', '2018-01');
     });
@@ -80,9 +80,9 @@ describe.skip('app/controllers/message-controller', () => {
       await incomingMessage({
         content: '?didido 333',
         channel: {
-          send: () => {}
+          send: () => {},
         },
-        author: { id: 'author' }
+        author: { id: 'author' },
       });
       stub.should.have.been.calledWith('author', '333');
     });

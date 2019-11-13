@@ -45,21 +45,12 @@ const getBestTime = R.reduce(R.min, Infinity);
 const computeScore = (numberOfContestants, rank) =>
   R.min(100, Math.ceil((-50 / (numberOfContestants - 1)) * rank) + 100);
 
-const sorter = R.map(
-  R.pipe(
-    R.prop,
-    R.ascend
-  ),
-  ['time', 'best']
-);
+const sorter = R.map(R.pipe(R.prop, R.ascend), ['time', 'best']);
 
 const sortRankings = ranks =>
   R.sortWith(
     R.ifElse(
-      R.pipe(
-        R.path([0, 'event']),
-        R.equals('3BLD')
-      ),
+      R.pipe(R.path([0, 'event']), R.equals('3BLD')),
       R.always(R.reverse(sorter)),
       R.always(sorter)
     )(ranks),
