@@ -1,5 +1,5 @@
 const { CronJob } = require('cron');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const R = require('ramda');
 const { events, hours } = require('../config');
 const {
@@ -23,11 +23,15 @@ const startCron = bot => {
     new CronJob({
       cronTime: '00 59 23 * * *',
       onTick: () => {
-        const date = moment().format('YYYY-MM-DD');
+        const date = moment()
+          .tz('Europe/Paris')
+          .format('YYYY-MM-DD');
 
-        const update = updateStandings(date);
-        const standings = getDayStandings(date);
-        const rankings = dailyRankingsFormat(date);
+        const [update, standings, rankings] = R.map(R.flip(R.apply)([date]), [
+          updateStandings,
+          getDayStandings,
+          dailyRankingsFormat,
+        ]);
 
         const dailyRankings = async event => {
           const chan = bot.channels.get(R.path(['env', event], process));
@@ -53,11 +57,14 @@ const startCron = bot => {
       cronTime: '1 0 0 1 * *',
       onTick: () => {
         const date = moment()
+          .tz('Europe/Paris')
           .subtract(1, 'months')
           .format('YYYY-MM-DD');
 
-        const rankings = monthlyRankingsFormat(date);
-        const standings = getMonthStandings(date);
+        const [standings, rankings] = R.map(R.flip(R.apply)([date]), [
+          monthlyRankingsFormat,
+          getMonthStandings,
+        ]);
 
         const monthStandings = event => {
           const chan = bot.channels.get(R.path(['env', event], process));
@@ -85,7 +92,9 @@ const startCron = bot => {
     new CronJob({
       cronTime: '00 01 00 * * *',
       onTick: () => {
-        const date = moment().format('YYYY-MM-DD');
+        const date = moment()
+          .tz('Europe/Paris')
+          .format('YYYY-MM-DD');
 
         const send = sendScrambles(date);
 
@@ -112,7 +121,9 @@ const startCron = bot => {
     new CronJob({
       cronTime: '00 00 * * * *',
       onTick: () => {
-        const time = moment().hour();
+        const time = moment()
+          .tz('Europe/Paris')
+          .hour();
         if (R.includes(time, hours)) {
           const chan = bot.channels.get(process.env.CHANNEL_SPAM);
 

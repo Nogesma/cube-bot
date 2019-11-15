@@ -16,7 +16,7 @@
     "discord.js": "^11.5.1",
     "dotenv": "^8.2.0",
     "fs-extra": "^8.1.0",
-    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.27",
     "mongoose": "^5.7.10",
     "ramda": "^0.26.1",
     "scrambow": "^1.0.3",

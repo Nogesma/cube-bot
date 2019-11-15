@@ -1,5 +1,5 @@
 const fs = require('fs-extra');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const R = require('ramda');
 const { computeScore } = require('../tools/calculators');
 
@@ -30,7 +30,9 @@ const dailyRankingsFormat = R.curry((date, channel, ranks) =>
 );
 
 const getMonthDateFormat_ = R.memoizeWith(R.identity, date =>
-  moment(date).format('YYYY-MM')
+  moment(date)
+    .tz('Europe/Paris')
+    .format('YYYY-MM')
 );
 
 const isCurrentMonth_ = date =>
@@ -53,7 +55,9 @@ const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
 );
 
 const ensureDay = date => {
-  const minDate = moment().subtract(1, 'days');
+  const minDate = moment()
+    .tz('Europe/Paris')
+    .subtract(1, 'days');
   const wantedDate = moment(date);
   return (wantedDate < minDate ? wantedDate : minDate).format('YYYY-MM-DD');
 };
