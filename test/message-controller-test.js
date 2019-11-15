@@ -1,5 +1,5 @@
 const chai = require('chai');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');

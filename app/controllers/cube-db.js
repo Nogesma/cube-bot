@@ -1,4 +1,4 @@
-const moment = require('moment');
+const moment = require('moment-timezone');
 const mongoose = require('mongoose');
 const R = require('ramda');
 const { events: availableEvents } = require('../config');
@@ -79,7 +79,9 @@ const insertNewTimes = async ({
  * @param {String} event - 333 the event for which we compete
  */
 const updateStandings = R.curry(async (date, event) => {
-  const monthDate = moment(date).format('YYYY-MM');
+  const monthDate = moment(date)
+    .tz('Europe/Paris')
+    .format('YYYY-MM');
   const todayStandings = sortRankings(await Cube.find({ date, event }));
   const promisesUpdate = [];
 
@@ -117,7 +119,9 @@ const getDayStandings = R.curry(async (date, event) =>
 );
 
 const getMonthStandings = R.curry(async (date, event) => {
-  const monthDate = moment(date).format('YYYY-MM');
+  const monthDate = moment(date)
+    .tz('Europe/Paris')
+    .format('YYYY-MM');
   const monthStandings = await Ranking.find({ date: monthDate, event }).exec();
   return R.sort(R.descend(R.prop('score')), monthStandings);
 });

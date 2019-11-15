@@ -1,4 +1,4 @@
-const moment = require('moment');
+const moment = require('moment-timezone');
 const R = require('ramda');
 const {
   helpCommand,
@@ -23,7 +23,7 @@ const commandChoose = R.cond([
 ]);
 
 const applyCommand = message => {
-  const date = moment();
+  const date = moment().tz('Europe/Paris');
   const { author, channel } = message;
   const [command, event, ...args] = R.pipe(
     R.prop('content'),
