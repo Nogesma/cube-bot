@@ -124,9 +124,9 @@ const startCron = bot => {
         const time = moment()
           .tz('Europe/Paris')
           .hour();
+
         if (R.includes(time, hours)) {
           const chan = bot.channels.get(process.env.CHANNEL_SPAM);
-
           R.pipe(
             getNotifSquad,
             R.then(doc =>

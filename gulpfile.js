@@ -21,6 +21,7 @@ const spawnBot = cb => {
 };
 
 const watcher = () => watch(files, series(runXO, spawnBot));
+const watcherN = () => watch(files, spawnBot);
 
 exports.default = series(runXO, parallel(watcher, spawnBot));
-exports.n = parallel(watcher, spawnBot);
+exports.n = parallel(watcherN, spawnBot);

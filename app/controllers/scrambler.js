@@ -4,6 +4,7 @@ const { Scrambow } = require('scrambow');
 const scrambles = event =>
   R.pipe(
     R.pluck('scramble_string'),
+    R.map(R.replace(/\n/g, ' ')),
     R.join('``````')
   )(new Scrambow().setType(event).get(5));
 

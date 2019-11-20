@@ -141,9 +141,8 @@ const deleteNotifSquad = (author, time) =>
     { $pull: { authors: author } }
   ).exec();
 
-const getNotifSquad = R.curry(async time =>
-  R.prop('authors', await Squad.findOne({ event: time }).exec())
-);
+const getNotifSquad = async time =>
+  R.prop('authors', await Squad.findOne({ event: time }).exec());
 
 module.exports = {
   insertNewTimes,
