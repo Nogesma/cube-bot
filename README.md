@@ -6,13 +6,9 @@
 
 - Install Yarn : `brew install yarn`
 
-- Install mongoDB : `brew install mongodb`
+- Install mongoDB : `brew tap mongodb/brew && brew install mongodb-community`
 
-- You will need to create the db directory and change its permission :
-
-  - `sudo mkdir -p /data/db`
-  
-  - ``sudo chown -R `id -u` /data/db``
+- Start mongoDB : `brew services start mongodb-community`
 
 ### Windows :
 
@@ -26,7 +22,7 @@
 
 ### MacOS and Windows :
 
-- Clone repository : `git clone https://github.com/Waxo/cube-bot` 
+- Clone repository : `git clone https://github.com/Nogesma/cube-bot` 
 
 - Install modules : `yarn install`
 
@@ -41,6 +37,7 @@ TOKEN=xyz
 OH=1234
 3BLD=1234
 SQ1=1234
+MINX=1234
 CHANNEL_SPAM=1234
 ROLE_ID=1234
 GUILD_ID=1234
@@ -48,7 +45,7 @@ MONGO_URL=mongodb://localhost:27017/test
 ```
 
 
-- Init : `node init.js 17 18 19 20 21`
+- Init : `node init.js`
 - Start the bot: `gulp`
 
 ## Contribute

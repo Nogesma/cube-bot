@@ -62,8 +62,8 @@ const startCron = bot => {
           .format('YYYY-MM-DD');
 
         const [standings, rankings] = R.map(R.flip(R.apply)([date]), [
-          monthlyRankingsFormat,
           getMonthStandings,
+          monthlyRankingsFormat,
         ]);
 
         const monthStandings = event => {
