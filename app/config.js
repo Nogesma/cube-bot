@@ -1,4 +1,5 @@
+const R = require('ramda');
 module.exports = {
   events: ['333', '222', '3BLD', 'OH', 'SQ1', 'MINX'],
-  hours: [17, 18, 19, 20, 21],
+  hours: R.range(1, 24),
 };
