@@ -119,7 +119,7 @@ const startCron = bot => {
 
   cronList_.push(
     new CronJob({
-      cronTime: '00 00 * * * *',
+      cronTime: '0 0 * * * *',
       onTick: () => {
         const time = moment()
           .tz('Europe/Paris')
@@ -129,12 +129,14 @@ const startCron = bot => {
           const chan = bot.channels.get(process.env.CHANNEL_SPAM);
           R.pipe(
             getNotifSquad,
-            R.then(doc =>
-              chan.send(
-                `Participez au tournoi ! ${R.join(
-                  ' ',
-                  R.map(x => `<@${x}>`, doc)
-                )}`
+            R.then(
+              R.unless(R.isEmpty, doc =>
+                chan.send(
+                  `Participez au tournoi ! ${R.join(
+                    ' ',
+                    R.map(x => `<@${x}>`, doc)
+                  )}`
+                )
               )
             )
           )(time);
