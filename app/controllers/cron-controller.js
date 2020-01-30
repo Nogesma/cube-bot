@@ -54,7 +54,18 @@ const startCron = bot => {
 
   cronList_.push(
     new CronJob({
-      cronTime: '1 0 0 1 * *',
+      cronTime: '0 0 0 1 * *',
+      onTick: () => {
+        removeRole(bot);
+      },
+      start: false,
+      timeZone: 'Europe/Paris',
+    })
+  );
+
+  cronList_.push(
+    new CronJob({
+      cronTime: '0 1 0 1 * *',
       onTick: () => {
         const date = moment()
           .tz('Europe/Paris')
@@ -79,8 +90,6 @@ const startCron = bot => {
           )(event);
         };
 
-        removeRole(bot);
-
         R.map(monthStandings, events);
       },
       start: false,
@@ -90,7 +99,7 @@ const startCron = bot => {
 
   cronList_.push(
     new CronJob({
-      cronTime: '00 01 00 * * *',
+      cronTime: '0 1 0 * * *',
       onTick: () => {
         const date = moment()
           .tz('Europe/Paris')
