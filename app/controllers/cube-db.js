@@ -88,7 +88,7 @@ const updateStandings = R.curry(async (date, event) => {
   R.addIndex(R.forEach)((entry, index) => {
     promisesUpdate.push(
       Ranking.findOne({ date: monthDate, author: entry.author, event })
-        .then(currentStanding => {
+        .then((currentStanding) => {
           currentStanding.score += computeScore(todayStandings.length, index);
           currentStanding.attendances++;
           return currentStanding.save();
@@ -109,7 +109,7 @@ const updateStandings = R.curry(async (date, event) => {
 
 const getDayStandings = R.curry(async (date, event) =>
   R.map(
-    x =>
+    (x) =>
       R.over(
         R.lensProp('time'),
         secondsToTime
@@ -141,8 +141,11 @@ const deleteNotifSquad = (author, time) =>
     { $pull: { authors: author } }
   ).exec();
 
-const getNotifSquad = async time =>
+const getNotifSquad = async (time) =>
   R.prop('authors', await Squad.findOne({ event: time }).exec());
+
+const getTimes = async (author, event) =>
+  Cube.find({ author: author.id, event }).exec();
 
 module.exports = {
   insertNewTimes,
@@ -153,4 +156,5 @@ module.exports = {
   addNotifSquad,
   deleteNotifSquad,
   getNotifSquad,
+  getTimes,
 };

@@ -1,6 +1,6 @@
 const R = require('ramda');
 
-const timeToSeconds = t => {
+const timeToSeconds = (t) => {
   if (t === 'DNF') {
     return Infinity;
   }
@@ -14,7 +14,7 @@ const timeToSeconds = t => {
   );
 };
 
-const secondsToTime = t => {
+const secondsToTime = (t) => {
   const time = Number(t);
   if (time === Infinity) {
     return 'DNF';
@@ -30,7 +30,7 @@ const secondsToTime = t => {
   return `${h ? h + ':' : ''}${h || min ? min + ':' : ''}${s}`;
 };
 
-const averageOfFiveCalculator = t => {
+const averageOfFiveCalculator = (t) => {
   let times = R.map(Number, t);
   if (R.length(R.filter(R.lt(0), times)) === 5) {
     times = R.slice(1, -1, R.sort(R.subtract, times));
@@ -47,7 +47,7 @@ const computeScore = (numberOfContestants, rank) =>
 
 const sorter = R.map(R.pipe(R.prop, R.ascend), ['time', 'best']);
 
-const sortRankings = ranks =>
+const sortRankings = (ranks) =>
   R.sortWith(
     R.ifElse(
       R.pipe(R.path([0, 'event']), R.equals('3BLD')),
@@ -57,6 +57,11 @@ const sortRankings = ranks =>
     ranks
   );
 
+const getPB = (t) => ({
+  single: getBestTime(R.map(R.prop('best'), t)),
+  average: getBestTime(R.map(R.prop('time'), t)),
+});
+
 module.exports = {
   averageOfFiveCalculator,
   timeToSeconds,
@@ -64,4 +69,5 @@ module.exports = {
   computeScore,
   getBestTime,
   sortRankings,
+  getPB,
 };

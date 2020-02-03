@@ -1,7 +1,7 @@
 const R = require('ramda');
 const { Scrambow } = require('scrambow');
 
-const scrambles = event =>
+const scrambles = (event) =>
   R.pipe(
     R.pluck('scramble_string'),
     R.map(R.replace(/\n/g, ' ')),

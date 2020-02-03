@@ -1,5 +1,6 @@
 const R = require('ramda');
 const { events: availableEvents, hours: availableTimes } = require('../config');
+const { getPB } = require('../tools/calculators');
 const {
   insertNewTimes,
   getDayStandings,
@@ -7,6 +8,7 @@ const {
   haveTimesForToday,
   addNotifSquad,
   deleteNotifSquad,
+  getTimes,
 } = require('../controllers/cube-db');
 const {
   helpMessage,
@@ -30,7 +32,7 @@ const includesTime = (time, messageSender, func) =>
 const helpCommand = ({ channel }) =>
   R.pipe(helpMessage, R.then(sendMessageToChannel(channel)))();
 
-const newTimesCommand = x =>
+const newTimesCommand = (x) =>
   R.pipe(insertNewTimes, R.then(sendMessageToChannel(R.prop('channel', x))))(x);
 
 const dailyRanksCommand = ({ channel, event, args }) => {
@@ -61,7 +63,7 @@ const dididoCommand = ({ date, author, event, channel }) => {
   return includesEvent(event, messageSender, () =>
     R.pipe(
       haveTimesForToday,
-      R.then(participation => (participation ? 'Oui' : 'Non')),
+      R.then((participation) => (participation ? 'Oui' : 'Non')),
       R.then(messageSender)
     )(date.format('YYYY-MM-DD'), R.prop('id', author), event)
   );
@@ -89,6 +91,19 @@ const idonotdoCommand = ({ author, event, channel }) => {
   );
 };
 
+const pbCommand = ({ author, event, channel }) => {
+  const messageSender = sendMessageToChannel(channel);
+  return includesEvent(event, messageSender, () =>
+    R.pipe(
+      getTimes,
+      R.then(getPB),
+      R.then(({ single, average }) =>
+        messageSender(`PB Single: ${single}\n PB Average: ${average}`)
+      )
+    )(author, event)
+  );
+};
+
 module.exports = {
   helpCommand,
   newTimesCommand,
@@ -97,4 +112,5 @@ module.exports = {
   dididoCommand,
   idoCommand,
   idonotdoCommand,
+  pbCommand,
 };

@@ -18,7 +18,7 @@ const { sendScrambles, scrambles } = require('./scrambler');
 
 const cronList_ = [];
 
-const startCron = bot => {
+const startCron = (bot) => {
   cronList_.push(
     new CronJob({
       cronTime: '00 59 23 * * *',
@@ -33,7 +33,7 @@ const startCron = bot => {
           dailyRankingsFormat,
         ]);
 
-        const dailyRankings = async event => {
+        const dailyRankings = async (event) => {
           const chan = bot.channels.get(R.path(['env', event], process));
 
           await update(event);
@@ -41,7 +41,7 @@ const startCron = bot => {
           R.pipe(
             standings,
             R.then(rankings(chan)),
-            R.then(x => chan.send(x))
+            R.then((x) => chan.send(x))
           )(event);
         };
 
@@ -77,16 +77,16 @@ const startCron = bot => {
           monthlyRankingsFormat,
         ]);
 
-        const monthStandings = event => {
+        const monthStandings = (event) => {
           const chan = bot.channels.get(R.path(['env', event], process));
 
           R.pipe(
             standings,
-            R.then(ranks => {
+            R.then((ranks) => {
               addRole(bot, ranks);
               return rankings(chan, ranks);
             }),
-            R.then(x => chan.send(x))
+            R.then((x) => chan.send(x))
           )(event);
         };
 
@@ -113,7 +113,7 @@ const startCron = bot => {
           R.toLower
         );
 
-        const scrambleSend = event => {
+        const scrambleSend = (event) => {
           const chan = bot.channels.get(R.path(['env', event], process));
 
           R.pipe(scrambles, send(chan))(formatNameForScrambow(event));
@@ -139,11 +139,11 @@ const startCron = bot => {
           R.pipe(
             getNotifSquad,
             R.then(
-              R.unless(R.isEmpty, doc =>
+              R.unless(R.isEmpty, (doc) =>
                 chan.send(
                   `Participez au tournoi ! ${R.join(
                     ' ',
-                    R.map(x => `<@${x}>`, doc)
+                    R.map((x) => `<@${x}>`, doc)
                   )}`
                 )
               )
@@ -156,12 +156,12 @@ const startCron = bot => {
     })
   );
 
-  cronList_.forEach(c => c.start());
+  cronList_.forEach((c) => c.start());
   logger.log('info', 'Cron Started');
 };
 
 const stopCron = () => {
-  cronList_.forEach(c => c.stop());
+  cronList_.forEach((c) => c.stop());
   logger.log('info', 'Cron Stopped');
 };
 

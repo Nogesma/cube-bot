@@ -14,7 +14,7 @@ const chooseColor = R.cond([
   [R.T, R.always(chalk.white)],
 ]);
 
-const myFormat = printf(info => {
+const myFormat = printf((info) => {
   const color = chooseColor(info.level);
   return R.join(' ', [
     color(`[${info.timestamp}] ${R.toUpper(info.level)}:`),

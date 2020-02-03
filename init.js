@@ -16,8 +16,8 @@ mongoose.set('useUnifiedTopology', true);
 
 mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true });
 
-const myEvents = R.map(event => ({ event, authorList: [] }), R.range(1, 24));
+const myEvents = R.map((event) => ({ event, authorList: [] }), R.range(1, 24));
 
-const saveEvents = events => new Squad(events).save();
+const saveEvents = (events) => new Squad(events).save();
 
 Bromise.map(myEvents, saveEvents).then(() => mongoose.disconnect());

@@ -29,16 +29,16 @@ const dailyRankingsFormat = R.curry((date, channel, ranks) =>
   ])
 );
 
-const getMonthDateFormat_ = R.memoizeWith(R.identity, date =>
+const getMonthDateFormat_ = R.memoizeWith(R.identity, (date) =>
   moment(date)
     .tz('Europe/Paris')
     .format('YYYY-MM')
 );
 
-const isCurrentMonth_ = date =>
+const isCurrentMonth_ = (date) =>
   getMonthDateFormat_(date) === getMonthDateFormat_();
 
-const displayMonthDate_ = date =>
+const displayMonthDate_ = (date) =>
   isCurrentMonth_(date) ? 'en cours' : getMonthDateFormat_(date);
 
 const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
@@ -54,7 +54,7 @@ const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
   ])
 );
 
-const ensureDay = date => {
+const ensureDay = (date) => {
   const minDate = moment()
     .tz('Europe/Paris')
     .subtract(1, 'days');
