@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const R = require('ramda');
 const { events: availableEvents } = require('../config');
 const { Cube } = require('../models/cubes');
+const { User } = require('../models/user');
 const { Squad } = require('../models/notif');
 const { Ranking } = require('../models/rankings');
 const {
@@ -13,6 +14,7 @@ const {
   getBestTime,
   sortRankings,
 } = require('../tools/calculators');
+const { dailyRankingsFormat } = require('../helpers/messages-helpers');
 
 mongoose.set('useCreateIndex', true).set('useUnifiedTopology', true);
 
@@ -47,6 +49,7 @@ const insertNewTimes = async ({
   const times = R.map(timeToSeconds, solves);
   const average = averageOfFiveCalculator(times);
   const best = getBestTime(times);
+  const formattedDate = date.tz('Europe/Paris').format('YYYY-MM-DD');
 
   if (average < 0) {
     return 'Veuillez entrer des temps valides';
@@ -54,7 +57,7 @@ const insertNewTimes = async ({
 
   const entry = await Cube.findOne({
     author: R.prop('id', author),
-    date: date.format('YYYY-MM-DD'),
+    date: formattedDate,
     event,
   }).exec();
 
@@ -67,9 +70,23 @@ const insertNewTimes = async ({
     solves: R.map(secondsToTime, times),
     time: average,
     best,
-    date: date.format('YYYY-MM-DD'),
+    date: formattedDate,
     event,
   }).save();
+
+  const chan = channel.client.channels.get(R.path(['env', event], process));
+
+  chan.fetchMessages({ limit: 1 }).then((messages) => {
+    const lastMessage = messages.first();
+    lastMessage.delete();
+  });
+
+  await R.pipe(
+    getDayStandings(formattedDate),
+    R.then(dailyRankingsFormat(formattedDate, chan)),
+    R.then((x) => chan.send(x))
+  )(event);
+
   return `Vos temps ont bien été enregistrés ! ao5: ${secondsToTime(average)}`;
 };
 
@@ -85,7 +102,34 @@ const updateStandings = R.curry(async (date, event) => {
   const todayStandings = sortRankings(await Cube.find({ date, event }));
   const promisesUpdate = [];
 
-  R.addIndex(R.forEach)((entry, index) => {
+  R.addIndex(R.forEach)(async (entry, index) => {
+    console.log(todayStandings);
+    User.findOne({
+      author: R.prop('id', entry.author),
+      event,
+    })
+      .then((user) => {
+        if (user.single > entry.best) {
+          user.single = entry.best;
+          user.singleDate = entry.date;
+        }
+
+        if (user.average > entry.time) {
+          user.average = entry.time;
+          user.averageDate = entry.date;
+        }
+      })
+      .catch(() => {
+        return new User({
+          author: entry.author,
+          single: entry.best,
+          singleDate: entry.date,
+          average: entry.time,
+          averageDate: entry.date,
+          event,
+        }).save();
+      });
+
     promisesUpdate.push(
       Ranking.findOne({ date: monthDate, author: entry.author, event })
         .then((currentStanding) => {

@@ -98,7 +98,7 @@ const pbCommand = ({ author, event, channel }) => {
       getTimes,
       R.then(getPB),
       R.then(({ single, average }) =>
-        messageSender(`PB Single: ${single}\n PB Average: ${average}`)
+        messageSender(`PB Single: ${single}\nPB Average: ${average}`)
       )
     )(author, event)
   );

@@ -117,6 +117,7 @@ const startCron = (bot) => {
           const chan = bot.channels.get(R.path(['env', event], process));
 
           R.pipe(scrambles, send(chan))(formatNameForScrambow(event));
+          chan.send(dailyRankingsFormat(date, chan, []));
         };
 
         R.map(scrambleSend, events);
