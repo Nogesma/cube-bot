@@ -8,13 +8,13 @@ const addRole = (bot, ranks) => {
   if (user) user.addRole(role);
 };
 
-const removeRole = bot => {
+const removeRole = (bot) => {
   const role = R.prop(
     'roles',
     R.prop('guilds', bot).get(process.env.GUILD_ID)
   ).get(process.env.ROLE_ID);
 
-  R.forEach(member => member.removeRole(role), R.prop('members', role));
+  R.forEach((member) => member.removeRole(role), R.prop('members', role));
 };
 
 module.exports = { addRole, removeRole };

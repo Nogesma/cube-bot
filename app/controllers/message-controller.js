@@ -8,6 +8,7 @@ const {
   dididoCommand,
   idoCommand,
   idonotdoCommand,
+  pbCommand,
 } = require('../helpers/messages-handler');
 
 const messageIsCommand = R.startsWith('?');
@@ -20,9 +21,10 @@ const commandChoose = R.cond([
   [R.propEq('command', '?didido'), dididoCommand],
   [R.propEq('command', '?ido'), idoCommand],
   [R.propEq('command', '?idonotdo'), idonotdoCommand],
+  [R.propEq('command', '?pb'), pbCommand],
 ]);
 
-const applyCommand = message => {
+const applyCommand = (message) => {
   const date = moment().tz('Europe/Paris');
   const { author, channel } = message;
   const [command, event, ...args] = R.pipe(

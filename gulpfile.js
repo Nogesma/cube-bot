@@ -11,7 +11,7 @@ const runXO = () =>
     .pipe(xo.format())
     .pipe(xo.failAfterError());
 
-const spawnBot = cb => {
+const spawnBot = (cb) => {
   if (node) {
     node.kill();
   }
