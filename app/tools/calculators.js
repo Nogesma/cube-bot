@@ -58,8 +58,8 @@ const sortRankings = (ranks) =>
   );
 
 const getPB = (t) => ({
-  single: getBestTime(R.map(R.prop('best'), t)),
-  average: getBestTime(R.map(R.prop('time'), t)),
+  single: secondsToTime(getBestTime(R.map(R.prop('best'), t))),
+  average: secondsToTime(getBestTime(R.map(R.prop('time'), t))),
 });
 
 module.exports = {
