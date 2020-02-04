@@ -36,6 +36,11 @@ const startCron = (bot) => {
         const dailyRankings = async (event) => {
           const chan = bot.channels.get(R.path(['env', event], process));
 
+          await chan.fetchMessages({ limit: 1 }).then((messages) => {
+            const lastMessage = messages.first();
+            lastMessage.delete();
+          });
+
           await update(event);
 
           R.pipe(
