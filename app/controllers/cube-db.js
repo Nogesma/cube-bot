@@ -34,7 +34,7 @@ const insertNewTimes = async ({
     return 'Veuillez envoyer vos temps en message privé';
   }
 
-  if (date.diff(moment('00:00', 'HH:mm'), 'minutes') < 5) {
+  if (date.tz('Europe/Paris').diff(moment('00:00', 'HH:mm'), 'minutes') < 5) {
     return 'Vous ne pouvez pas soumettre vos temps entre 23h55 et 00h05';
   }
 
@@ -103,32 +103,33 @@ const updateStandings = R.curry(async (date, event) => {
   const promisesUpdate = [];
 
   R.addIndex(R.forEach)(async (entry, index) => {
-    console.log(todayStandings);
-    User.findOne({
-      author: R.prop('id', entry.author),
-      event,
-    })
-      .then((user) => {
-        if (user.single > entry.best) {
-          user.single = entry.best;
-          user.singleDate = entry.date;
-        }
-
-        if (user.average > entry.time) {
-          user.average = entry.time;
-          user.averageDate = entry.date;
-        }
+    promisesUpdate.push(
+      User.findOne({
+        author: R.prop('id', entry.author),
+        event,
       })
-      .catch(() => {
-        return new User({
-          author: entry.author,
-          single: entry.best,
-          singleDate: entry.date,
-          average: entry.time,
-          averageDate: entry.date,
-          event,
-        }).save();
-      });
+        .then((user) => {
+          if (user.single > entry.best) {
+            user.single = entry.best;
+            user.singleDate = entry.date;
+          }
+
+          if (user.average > entry.time) {
+            user.average = entry.time;
+            user.averageDate = entry.date;
+          }
+        })
+        .catch(() => {
+          return new User({
+            author: entry.author,
+            single: entry.best,
+            singleDate: entry.date,
+            average: entry.time,
+            averageDate: entry.date,
+            event,
+          }).save();
+        })
+    );
 
     promisesUpdate.push(
       Ranking.findOne({ date: monthDate, author: entry.author, event })
