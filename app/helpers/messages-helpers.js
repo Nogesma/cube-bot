@@ -19,8 +19,8 @@ const dailyRankingsFormat = R.curry((date, channel, ranks) =>
       const name = user ? user.username : 'RAGE-QUITTER';
       const pts = computeScore(ranks.length, idx);
       return R.join('\n', [
-        `#${idx + 1} ${name}: ${cuber.time} ao5, ${
-          cuber.best
+        `#${idx + 1} ${name}: ${cuber.average} ao5, ${
+          cuber.single
         } single, ${pts} pts`,
         `[${R.join(', ', cuber.solves)}]`,
       ]);

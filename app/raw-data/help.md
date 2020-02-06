@@ -13,9 +13,9 @@ Exemple : ?didido 333
 
 # Recevoir une notification pour vous rappeler de participer : ?ido <heure>
 Exemple : ?ido 19
-Vous pouvez rentrer des heures de 17 à 21h inclus
+Vous pouvez rentrer des heures de 1h à 23h
 
 # Ne plus recevoir de notifications : ?idonotdo <heure>
 Exemple : ?idonotdo 19
 
-# Events disponibles : 333, 222, 3bld, oh, sq1, minx
+# Events disponibles : 333, 222, 444, 3bld, oh, sq1, minx

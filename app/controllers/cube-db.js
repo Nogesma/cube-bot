@@ -48,7 +48,7 @@ const insertNewTimes = async ({
 
   const times = R.map(timeToSeconds, solves);
   const average = averageOfFiveCalculator(times);
-  const best = getBestTime(times);
+  const single = getBestTime(times);
   const formattedDate = date.tz('Europe/Paris').format('YYYY-MM-DD');
 
   if (average < 0) {
@@ -68,8 +68,8 @@ const insertNewTimes = async ({
   await new Cube({
     author: R.prop('id', author),
     solves: R.map(secondsToTime, times),
-    time: average,
-    best,
+    average,
+    single,
     date: formattedDate,
     event,
   }).save();
@@ -109,22 +109,22 @@ const updateStandings = R.curry(async (date, event) => {
         event,
       })
         .then((user) => {
-          if (user.single > entry.best) {
-            user.single = entry.best;
+          if (user.single > entry.single) {
+            user.single = entry.single;
             user.singleDate = entry.date;
           }
 
-          if (user.average > entry.time) {
-            user.average = entry.time;
+          if (user.average > entry.average) {
+            user.average = entry.average;
             user.averageDate = entry.date;
           }
         })
         .catch(() => {
           return new User({
             author: entry.author,
-            single: entry.best,
+            single: entry.single,
             singleDate: entry.date,
-            average: entry.time,
+            average: entry.average,
             averageDate: entry.date,
             event,
           }).save();
@@ -156,9 +156,9 @@ const getDayStandings = R.curry(async (date, event) =>
   R.map(
     (x) =>
       R.over(
-        R.lensProp('time'),
+        R.lensProp('average'),
         secondsToTime
-      )(R.over(R.lensProp('best'), secondsToTime)(x)),
+      )(R.over(R.lensProp('single'), secondsToTime)(x)),
     sortRankings(await Cube.find({ date, event }).exec())
   )
 );
