@@ -10,7 +10,6 @@ const logger = require('../tools/logger');
 const {
   updateStandings,
   getMonthStandings,
-  getDayStandings,
   getNotifSquad,
 } = require('./cube-db');
 const { removeRole, addRole } = require('./role-controller');
@@ -21,81 +20,13 @@ const cronList_ = [];
 const startCron = (bot) => {
   cronList_.push(
     new CronJob({
-      cronTime: '00 59 23 * * *',
+      cronTime: '0 59 23 * * *',
       onTick: () => {
         const date = moment()
           .tz('Europe/Paris')
           .format('YYYY-MM-DD');
 
-        const [update, standings, rankings] = R.map(R.flip(R.apply)([date]), [
-          updateStandings,
-          getDayStandings,
-          dailyRankingsFormat,
-        ]);
-
-        const dailyRankings = async (event) => {
-          const chan = bot.channels.get(R.path(['env', event], process));
-
-          await chan.fetchMessages({ limit: 1 }).then((messages) => {
-            const lastMessage = messages.first();
-            lastMessage.delete();
-          });
-
-          await update(event);
-
-          R.pipe(
-            standings,
-            R.then(rankings(chan)),
-            R.then((x) => chan.send(x))
-          )(event);
-        };
-
-        R.map(dailyRankings, events);
-      },
-      start: false,
-      timeZone: 'Europe/Paris',
-    })
-  );
-
-  cronList_.push(
-    new CronJob({
-      cronTime: '0 0 0 1 * *',
-      onTick: () => {
-        removeRole(bot);
-      },
-      start: false,
-      timeZone: 'Europe/Paris',
-    })
-  );
-
-  cronList_.push(
-    new CronJob({
-      cronTime: '0 1 0 1 * *',
-      onTick: () => {
-        const date = moment()
-          .tz('Europe/Paris')
-          .subtract(1, 'months')
-          .format('YYYY-MM-DD');
-
-        const [standings, rankings] = R.map(R.flip(R.apply)([date]), [
-          getMonthStandings,
-          monthlyRankingsFormat,
-        ]);
-
-        const monthStandings = (event) => {
-          const chan = bot.channels.get(R.path(['env', event], process));
-
-          R.pipe(
-            standings,
-            R.then((ranks) => {
-              addRole(bot, ranks);
-              return rankings(chan, ranks);
-            }),
-            R.then((x) => chan.send(x))
-          )(event);
-        };
-
-        R.map(monthStandings, events);
+        R.map(updateStandings(date), events);
       },
       start: false,
       timeZone: 'Europe/Paris',
@@ -126,6 +57,51 @@ const startCron = (bot) => {
         };
 
         R.map(scrambleSend, events);
+      },
+      start: false,
+      timeZone: 'Europe/Paris',
+    })
+  );
+
+  cronList_.push(
+    new CronJob({
+      cronTime: '0 0 0 1 * *',
+      onTick: () => {
+        removeRole(bot);
+      },
+      start: false,
+      timeZone: 'Europe/Paris',
+    })
+  );
+
+  cronList_.push(
+    new CronJob({
+      cronTime: '30 0 0 1 * *',
+      onTick: () => {
+        const date = moment()
+          .tz('Europe/Paris')
+          .subtract(1, 'months')
+          .format('YYYY-MM-DD');
+
+        const [standings, rankings] = R.map(R.flip(R.apply)([date]), [
+          getMonthStandings,
+          monthlyRankingsFormat,
+        ]);
+
+        const monthStandings = (event) => {
+          const chan = bot.channels.get(R.path(['env', event], process));
+
+          R.pipe(
+            standings,
+            R.then((ranks) => {
+              addRole(bot, ranks);
+              return rankings(chan, ranks);
+            }),
+            R.then((x) => chan.send(x))
+          )(event);
+        };
+
+        R.map(monthStandings, events);
       },
       start: false,
       timeZone: 'Europe/Paris',
