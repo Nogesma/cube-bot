@@ -45,7 +45,7 @@ const getBestTime = R.reduce(R.min, Infinity);
 const computeScore = (numberOfContestants, rank) =>
   R.min(100, Math.ceil((-50 / (numberOfContestants - 1)) * rank) + 100);
 
-const sorter = R.map(R.pipe(R.prop, R.ascend), ['time', 'best']);
+const sorter = R.map(R.pipe(R.prop, R.ascend), ['average', 'single']);
 
 const sortRankings = (ranks) =>
   R.sortWith(
@@ -58,8 +58,8 @@ const sortRankings = (ranks) =>
   );
 
 const getPB = (t) => ({
-  single: secondsToTime(getBestTime(R.map(R.prop('best'), t))),
-  average: secondsToTime(getBestTime(R.map(R.prop('time'), t))),
+  single: secondsToTime(getBestTime(R.map(R.prop('single'), t))),
+  average: secondsToTime(getBestTime(R.map(R.prop('average'), t))),
 });
 
 module.exports = {
