@@ -12,7 +12,7 @@ const {
 } = require('../controllers/cube-db');
 const {
   helpMessage,
-  ensureDay,
+  ensureDate,
   dailyRankingsFormat,
   monthlyRankingsFormat,
 } = require('./messages-helpers');
@@ -35,26 +35,27 @@ const helpCommand = ({ channel }) =>
 const newTimesCommand = (x) =>
   R.pipe(insertNewTimes, R.then(sendMessageToChannel(R.prop('channel', x))))(x);
 
-const dailyRanksCommand = ({ channel, event, args }) => {
-  const date = ensureDay(args[0]);
+const dailyRanksCommand = ({ channel, event, args: [date] }) => {
+  const formattedDate = ensureDate(date).format('YYYY-MM-DD');
   const messageSender = sendMessageToChannel(channel);
   return includesEvent(event, messageSender, () =>
     R.pipe(
       getDayStandings,
-      R.then(dailyRankingsFormat(date, channel)),
+      R.then(dailyRankingsFormat(formattedDate, channel)),
       R.then(messageSender)
-    )(date, event)
+    )(formattedDate, event)
   );
 };
 
-const monthlyRanksCommand = ({ channel, event, args: [date = new Date()] }) => {
+const monthlyRanksCommand = ({ channel, event, args: [date] }) => {
+  const formattedDate = ensureDate(date).format('YYYY-MM');
   const messageSender = sendMessageToChannel(channel);
   return includesEvent(event, messageSender, () =>
     R.pipe(
       getMonthStandings,
-      R.then(monthlyRankingsFormat(date, channel)),
+      R.then(monthlyRankingsFormat(formattedDate, channel)),
       R.then(messageSender)
-    )(date, event)
+    )(formattedDate, event)
   );
 };
 
