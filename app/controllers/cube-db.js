@@ -34,8 +34,10 @@ const insertNewTimes = async ({
     return 'Veuillez envoyer vos temps en message privé';
   }
 
-  if (date.tz('Europe/Paris').diff(moment('00:00', 'HH:mm'), 'minutes') < 5) {
-    return 'Vous ne pouvez pas soumettre vos temps entre 23h55 et 00h05';
+  if (
+    date.diff(moment('00:00:00', 'HH:mm:ss').tz('Europe/Paris'), 'seconds') < 10
+  ) {
+    return 'Vous ne pouvez pas soumettre de temps pendant la phase des résultats';
   }
 
   if (solves.length !== 5) {
@@ -49,7 +51,7 @@ const insertNewTimes = async ({
   const times = R.map(timeToSeconds, solves);
   const average = averageOfFiveCalculator(times);
   const single = getBestTime(times);
-  const formattedDate = date.tz('Europe/Paris').format('YYYY-MM-DD');
+  const formattedDate = date.format('YYYY-MM-DD');
 
   if (average < 0) {
     return 'Veuillez entrer des temps valides';
@@ -76,10 +78,9 @@ const insertNewTimes = async ({
 
   const chan = channel.client.channels.get(R.path(['env', event], process));
 
-  chan.fetchMessages({ limit: 1 }).then((messages) => {
-    const lastMessage = messages.first();
-    lastMessage.delete();
-  });
+  chan
+    .fetchMessages({ limit: 1 })
+    .then((messages) => messages.first().delete());
 
   await R.pipe(
     getDayStandings(formattedDate),
@@ -105,7 +106,7 @@ const updateStandings = R.curry(async (date, event) => {
   R.addIndex(R.forEach)(async (entry, index) => {
     promisesUpdate.push(
       User.findOne({
-        author: R.prop('id', entry.author),
+        author: entry.author,
         event,
       })
         .then((user) => {
@@ -164,10 +165,7 @@ const getDayStandings = R.curry(async (date, event) =>
 );
 
 const getMonthStandings = R.curry(async (date, event) => {
-  const monthDate = moment(date)
-    .tz('Europe/Paris')
-    .format('YYYY-MM');
-  const monthStandings = await Ranking.find({ date: monthDate, event }).exec();
+  const monthStandings = await Ranking.find({ date, event }).exec();
   return R.sort(R.descend(R.prop('score')), monthStandings);
 });
 

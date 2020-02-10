@@ -35,11 +35,8 @@ const getMonthDateFormat_ = R.memoizeWith(R.identity, (date) =>
     .format('YYYY-MM')
 );
 
-const isCurrentMonth_ = (date) =>
-  getMonthDateFormat_(date) === getMonthDateFormat_();
-
 const displayMonthDate_ = (date) =>
-  isCurrentMonth_(date) ? 'en cours' : getMonthDateFormat_(date);
+  getMonthDateFormat_() === date ? 'en cours' : date;
 
 const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
   R.join('\n', [
@@ -54,17 +51,15 @@ const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
   ])
 );
 
-const ensureDay = (date) => {
-  const minDate = moment()
-    .tz('Europe/Paris')
-    .subtract(1, 'days');
-  const wantedDate = moment(date);
-  return (wantedDate < minDate ? wantedDate : minDate).format('YYYY-MM-DD');
+const ensureDate = (date) => {
+  const minDate = moment();
+  const wantedDate = R.tryCatch(() => moment(date), R.always(undefined))();
+  return wantedDate < minDate ? wantedDate : minDate;
 };
 
 module.exports = {
   helpMessage,
   dailyRankingsFormat,
   monthlyRankingsFormat,
-  ensureDay,
+  ensureDate,
 };

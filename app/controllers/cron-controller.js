@@ -20,26 +20,19 @@ const cronList_ = [];
 const startCron = (bot) => {
   cronList_.push(
     new CronJob({
-      cronTime: '0 59 23 * * *',
+      cronTime: '0 0 0 * * *',
       onTick: () => {
-        const date = moment()
+        const standingsDate = moment()
           .tz('Europe/Paris')
+          .subtract(1, 'hours')
           .format('YYYY-MM-DD');
 
-        R.map(updateStandings(date), events);
-      },
-      start: false,
-      timeZone: 'Europe/Paris',
-    })
-  );
-
-  cronList_.push(
-    new CronJob({
-      cronTime: '0 1 0 * * *',
-      onTick: () => {
         const date = moment()
           .tz('Europe/Paris')
+          .add(1, 'hours')
           .format('YYYY-MM-DD');
+
+        R.map(updateStandings(standingsDate), events);
 
         const send = sendScrambles(date);
 
