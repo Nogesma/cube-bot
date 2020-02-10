@@ -35,7 +35,10 @@ const insertNewTimes = async ({
   }
 
   if (
-    date.diff(moment('00:00:00', 'HH:mm:ss').tz('Europe/Paris'), 'seconds') < 10
+    R.includes(
+      date.diff(moment('0', 'H').tz('Europe/Paris'), 'seconds'),
+      R.range(-10, 1)
+    )
   ) {
     return 'Vous ne pouvez pas soumettre de temps pendant la phase des résultats';
   }
