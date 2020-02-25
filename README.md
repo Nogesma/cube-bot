@@ -1,4 +1,6 @@
 # cube-bot
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 ### MacOS :
 
@@ -24,7 +26,7 @@
 
 - Clone repository : `git clone https://github.com/Nogesma/cube-bot` 
 
-- Install modules : `yarn install`
+- Set the correct yarn version : `yarn set version berry`
 
  - Create a file named `.env` in the root directory. You will need to have the bot token, the database url, the channels ID, the server ID, and the ID of the 'Champion' role'.
  
@@ -45,13 +47,11 @@ MONGO_URL=mongodb://localhost:27017/test
 ```
 
 
-- Init : `node init.js`
-- Start the bot: `gulp`
+- Init : `yarn run init`
+- Start the bot in development mode : `yarn run dev`
 
 ## Contribute
 
 - Create a new branch (feature/, fix/, update/, refactor/)(name)
 - Push your changes to the branch
 - Create a pull request
-
-It is recommended to use the prettier extension
