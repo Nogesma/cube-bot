@@ -1,15 +1,8 @@
 const { spawn } = require('child_process');
-const { src, watch, series, parallel } = require('gulp');
-const xo = require('gulp-xo');
+const { watch, parallel } = require('gulp');
 
 const files = ['index-cube.js', 'app/**/*.js'];
 let node;
-
-const runXO = () =>
-  src(files)
-    .pipe(xo())
-    .pipe(xo.format())
-    .pipe(xo.failAfterError());
 
 const spawnBot = (cb) => {
   if (node) {
@@ -20,8 +13,6 @@ const spawnBot = (cb) => {
   return cb();
 };
 
-const watcher = () => watch(files, series(runXO, spawnBot));
-const watcherN = () => watch(files, spawnBot);
+const watcher = () => watch(files, spawnBot);
 
-exports.default = series(runXO, parallel(watcher, spawnBot));
-exports.n = parallel(watcherN, spawnBot);
+exports.default = parallel(watcher, spawnBot);
