@@ -86,11 +86,11 @@ const startCron = (bot) => {
 
           R.pipe(
             standings,
-            R.then((ranks) => {
+            R.andThen((ranks) => {
               addRole(bot, ranks);
               return rankings(chan, ranks);
             }),
-            R.then((x) => chan.send(x))
+            R.andThen((x) => chan.send(x))
           )(event);
         };
 
@@ -113,7 +113,7 @@ const startCron = (bot) => {
           const chan = bot.channels.get(process.env.CHANNEL_SPAM);
           R.pipe(
             getNotifSquad,
-            R.then(
+            R.andThen(
               R.unless(R.isEmpty, (doc) =>
                 chan.send(
                   `Participez au tournoi ! ${R.join(

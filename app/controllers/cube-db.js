@@ -87,8 +87,8 @@ const insertNewTimes = async ({
 
   await R.pipe(
     getDayStandings(formattedDate),
-    R.then(dailyRankingsFormat(formattedDate, chan)),
-    R.then((x) => chan.send(x))
+    R.andThen(dailyRankingsFormat(formattedDate, chan)),
+    R.andThen((x) => chan.send(x))
   )(event);
 
   return `Vos temps ont bien été enregistrés ! ao5: ${secondsToTime(average)}`;
