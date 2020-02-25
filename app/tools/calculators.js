@@ -1,37 +1,37 @@
 const R = require('ramda');
 
-const timeToSeconds = (t) => {
-  if (t === 'DNF') {
+const timeToSeconds = (time) => {
+  if (time === 'DNF') {
     return Infinity;
   }
 
-  if (R.test(/\+$/g, t)) {
-    t = R.init(t);
-  }
-
   return Number(
-    R.reduce((acc, t) => 60 * acc + Number(t), 0, R.split(':', t)).toFixed(2)
+    R.head(
+      R.match(
+        /\d+\.\d{2}/g,
+        String(
+          R.reduce((acc, t) => 60 * acc + Number(t), 0, R.split(':', time))
+        )
+      )
+    )
   );
 };
 
-const secondsToTime = (t) => {
-  const time = Number(t);
+const secondsToTime = (time) => {
   if (time === Infinity) {
     return 'DNF';
   }
 
-  const h = Math.floor(time / 3600);
-  const min = Math.floor((time - h * 3600) / 60);
-  let s = (time - h * 3600 - min * 60).toFixed(2);
+  const min = Math.floor(time / 60);
+  let s = (time - min * 60).toFixed(2);
   if (min > 0 && s.length === 4) {
     s = '0' + s;
   }
 
-  return `${h ? h + ':' : ''}${h || min ? min + ':' : ''}${s}`;
+  return `${min ? min + ':' : ''}${s}`;
 };
 
-const averageOfFiveCalculator = (t) => {
-  let times = R.map(Number, t);
+const averageOfFiveCalculator = (times) => {
   if (R.length(R.filter(R.lt(0), times)) === 5) {
     times = R.slice(1, -1, R.sort(R.subtract, times));
     return Number((R.sum(times) / 3).toFixed(2));
