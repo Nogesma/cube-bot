@@ -39,7 +39,8 @@ test('time is not valid', () => {
 });
 
 test('truncate time to two decimal places', () => {
-  expect(timeToSeconds('12.30')).toBe(12.3);
+  expect(timeToSeconds('12.3')).toBe(12.3);
+  expect(timeToSeconds('12')).toBe(12);
   expect(timeToSeconds('12.345')).toBe(12.34);
   expect(timeToSeconds('12.340')).toBe(12.34);
   expect(timeToSeconds('12.349')).toBe(12.34);

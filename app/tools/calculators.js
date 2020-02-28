@@ -8,7 +8,7 @@ const timeToSeconds = (time) => {
   return Number(
     R.head(
       R.match(
-        /\d+\.\d{1,2}/g,
+        /\d+\.?\d{1,2}/g,
         String(
           R.reduce((acc, t) => 60 * acc + Number(t), 0, R.split(':', time))
         )
