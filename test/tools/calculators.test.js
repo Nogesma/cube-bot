@@ -54,6 +54,8 @@ test('convert time from mm:ss.ms to s', () => {
 
 test('does not change time already in ss.ms format', () => {
   expect(timeToSeconds('12.34')).toBe(12.34);
+  expect(timeToSeconds('5.30')).toBe(5.3);
+  expect(timeToSeconds('5.00')).toBe(5);
   expect(timeToSeconds('77.65')).toBe(77.65);
 });
 
