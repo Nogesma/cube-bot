@@ -26,9 +26,9 @@
 
 - Clone repository : `git clone https://github.com/Nogesma/cube-bot` 
 
-- Set the correct yarn version : `yarn set version berry`
+- Install packages : `yarn`
 
- - Create a file named `.env` in the root directory. You will need to have the bot token, the database url, the channels ID, the server ID, and the ID of the 'Champion' role'.
+- Create a file named `.env` in the root directory. You will need to have the bot token, the database url, the channels ID, the server ID, and the ID of the 'Champion' role.
  
 #### Example :
 
