@@ -35,10 +35,10 @@ const insertNewTimes = async ({
   }
 
   if (
-    R.includes(
-      date.diff(moment('0', 'H').tz('Europe/Paris'), 'seconds'),
-      R.range(-10, 1)
-    )
+    R.includes(date.diff(moment('0', 'H').tz('Europe/Paris'), 'minutes'), [
+      0,
+      1,
+    ])
   ) {
     return 'Vous ne pouvez pas soumettre de temps pendant la phase des résultats';
   }
@@ -79,13 +79,15 @@ const insertNewTimes = async ({
     event,
   }).save();
 
-  const chan = channel.client.channels.get(R.path(['env', event], process));
+  const chan = await R.path(['client', 'channels', 'cache'], channel).get(
+    R.path(['env', event], process)
+  );
 
-  chan
-    .fetchMessages({ limit: 1 })
+  chan.messages
+    .fetch({ limit: 1 })
     .then((messages) => messages.first().delete());
 
-  await R.pipe(
+  R.pipe(
     getDayStandings(formattedDate),
     R.andThen(dailyRankingsFormat(formattedDate, chan)),
     R.andThen((x) => chan.send(x))
@@ -100,9 +102,7 @@ const insertNewTimes = async ({
  * @param {String} event - 333 the event for which we compete
  */
 const updateStandings = R.curry(async (date, event) => {
-  const monthDate = moment(date)
-    .tz('Europe/Paris')
-    .format('YYYY-MM');
+  const monthDate = moment(date).tz('Europe/Paris').format('YYYY-MM');
   const todayStandings = sortRankings(await Cube.find({ date, event }));
   const promisesUpdate = [];
 

@@ -20,19 +20,24 @@ const cronList_ = [];
 const startCron = (bot) => {
   cronList_.push(
     new CronJob({
-      cronTime: '0 0 0 * * *',
+      cronTime: '0 59 23 * * *',
       onTick: () => {
-        const standingsDate = moment()
-          .tz('Europe/Paris')
-          .subtract(1, 'hours')
-          .format('YYYY-MM-DD');
+        const standingsDate = moment().tz('Europe/Paris').format('YYYY-MM-DD');
 
+        R.map(updateStandings(standingsDate), events);
+      },
+      start: false,
+      timeZone: 'Europe/Paris',
+    })
+  );
+  cronList_.push(
+    new CronJob({
+      cronTime: '0 1 0 * * *',
+      onTick: () => {
         const date = moment()
           .tz('Europe/Paris')
           .add(1, 'hours')
           .format('YYYY-MM-DD');
-
-        R.map(updateStandings(standingsDate), events);
 
         const send = sendScrambles(date);
 
@@ -43,7 +48,7 @@ const startCron = (bot) => {
         );
 
         const scrambleSend = (event) => {
-          const chan = bot.channels.get(R.path(['env', event], process));
+          const chan = bot.channels.cache.get(R.path(['env', event], process));
 
           R.pipe(scrambles, send(chan))(formatNameForScrambow(event));
           chan.send(dailyRankingsFormat(date, chan, []));
@@ -73,16 +78,16 @@ const startCron = (bot) => {
       onTick: () => {
         const date = moment()
           .tz('Europe/Paris')
-          .subtract(1, 'months')
-          .format('YYYY-MM-DD');
+          .subtract(1, 'hours')
+          .format('YYYY-MM');
 
-        const [standings, rankings] = R.map(R.flip(R.apply)([date]), [
-          getMonthStandings,
-          monthlyRankingsFormat,
-        ]);
+        const [standings, rankings] = R.ap(
+          [getMonthStandings, monthlyRankingsFormat],
+          [date]
+        );
 
         const monthStandings = (event) => {
-          const chan = bot.channels.get(R.path(['env', event], process));
+          const chan = bot.channels.cache.get(R.path(['env', event], process));
 
           R.pipe(
             standings,
@@ -105,12 +110,10 @@ const startCron = (bot) => {
     new CronJob({
       cronTime: '0 0 * * * *',
       onTick: () => {
-        const time = moment()
-          .tz('Europe/Paris')
-          .hour();
+        const time = moment().tz('Europe/Paris').hour();
 
         if (R.includes(time, hours)) {
-          const chan = bot.channels.get(process.env.CHANNEL_SPAM);
+          const chan = bot.channels.cache.get(process.env.CHANNEL_SPAM);
           R.pipe(
             getNotifSquad,
             R.andThen(
