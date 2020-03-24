@@ -15,7 +15,7 @@ const dailyRankingsFormat = R.curry((date, channel, ranks) =>
     '```glsl',
     `Classement du ${date} :`,
     ...ranks.map((cuber, idx) => {
-      const user = channel.client.users.get(cuber.author);
+      const user = channel.client.users.cache.get(cuber.author);
       const name = user ? user.username : 'RAGE-QUITTER';
       const pts = computeScore(ranks.length, idx);
       return R.join('\n', [
@@ -43,7 +43,7 @@ const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
     '```xl',
     `Classement du mois (${displayMonthDate_(date)}) :`,
     ...ranks.map((cuber, idx) => {
-      const user = channel.client.users.get(cuber.author);
+      const user = channel.client.users.cache.get(cuber.author);
       const name = user ? user.username : 'RAGE-QUITTER';
       return `#${idx + 1} ${name} : ${cuber.score} pts (${cuber.attendances})`;
     }),

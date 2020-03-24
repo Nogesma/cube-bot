@@ -9,7 +9,9 @@ const bot = new discord.Client();
 bot.on('ready', () => {
   logger.log('info', 'Bot ready');
   startCron(bot);
-  bot.user.setPresence({ game: { name: 'for new PB | ?h', type: 'WATCHING' } });
+  bot.user.setPresence({
+    activity: { name: 'for new PB | ?h', type: 3 },
+  });
 });
 
 bot.on('message', incomingMessage);
