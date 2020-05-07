@@ -29,14 +29,8 @@ const dailyRankingsFormat = R.curry((date, channel, ranks) =>
   ])
 );
 
-const getMonthDateFormat_ = R.memoizeWith(R.identity, (date) =>
-  moment(date)
-    .tz('Europe/Paris')
-    .format('YYYY-MM')
-);
-
 const displayMonthDate_ = (date) =>
-  getMonthDateFormat_() === date ? 'en cours' : date;
+  moment().tz('Europe/Paris').format('YYYY-MM') === date ? 'en cours' : date;
 
 const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
   R.join('\n', [
@@ -62,4 +56,5 @@ module.exports = {
   dailyRankingsFormat,
   monthlyRankingsFormat,
   ensureDate,
+  displayMonthDate_,
 };
