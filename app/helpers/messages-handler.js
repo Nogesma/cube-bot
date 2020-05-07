@@ -1,6 +1,6 @@
 const R = require('ramda');
+const moment = require('moment-timezone');
 const { events: availableEvents, hours: availableTimes } = require('../config');
-const { getPB } = require('../tools/calculators');
 const {
   insertNewTimes,
   getDayStandings,
@@ -8,7 +8,7 @@ const {
   haveTimesForToday,
   addNotifSquad,
   deleteNotifSquad,
-  getTimes,
+  getUserPB,
 } = require('../controllers/cube-db');
 const {
   helpMessage,
@@ -16,6 +16,7 @@ const {
   dailyRankingsFormat,
   monthlyRankingsFormat,
 } = require('./messages-helpers');
+const { secondsToTime } = require('../tools/calculators');
 
 const sendMessageToChannel = R.curry((channel, msg) => channel.send(msg));
 
@@ -101,10 +102,15 @@ const pbCommand = ({ author, event, channel }) => {
   const messageSender = sendMessageToChannel(channel);
   return includesEvent(event, messageSender, () =>
     R.pipe(
-      getTimes,
-      R.andThen(getPB),
-      R.andThen(({ single, average }) =>
-        messageSender(`PB Single: ${single}\nPB Average: ${average}`)
+      getUserPB,
+      R.andThen(({ single, singleDate, average, averageDate }) =>
+        messageSender(
+          `PB Single: ${secondsToTime(single)} ${
+            singleDate ? `(${moment(singleDate).format('YYYY-MM-DD')})` : ''
+          }\nPB Average: ${secondsToTime(average)} ${
+            averageDate ? `(${moment(averageDate).format('YYYY-MM-DD')})` : ''
+          }`
+        )
       )
     )(author, event)
   );

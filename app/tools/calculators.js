@@ -57,11 +57,6 @@ const sortRankings = (ranks) =>
     ranks
   );
 
-const getPB = (t) => ({
-  single: secondsToTime(getBestTime(R.map(R.prop('single'), t))),
-  average: secondsToTime(getBestTime(R.map(R.prop('average'), t))),
-});
-
 module.exports = {
   averageOfFiveCalculator,
   timeToSeconds,
@@ -69,5 +64,4 @@ module.exports = {
   computeScore,
   getBestTime,
   sortRankings,
-  getPB,
 };

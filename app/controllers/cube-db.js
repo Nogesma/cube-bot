@@ -79,6 +79,33 @@ const insertNewTimes = async ({
     event,
   }).save();
 
+  await User.findOne({
+    author: R.prop('id', author),
+    event,
+  })
+    .then((user) => {
+      if (user.single > single) {
+        user.single = single;
+        user.singleDate = formattedDate;
+      }
+
+      if (user.average > average) {
+        user.average = average;
+        user.averageDate = formattedDate;
+      }
+      return user.save();
+    })
+    .catch(() => {
+      return new User({
+        author: R.prop('id', author),
+        single,
+        singleDate: formattedDate,
+        average,
+        averageDate: formattedDate,
+        event,
+      }).save();
+    });
+
   const chan = await R.path(['client', 'channels', 'cache'], channel).get(
     R.path(['env', event], process)
   );
@@ -107,34 +134,6 @@ const updateStandings = R.curry(async (date, event) => {
   const promisesUpdate = [];
 
   R.addIndex(R.forEach)(async (entry, index) => {
-    promisesUpdate.push(
-      User.findOne({
-        author: entry.author,
-        event,
-      })
-        .then((user) => {
-          if (user.single > entry.single) {
-            user.single = entry.single;
-            user.singleDate = entry.date;
-          }
-
-          if (user.average > entry.average) {
-            user.average = entry.average;
-            user.averageDate = entry.date;
-          }
-        })
-        .catch(() => {
-          return new User({
-            author: entry.author,
-            single: entry.single,
-            singleDate: entry.date,
-            average: entry.average,
-            averageDate: entry.date,
-            event,
-          }).save();
-        })
-    );
-
     promisesUpdate.push(
       Ranking.findOne({ date: monthDate, author: entry.author, event })
         .then((currentStanding) => {
@@ -190,8 +189,8 @@ const deleteNotifSquad = (author, time) =>
 const getNotifSquad = async (time) =>
   R.prop('authors', await Squad.findOne({ event: time }).exec());
 
-const getTimes = async (author, event) =>
-  Cube.find({ author: author.id, event }).exec();
+const getUserPB = async (author, event) =>
+  User.findOne({ author: author.id, event }).exec();
 
 module.exports = {
   insertNewTimes,
@@ -202,5 +201,5 @@ module.exports = {
   addNotifSquad,
   deleteNotifSquad,
   getNotifSquad,
-  getTimes,
+  getUserPB,
 };
