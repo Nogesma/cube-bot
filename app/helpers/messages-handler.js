@@ -98,8 +98,11 @@ const idonotdoCommand = ({ author, event, channel }) => {
   );
 };
 
-const pbCommand = ({ author, event, channel }) => {
+const pbCommand = ({ author, event, channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
+  const userName = R.join(' ', args);
+  const isUser = channel.members.find((u) => u.user.username === userName);
+  const user = isUser ? isUser.user : author;
   return includesEvent(event, messageSender, () =>
     R.pipe(
       getUserPB,
@@ -112,7 +115,7 @@ const pbCommand = ({ author, event, channel }) => {
           }`
         )
       )
-    )(author, event)
+    )(user, event)
   );
 };
 
