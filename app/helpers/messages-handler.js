@@ -108,7 +108,7 @@ const pbCommand = ({ author, event, channel, args }) => {
       getUserPB,
       R.andThen(({ single, singleDate, average, averageDate }) =>
         messageSender(
-          `__PB de ${isUser.nickname}:__\nPB Single: ${secondsToTime(single)} ${
+          `__PB de ${user.username}:__\nPB Single: ${secondsToTime(single)} ${
             singleDate ? `(${moment(singleDate).format('YYYY-MM-DD')})` : ''
           }\nPB Average: ${secondsToTime(average)} ${
             averageDate ? `(${moment(averageDate).format('YYYY-MM-DD')})` : ''
