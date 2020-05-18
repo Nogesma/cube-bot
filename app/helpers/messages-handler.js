@@ -101,14 +101,14 @@ const idonotdoCommand = ({ author, event, channel }) => {
 const pbCommand = ({ author, event, channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
   const userName = R.join(' ', args);
-  const isUser = channel.members.find((u) => u.user.username === userName);
+  const isUser = channel.members.find((u) => u.nickname === userName);
   const user = isUser ? isUser.user : author;
   return includesEvent(event, messageSender, () =>
     R.pipe(
       getUserPB,
       R.andThen(({ single, singleDate, average, averageDate }) =>
         messageSender(
-          `PB Single: ${secondsToTime(single)} ${
+          `__PB de ${user.username}:__\nPB Single: ${secondsToTime(single)} ${
             singleDate ? `(${moment(singleDate).format('YYYY-MM-DD')})` : ''
           }\nPB Average: ${secondsToTime(average)} ${
             averageDate ? `(${moment(averageDate).format('YYYY-MM-DD')})` : ''
