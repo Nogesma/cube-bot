@@ -67,44 +67,26 @@ const insertNewTimes = async ({
   }).exec();
 
   if (entry) {
-    return 'Vous avez déjà soumis vos temps.';
-  }
-
-  await new Cube({
-    author: R.prop('id', author),
-    solves: R.map(secondsToTime, times),
-    average,
-    single,
-    date: formattedDate,
-    event,
-  }).save();
-
-  await User.findOne({
-    author: R.prop('id', author),
-    event,
-  })
-    .then((user) => {
-      if (user.single > single) {
-        user.single = single;
-        user.singleDate = formattedDate;
-      }
-
-      if (user.average > average) {
-        user.average = average;
-        user.averageDate = formattedDate;
-      }
-      return user.save();
-    })
-    .catch(() => {
-      return new User({
-        author: R.prop('id', author),
-        single,
-        singleDate: formattedDate,
-        average,
-        averageDate: formattedDate,
-        event,
-      }).save();
+    await Cube.findOne({
+      author: R.prop('id', author),
+      date: formattedDate,
+      event,
+    }).then((cube) => {
+      cube.solves = R.map(secondsToTime, times);
+      cube.average = average;
+      cube.single = single;
+      return cube.save();
     });
+  } else {
+    await new Cube({
+      author: R.prop('id', author),
+      solves: R.map(secondsToTime, times),
+      average,
+      single,
+      date: formattedDate,
+      event,
+    }).save();
+  }
 
   const chan = await R.path(['client', 'channels', 'cache'], channel).get(
     R.path(['env', event], process)
@@ -120,7 +102,9 @@ const insertNewTimes = async ({
     R.andThen((x) => chan.send(x))
   )(event);
 
-  return `Vos temps ont bien été enregistrés ! ao5: ${secondsToTime(average)}`;
+  return `Vos temps ont bien été ${
+    entry ? 'modifiés' : 'enregistrés'
+  }! ao5: ${secondsToTime(average)}`;
 };
 
 /**
@@ -134,6 +118,35 @@ const updateStandings = R.curry(async (date, event) => {
   const promisesUpdate = [];
 
   R.addIndex(R.forEach)(async (entry, index) => {
+    promisesUpdate.push(
+      User.findOne({
+        author: entry.author,
+        event,
+      })
+        .then((user) => {
+          if (user.single > entry.single) {
+            user.single = entry.single;
+            user.singleDate = date;
+          }
+
+          if (user.average > entry.average) {
+            user.average = entry.average;
+            user.averageDate = date;
+          }
+          return user.save();
+        })
+        .catch(() => {
+          return new User({
+            author: entry.author,
+            single: entry.single,
+            singleDate: date,
+            average: entry.average,
+            averageDate: date,
+            event,
+          }).save();
+        })
+    );
+
     promisesUpdate.push(
       Ranking.findOne({ date: monthDate, author: entry.author, event })
         .then((currentStanding) => {
