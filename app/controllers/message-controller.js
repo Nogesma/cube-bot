@@ -11,7 +11,10 @@ const {
   pbCommand,
 } = require('../helpers/messages-handler');
 
-const messageIsCommand = R.startsWith('?');
+const messageIsCommand = R.both(
+  R.pipe(R.prop('content'), R.startsWith('?')),
+  R.pipe(R.path(['author', 'bot']), R.not)
+);
 
 const commandChoose = R.cond([
   [R.propEq('command', '?t'), newTimesCommand],
@@ -42,9 +45,6 @@ const applyCommand = (message) => {
   });
 };
 
-const incomingMessage = R.when(
-  R.pipe(R.prop('content'), messageIsCommand),
-  applyCommand
-);
+const incomingMessage = R.when(messageIsCommand, applyCommand);
 
 module.exports = { incomingMessage };
