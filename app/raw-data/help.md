@@ -21,4 +21,4 @@ Vous pouvez rentrer des heures de 1h à 23h
 # Ne plus recevoir de notifications : ?idonotdo <heure>
 Exemple : ?idonotdo 19
 
-# Events disponibles : 333, 222, 444, 3bld, oh, sq1, minx
+# Events disponibles : 333, 222, 444, 3bld, oh, sq1, minx, pyram
