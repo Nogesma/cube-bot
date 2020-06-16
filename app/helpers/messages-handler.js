@@ -100,13 +100,21 @@ const idonotdoCommand = ({ author, event, channel }) => {
 
 const pbCommand = ({ author, event, channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
-  const userName = R.join(' ', args);
-  const hasNickname = channel.members.find((u) => u.nickname === userName);
-  const isUser = channel.members.find((u) => u.user.username === userName);
-  const user = hasNickname ? hasNickname.user : isUser ? isUser.user : author;
+  const user = R.ifElse(
+    () => R.equals(channel.type, 'dm'),
+    R.always(author),
+    () => {
+      const userName = R.join(' ', args);
+      const hasNickname = channel.members.find((u) => u.nickname === userName);
+      const isUser = channel.members.find((u) => u.user.username === userName);
+      return hasNickname ? hasNickname.user : isUser ? isUser.user : author;
+    }
+  )();
+
   return includesEvent(event, messageSender, () =>
     R.pipe(
       getUserPB,
+      R.andThen((x) => (x ? x : { single: Infinity, average: Infinity })),
       R.andThen(({ single, singleDate, average, averageDate }) =>
         messageSender(
           `__PB de ${user.username}:__\nPB Single: ${secondsToTime(single)} ${
