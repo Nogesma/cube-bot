@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const { events: availableEvents } = require('../config');
+import mongoose from 'mongoose';
+import { events as availableEvents } from '../config.js';
 
 const cubeSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
@@ -10,4 +10,4 @@ const cubeSchema = new mongoose.Schema({
   event: { type: String, enum: availableEvents, required: true },
 });
 
-module.exports = { Cube: mongoose.model('Cube', cubeSchema) };
+export default mongoose.model('Cube', cubeSchema);

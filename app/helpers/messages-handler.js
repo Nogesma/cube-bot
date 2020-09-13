@@ -1,7 +1,11 @@
-const R = require('ramda');
-const moment = require('moment-timezone');
-const { events: availableEvents, hours: availableTimes } = require('../config');
-const {
+import R from 'ramda';
+import dayjs from 'dayjs';
+
+import {
+  events as availableEvents,
+  hours as availableTimes,
+} from '../config.js';
+import {
   insertNewTimes,
   getDayStandings,
   getMonthStandings,
@@ -9,14 +13,14 @@ const {
   addNotifSquad,
   deleteNotifSquad,
   getUserPB,
-} = require('../controllers/cube-db');
-const {
+} from '../controllers/cube-db.js';
+import {
   helpMessage,
   ensureDate,
   dailyRankingsFormat,
   monthlyRankingsFormat,
-} = require('./messages-helpers');
-const { secondsToTime } = require('../tools/calculators');
+  pbFormat,
+} from './messages-helpers.js';
 
 const sendMessageToChannel = R.curry((channel, msg) => channel.send(msg));
 
@@ -45,8 +49,9 @@ const dailyRanksCommand = ({ channel, event, args: [date] }) => {
   return includesEvent(event, messageSender, () =>
     R.pipe(
       getDayStandings,
-      R.andThen(dailyRankingsFormat(formattedDate, channel)),
-      R.andThen(messageSender)
+      R.andThen(
+        R.pipe(dailyRankingsFormat(formattedDate, channel), messageSender)
+      )
     )(formattedDate, event)
   );
 };
@@ -57,8 +62,9 @@ const monthlyRanksCommand = ({ channel, event, args: [date] }) => {
   return includesEvent(event, messageSender, () =>
     R.pipe(
       getMonthStandings,
-      R.andThen(monthlyRankingsFormat(formattedDate, channel)),
-      R.andThen(messageSender)
+      R.andThen(
+        R.pipe(monthlyRankingsFormat(formattedDate, channel), messageSender)
+      )
     )(formattedDate, event)
   );
 };
@@ -68,8 +74,12 @@ const dididoCommand = ({ date, author, event, channel }) => {
   return includesEvent(event, messageSender, () =>
     R.pipe(
       haveTimesForToday,
-      R.andThen((participation) => (participation ? 'Oui' : 'Non')),
-      R.andThen(messageSender)
+      R.andThen(
+        R.pipe(
+          (participation) => (participation ? 'Oui' : 'Non'),
+          messageSender
+        )
+      )
     )(date.format('YYYY-MM-DD'), R.prop('id', author), event)
   );
 };
@@ -100,35 +110,31 @@ const idonotdoCommand = ({ author, event, channel }) => {
 
 const pbCommand = ({ author, event, channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
-  const user = R.ifElse(
-    () => R.equals(channel.type, 'dm'),
-    R.always(author),
-    () => {
-      const userName = R.join(' ', args);
-      const hasNickname = channel.members.find((u) => u.nickname === userName);
-      const isUser = channel.members.find((u) => u.user.username === userName);
-      return hasNickname ? hasNickname.user : isUser ? isUser.user : author;
-    }
-  )();
+
+  const userName = R.join(' ', args);
+  const user =
+    channel.members?.find(
+      R.either(
+        R.pipe(R.prop('nickname'), R.equals(userName)),
+        R.pipe(R.path(['user', 'username']), R.equals(userName))
+      )
+    )?.user ?? author;
 
   return includesEvent(event, messageSender, () =>
     R.pipe(
       getUserPB,
-      R.andThen((x) => (x ? x : { single: Infinity, average: Infinity })),
-      R.andThen(({ single, singleDate, average, averageDate }) =>
-        messageSender(
-          `__PB de ${user.username}:__\nPB Single: ${secondsToTime(single)} ${
-            singleDate ? `(${moment(singleDate).format('YYYY-MM-DD')})` : ''
-          }\nPB Average: ${secondsToTime(average)} ${
-            averageDate ? `(${moment(averageDate).format('YYYY-MM-DD')})` : ''
-          }`
+      R.andThen(
+        R.pipe(
+          (x) => x ?? { single: Infinity, average: Infinity },
+          pbFormat(user),
+          messageSender
         )
       )
     )(user, event)
   );
 };
 
-module.exports = {
+export {
   helpCommand,
   newTimesCommand,
   dailyRanksCommand,

@@ -1,27 +1,32 @@
-const moment = require('moment-timezone');
-const mongoose = require('mongoose');
-const R = require('ramda');
-const { events: availableEvents } = require('../config');
-const { Cube } = require('../models/cubes');
-const { User } = require('../models/user');
-const { Squad } = require('../models/notif');
-const { Ranking } = require('../models/rankings');
-const {
+import mongoose from 'mongoose';
+import R from 'ramda';
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween.js';
+import customParseFormat from 'dayjs/plugin/customParseFormat.js';
+
+import { events as availableEvents } from '../config.js';
+import Cube from '../models/cubes.js';
+import User from '../models/user.js';
+import Squad from '../models/notif.js';
+import Ranking from '../models/rankings.js';
+import {
   averageOfFiveCalculator,
   timeToSeconds,
   secondsToTime,
   computeScore,
   getBestTime,
   sortRankings,
-} = require('../tools/calculators');
-const { dailyRankingsFormat } = require('../helpers/messages-helpers');
-
-mongoose.set('useCreateIndex', true).set('useUnifiedTopology', true);
+} from '../tools/calculators.js';
+import { dailyRankingsFormat } from '../helpers/messages-helpers.js';
 
 mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/test', {
   useNewUrlParser: true,
   useFindAndModify: false,
+  useCreateIndex: true,
+  useUnifiedTopology: true,
 });
+
+dayjs.extend(isBetween).extend(customParseFormat);
 
 const insertNewTimes = async ({
   channel,
@@ -35,10 +40,7 @@ const insertNewTimes = async ({
   }
 
   if (
-    R.includes(
-      date.diff(moment('00:00', 'HH:mm').tz('Europe/Paris'), 'minutes'),
-      [0, 1]
-    )
+    date.isBetween(dayjs('23:59', 'H:m'), dayjs('00:01', 'H:m').add(1, 'd'))
   ) {
     return 'Vous ne pouvez pas soumettre de temps pendant la phase des résultats';
   }
@@ -113,7 +115,7 @@ const insertNewTimes = async ({
  * @param {String} event - 333 the event for which we compete
  */
 const updateStandings = R.curry(async (date, event) => {
-  const monthDate = moment(date).tz('Europe/Paris').format('YYYY-MM');
+  const monthDate = dayjs(date).format('YYYY-MM');
   const todayStandings = sortRankings(await Cube.find({ date, event }));
   const promisesUpdate = [];
 
@@ -205,7 +207,7 @@ const getNotifSquad = async (time) =>
 const getUserPB = async (author, event) =>
   User.findOne({ author: author.id, event }).exec();
 
-module.exports = {
+export {
   insertNewTimes,
   updateStandings,
   getDayStandings,
