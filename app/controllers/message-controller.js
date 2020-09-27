@@ -9,6 +9,7 @@ const {
   idoCommand,
   idonotdoCommand,
   pbCommand,
+  scrCommand,
 } = require('../helpers/messages-handler');
 
 const messageIsCommand = R.both(
@@ -25,6 +26,7 @@ const commandChoose = R.cond([
   [R.propEq('command', '?ido'), idoCommand],
   [R.propEq('command', '?idonotdo'), idonotdoCommand],
   [R.propEq('command', '?pb'), pbCommand],
+  [R.propEq('command', '?scr'), scrCommand],
 ]);
 
 const applyCommand = (message) => {
