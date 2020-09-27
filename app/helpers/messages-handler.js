@@ -10,6 +10,7 @@ const {
   deleteNotifSquad,
   getUserPB,
 } = require('../controllers/cube-db');
+const { getScrambles } = require('../controllers/scrambler');
 const {
   helpMessage,
   ensureDate,
@@ -128,6 +129,16 @@ const pbCommand = ({ author, event, channel, args }) => {
   );
 };
 
+const scrCommand = ({ channel, event, args: [n] }) =>
+  R.pipe(
+    R.ifElse(
+      (e, n) => (n ? n <= 5 : 1),
+      R.tryCatch(getScrambles, R.always('Event non valide.')),
+      R.always('Vous ne pouvez pas demander plus de 5 mélanges.')
+    ),
+    sendMessageToChannel(channel)
+  )(event, n);
+
 module.exports = {
   helpCommand,
   newTimesCommand,
@@ -137,4 +148,5 @@ module.exports = {
   idoCommand,
   idonotdoCommand,
   pbCommand,
+  scrCommand,
 };

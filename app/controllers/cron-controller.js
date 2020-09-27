@@ -13,7 +13,7 @@ const {
   getNotifSquad,
 } = require('./cube-db');
 const { removeRole, addRole } = require('./role-controller');
-const { sendScrambles, scrambles } = require('./scrambler');
+const { sendScrambles, getScrambles } = require('./scrambler');
 
 const cronList_ = [];
 
@@ -50,7 +50,7 @@ const startCron = (bot) => {
         const scrambleSend = (event) => {
           const chan = bot.channels.cache.get(R.path(['env', event], process));
 
-          R.pipe(scrambles, send(chan))(formatNameForScrambow(event));
+          R.pipe(getScrambles, send(chan))(formatNameForScrambow(event), 5);
           chan.send(dailyRankingsFormat(date, chan, []));
         };
 
