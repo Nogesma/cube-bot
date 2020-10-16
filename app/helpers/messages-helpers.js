@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const moment = require('moment-timezone');
 const R = require('ramda');
-const { computeScore } = require('../tools/calculators');
+const { computeScore, secondsToTime } = require('../tools/calculators');
 
 const helpMessage = async () =>
   R.join('\n', [
@@ -51,10 +51,32 @@ const ensureDate = (date) => {
   return wantedDate < minDate ? wantedDate : minDate;
 };
 
+const displayPB = R.curry((user, pb) =>
+  R.join('\n', [
+    `__PB de ${user.username}:__`,
+    R.pipe(
+      R.filter(([_, x]) => x),
+      R.map(([e, { single, singleDate, average, averageDate }]) =>
+        R.join('\n', [
+          `__${e}:__`,
+          `PB Single: ${secondsToTime(single)} ${
+            singleDate ? `(${moment(singleDate).format('YYYY-MM-DD')})` : ''
+          }`,
+          `PB Average: ${secondsToTime(average)} ${
+            averageDate ? `(${moment(averageDate).format('YYYY-MM-DD')})` : ''
+          }`,
+        ])
+      ),
+      R.join('\n')
+    )(pb),
+  ])
+);
+
 module.exports = {
   helpMessage,
   dailyRankingsFormat,
   monthlyRankingsFormat,
   ensureDate,
   displayMonthDate_,
+  displayPB,
 };
