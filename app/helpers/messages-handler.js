@@ -16,6 +16,7 @@ const {
   ensureDate,
   dailyRankingsFormat,
   monthlyRankingsFormat,
+  displayPB,
 } = require('./messages-helpers');
 const { secondsToTime } = require('../tools/calculators');
 
@@ -101,6 +102,9 @@ const idonotdoCommand = ({ author, event, channel }) => {
 
 const pbCommand = ({ author, event, channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
+
+  const events = R.includes(event, availableEvents) ? [event] : availableEvents;
+
   const user = R.ifElse(
     () => R.equals(channel.type, 'dm'),
     R.always(author),
@@ -112,21 +116,14 @@ const pbCommand = ({ author, event, channel, args }) => {
     }
   )();
 
-  return includesEvent(event, messageSender, () =>
-    R.pipe(
-      getUserPB,
-      R.andThen((x) => (x ? x : { single: Infinity, average: Infinity })),
-      R.andThen(({ single, singleDate, average, averageDate }) =>
-        messageSender(
-          `__PB de ${user.username}:__\nPB Single: ${secondsToTime(single)} ${
-            singleDate ? `(${moment(singleDate).format('YYYY-MM-DD')})` : ''
-          }\nPB Average: ${secondsToTime(average)} ${
-            averageDate ? `(${moment(averageDate).format('YYYY-MM-DD')})` : ''
-          }`
-        )
-      )
-    )(user, event)
-  );
+  const displayPBforUser = displayPB(user);
+
+  R.pipe(
+    (events) =>
+      Promise.all(R.map(async (e) => [e, await getUserPB(user, e)], events)),
+    R.andThen(displayPBforUser),
+    R.andThen(messageSender)
+  )(events);
 };
 
 const scrCommand = ({ channel, event, args: [n] }) =>
