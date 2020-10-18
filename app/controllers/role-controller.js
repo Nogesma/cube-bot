@@ -1,4 +1,4 @@
-const R = require('ramda');
+import R from 'ramda';
 
 const addRole = (bot, ranks) => {
   const guild = bot.guilds.cache.get(process.env.GUILD_ID);
@@ -16,4 +16,4 @@ const removeRole = (bot) => {
   R.forEach((member) => member.roles.remove(role), R.prop('members', role));
 };
 
-module.exports = { addRole, removeRole };
+export { addRole, removeRole };

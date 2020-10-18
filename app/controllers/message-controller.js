@@ -1,6 +1,6 @@
-const moment = require('moment-timezone');
-const R = require('ramda');
-const {
+import R from 'ramda';
+import dayjs from 'dayjs';
+import {
   helpCommand,
   newTimesCommand,
   dailyRanksCommand,
@@ -10,7 +10,7 @@ const {
   idonotdoCommand,
   pbCommand,
   scrCommand,
-} = require('../helpers/messages-handler');
+} from '../helpers/messages-handler.js';
 
 const messageIsCommand = R.both(
   R.pipe(R.prop('content'), R.startsWith('?')),
@@ -30,7 +30,7 @@ const commandChoose = R.cond([
 ]);
 
 const applyCommand = (message) => {
-  const date = moment().tz('Europe/Paris');
+  const date = dayjs();
   const { author, channel } = message;
   const [command, event, ...args] = R.pipe(
     R.prop('content'),
@@ -49,4 +49,4 @@ const applyCommand = (message) => {
 
 const incomingMessage = R.when(messageIsCommand, applyCommand);
 
-module.exports = { incomingMessage };
+export { incomingMessage };

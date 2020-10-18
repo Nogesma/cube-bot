@@ -1,4 +1,4 @@
-const R = require('ramda');
+import R from 'ramda';
 
 const timeToSeconds = (time) => {
   if (time === 'DNF') {
@@ -57,7 +57,7 @@ const sortRankings = (ranks) =>
     ranks
   );
 
-module.exports = {
+export {
   averageOfFiveCalculator,
   timeToSeconds,
   secondsToTime,

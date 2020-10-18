@@ -1,7 +1,8 @@
-const fs = require('fs-extra');
-const moment = require('moment-timezone');
-const R = require('ramda');
-const { computeScore, secondsToTime } = require('../tools/calculators');
+import fs from 'fs-extra';
+import R from 'ramda';
+import dayjs from 'dayjs';
+
+import { computeScore, secondsToTime } from '../tools/calculators.js';
 
 const helpMessage = async () =>
   R.join('\n', [
@@ -30,7 +31,7 @@ const dailyRankingsFormat = R.curry((date, channel, ranks) =>
 );
 
 const displayMonthDate_ = (date) =>
-  moment().tz('Europe/Paris').format('YYYY-MM') === date ? 'en cours' : date;
+  dayjs().format('YYYY-MM') === date ? 'en cours' : date;
 
 const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
   R.join('\n', [
@@ -46,8 +47,8 @@ const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
 );
 
 const ensureDate = (date) => {
-  const minDate = moment();
-  const wantedDate = R.tryCatch(() => moment(date), R.always(undefined))();
+  const minDate = dayjs();
+  const wantedDate = dayjs(date).isValid() ? dayjs(date) : undefined;
   return wantedDate < minDate ? wantedDate : minDate;
 };
 
@@ -72,7 +73,7 @@ const displayPB = R.curry((user, pb) =>
   ])
 );
 
-module.exports = {
+export {
   helpMessage,
   dailyRankingsFormat,
   monthlyRankingsFormat,

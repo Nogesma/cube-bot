@@ -1,5 +1,6 @@
-const { spawn } = require('child_process');
-const { watch, parallel } = require('gulp');
+import { spawn } from 'child_process';
+import pkg from 'gulp';
+const { watch, parallel } = pkg;
 
 const files = ['index-cube.js', 'app/**/*.js'];
 let node;
@@ -15,4 +16,4 @@ const spawnBot = (cb) => {
 
 const watcher = () => watch(files, spawnBot);
 
-exports.default = parallel(watcher, spawnBot);
+export default parallel(watcher, spawnBot);

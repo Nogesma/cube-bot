@@ -1,6 +1,7 @@
-const chalk = require('chalk');
-const R = require('ramda');
-const { createLogger, format, transports } = require('winston');
+import chalk from 'chalk';
+import R from 'ramda';
+import pkg from 'winston';
+const { createLogger, format, transports } = pkg;
 
 const { combine, timestamp, printf } = format;
 
@@ -29,7 +30,7 @@ const wl = createLogger({
 
 wl.level = process.env.LOG_LEVEL || 'info';
 
-const logger = {
+export default {
   silly(msg) {
     wl.log('silly', msg);
   },
@@ -52,5 +53,3 @@ const logger = {
     wl.log(level, msg);
   },
 };
-
-module.exports = logger;

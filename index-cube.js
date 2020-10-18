@@ -1,8 +1,11 @@
-require('dotenv').config();
-const discord = require('discord.js');
-const logger = require('./app/tools/logger');
-const { incomingMessage } = require('./app/controllers/message-controller');
-const { startCron, stopCron } = require('./app/controllers/cron-controller');
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import discord from 'discord.js';
+import { incomingMessage } from './app/controllers/message-controller.js';
+import logger from './app/tools/logger.js';
+import { startCron, stopCron } from './app/controllers/cron-controller.js';
+
+dotenv.config();
 
 const bot = new discord.Client();
 
@@ -19,6 +22,6 @@ bot.login(process.env.TOKEN);
 
 process.on('exit', () => {
   stopCron();
-  require('mongoose').disconnect();
+  mongoose.disconnect();
   logger.log('info', 'Exiting');
 });
