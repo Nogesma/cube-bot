@@ -64,7 +64,7 @@ const getDate = (args, messageSender) =>
     const date = dayjs(d);
 
     return date.isValid()
-      ? date.format('YYYY-MM')
+      ? date
       : R.pipe(
           () => messageSender(`Veuillez entrer une date valide.`),
           () => undefined

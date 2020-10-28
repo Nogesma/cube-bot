@@ -51,7 +51,9 @@ const dailyRanksCommand = ({ channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
 
   const event = getEvent(args, messageSender);
-  const date = getDate(args, event ? messageSender : R.identity);
+  const date = getDate(args, event ? messageSender : R.identity)?.format(
+    'YYYY-MM-DD'
+  );
 
   if (R.and(date, event))
     R.pipe(
@@ -64,7 +66,9 @@ const monthlyRanksCommand = ({ channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
 
   const event = getEvent(args, messageSender);
-  const date = getDate(args, event ? messageSender : R.identity);
+  const date = getDate(args, event ? messageSender : R.identity)?.format(
+    'YYYY-MM'
+  );
 
   if (R.and(date, event))
     R.pipe(
