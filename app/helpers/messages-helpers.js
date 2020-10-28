@@ -74,10 +74,14 @@ const getDate = (args, messageSender) =>
 const getTime = (args, messageSender) =>
   R.pipe(
     R.head,
-    R.ifElse(R.flip(R.includes)(availableTimes), R.identity, () => {
-      messageSender(`Veuillez entrer une heure valide : ${availableTimes}`);
-      return undefined;
-    })
+    R.ifElse(
+      R.pipe(Number, R.flip(R.includes)(availableTimes)),
+      R.identity,
+      () => {
+        messageSender(`Veuillez entrer une heure valide : ${availableTimes}`);
+        return undefined;
+      }
+    )
   )(args);
 
 const displayPB = R.curry((user, pb) =>
