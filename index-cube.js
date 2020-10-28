@@ -1,11 +1,8 @@
-import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import discord from 'discord.js';
 import { incomingMessage } from './app/controllers/message-controller.js';
 import logger from './app/tools/logger.js';
 import { startCron, stopCron } from './app/controllers/cron-controller.js';
-
-dotenv.config();
 
 const bot = new discord.Client();
 

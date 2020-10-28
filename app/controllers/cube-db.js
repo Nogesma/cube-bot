@@ -33,7 +33,7 @@ const insertNewTimes = async (channel, date, author, event, solves) => {
   }
 
   if (
-    date.isBetween(dayjs('23:59', 'H:m'), dayjs('00:01', 'H:m').add(1, 'd'))
+    date.isBetween(dayjs('23:59', 'H:m'), dayjs('23:59', 'H:m').add(2, 'm'))
   ) {
     return 'Vous ne pouvez pas soumettre de temps pendant la phase des résultats';
   }

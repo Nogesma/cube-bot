@@ -1,8 +1,7 @@
-import Cron from 'cron';
-const { CronJob } = Cron;
-
+import { CronJob } from 'cron';
 import dayjs from 'dayjs';
 import R from 'ramda';
+
 import { events, hours } from '../config.js';
 import {
   monthlyRankingsFormat,
@@ -14,7 +13,6 @@ import {
   getMonthStandings,
   getNotifSquad,
 } from './cube-db.js';
-
 import { removeRole, addRole } from './role-controller.js';
 import { sendScrambles, getScrambles } from './scrambler.js';
 
@@ -35,7 +33,7 @@ const startCron = (bot) => {
   );
   cronList_.push(
     new CronJob({
-      cronTime: '0 1 0 * * *',
+      cronTime: '15 37 * * * *',
       onTick: () => {
         const date = dayjs().add(1, 'h').format('YYYY-MM-DD');
 

@@ -51,7 +51,7 @@ const dailyRanksCommand = ({ channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
 
   const event = getEvent(args, messageSender);
-  const date = getDate(args, messageSender);
+  const date = getDate(args, event ? messageSender : R.identity);
 
   if (R.and(date, event))
     R.pipe(
@@ -64,7 +64,7 @@ const monthlyRanksCommand = ({ channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
 
   const event = getEvent(args, messageSender);
-  const date = getDate(args, messageSender);
+  const date = getDate(args, event ? messageSender : R.identity);
 
   if (R.and(date, event))
     R.pipe(
@@ -115,7 +115,7 @@ const idonotdoCommand = ({ author, channel, args }) => {
 const pbCommand = ({ author, channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
 
-  const event = getEvent(args, messageSender);
+  const event = getEvent(args, R.identity);
 
   const userName = R.join(' ', event ? R.tail(args) : args);
   const user =

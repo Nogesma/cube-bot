@@ -89,10 +89,10 @@ const displayPB = R.curry((user, pb) =>
         R.join('\n', [
           `__${e}:__`,
           `PB Single: ${secondsToTime(single)} ${
-            singleDate ? `(${moment(singleDate).format('YYYY-MM-DD')})` : ''
+            singleDate ? `(${dayjs(singleDate).format('YYYY-MM-DD')})` : ''
           }`,
           `PB Average: ${secondsToTime(average)} ${
-            averageDate ? `(${moment(averageDate).format('YYYY-MM-DD')})` : ''
+            averageDate ? `(${dayjs(averageDate).format('YYYY-MM-DD')})` : ''
           }`,
         ])
       ),
