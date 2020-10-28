@@ -1,11 +1,11 @@
-const {
+import {
   averageOfFiveCalculator,
   timeToSeconds,
   secondsToTime,
   computeScore,
   getBestTime,
   sortRankings,
-} = require('../../app/tools/calculators');
+} from '../../app/tools/calculators.js';
 
 describe('averageOfFiveCalculator', () => {
   test('invalid data in array', () => {

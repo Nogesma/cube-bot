@@ -8,8 +8,8 @@ Donnera le classement du 03 mai 2018 (spoiler, y en a pas)
 # Afficher le classement d'un mois : ?classementmois <event> [date]
 Exemple : ?classementmois 333 2018-05
 
-# Afficher votre pb : ?pb <event>
-Exembple : ?pb 333
+# Afficher vos pb : ?pb <event>
+Exemple : ?pb 333
 
 # Afficher votre participation d'aujourd'hui : ?didido <event>
 Exemple : ?didido 333

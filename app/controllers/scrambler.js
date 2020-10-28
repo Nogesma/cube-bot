@@ -1,5 +1,6 @@
-const R = require('ramda');
-const { Scrambow } = require('scrambow');
+import R from 'ramda';
+import pkg from 'scrambow';
+const { Scrambow } = pkg;
 
 const getScrambles = (event, number) =>
   R.pipe(
@@ -13,7 +14,4 @@ const sendScrambles = R.curry((date, chan, scrambles) =>
   chan.send(R.join('\n', [`**Scrambles du ${date}:**`, scrambles]))
 );
 
-module.exports = {
-  getScrambles,
-  sendScrambles,
-};
+export { getScrambles, sendScrambles };

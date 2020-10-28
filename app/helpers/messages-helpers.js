@@ -1,7 +1,12 @@
-const fs = require('fs-extra');
-const moment = require('moment-timezone');
-const R = require('ramda');
-const { computeScore, secondsToTime } = require('../tools/calculators');
+import fs from 'fs-extra';
+import R from 'ramda';
+import dayjs from 'dayjs';
+
+import { computeScore, secondsToTime } from '../tools/calculators.js';
+import {
+  events as availableEvents,
+  hours as availableTimes,
+} from '../config.js';
 
 const helpMessage = async () =>
   R.join('\n', [
@@ -30,7 +35,7 @@ const dailyRankingsFormat = R.curry((date, channel, ranks) =>
 );
 
 const displayMonthDate_ = (date) =>
-  moment().tz('Europe/Paris').format('YYYY-MM') === date ? 'en cours' : date;
+  dayjs().format('YYYY-MM') === date ? 'en cours' : date;
 
 const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
   R.join('\n', [
@@ -45,11 +50,35 @@ const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
   ])
 );
 
-const ensureDate = (date) => {
-  const minDate = moment();
-  const wantedDate = R.tryCatch(() => moment(date), R.always(undefined))();
-  return wantedDate < minDate ? wantedDate : minDate;
-};
+const getEvent = (args, messageSender) =>
+  R.pipe(
+    R.head,
+    R.ifElse(R.flip(R.includes)(availableEvents), R.identity, () => {
+      messageSender(`Veuillez entrer un event valide : ${availableEvents}`);
+      return undefined;
+    })
+  )(args);
+
+const getDate = (args, messageSender) =>
+  R.pipe(R.nth(1), (d) => {
+    const date = dayjs(d);
+
+    return date.isValid()
+      ? date.format('YYYY-MM')
+      : R.pipe(
+          () => messageSender(`Veuillez entrer une date valide.`),
+          () => undefined
+        )();
+  })(args);
+
+const getTime = (args, messageSender) =>
+  R.pipe(
+    R.head,
+    R.ifElse(R.flip(R.includes)(availableTimes), R.identity, () => {
+      messageSender(`Veuillez entrer une heure valide : ${availableTimes}`);
+      return undefined;
+    })
+  )(args);
 
 const displayPB = R.curry((user, pb) =>
   R.join('\n', [
@@ -60,10 +89,10 @@ const displayPB = R.curry((user, pb) =>
         R.join('\n', [
           `__${e}:__`,
           `PB Single: ${secondsToTime(single)} ${
-            singleDate ? `(${moment(singleDate).format('YYYY-MM-DD')})` : ''
+            singleDate ? `(${dayjs(singleDate).format('YYYY-MM-DD')})` : ''
           }`,
           `PB Average: ${secondsToTime(average)} ${
-            averageDate ? `(${moment(averageDate).format('YYYY-MM-DD')})` : ''
+            averageDate ? `(${dayjs(averageDate).format('YYYY-MM-DD')})` : ''
           }`,
         ])
       ),
@@ -72,11 +101,13 @@ const displayPB = R.curry((user, pb) =>
   ])
 );
 
-module.exports = {
+export {
   helpMessage,
   dailyRankingsFormat,
   monthlyRankingsFormat,
-  ensureDate,
+  getEvent,
+  getDate,
+  getTime,
   displayMonthDate_,
   displayPB,
 };

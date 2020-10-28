@@ -1,6 +1,6 @@
-const R = require('ramda');
+import R from 'ramda';
 
-module.exports = {
-  events: ['333', '222', '444', '3BLD', 'OH', 'SQ1', 'MINX', 'PYRAM'],
-  hours: R.range(1, 24),
-};
+const events = ['333', '222', '444', '3BLD', 'OH', 'SQ1', 'MINX', 'PYRAM'];
+const hours = R.range(1, 24);
+
+export { events, hours };

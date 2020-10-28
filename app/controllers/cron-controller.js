@@ -1,19 +1,20 @@
-const { CronJob } = require('cron');
-const moment = require('moment-timezone');
-const R = require('ramda');
-const { events, hours } = require('../config');
-const {
+import { CronJob } from 'cron';
+import dayjs from 'dayjs';
+import R from 'ramda';
+
+import { events, hours } from '../config.js';
+import {
   monthlyRankingsFormat,
   dailyRankingsFormat,
-} = require('../helpers/messages-helpers');
-const logger = require('../tools/logger');
-const {
+} from '../helpers/messages-helpers.js';
+import logger from '../tools/logger.js';
+import {
   updateStandings,
   getMonthStandings,
   getNotifSquad,
-} = require('./cube-db');
-const { removeRole, addRole } = require('./role-controller');
-const { sendScrambles, getScrambles } = require('./scrambler');
+} from './cube-db.js';
+import { removeRole, addRole } from './role-controller.js';
+import { sendScrambles, getScrambles } from './scrambler.js';
 
 const cronList_ = [];
 
@@ -22,7 +23,7 @@ const startCron = (bot) => {
     new CronJob({
       cronTime: '0 59 23 * * *',
       onTick: () => {
-        const standingsDate = moment().tz('Europe/Paris').format('YYYY-MM-DD');
+        const standingsDate = dayjs().format('YYYY-MM-DD');
 
         R.map(updateStandings(standingsDate), events);
       },
@@ -32,12 +33,9 @@ const startCron = (bot) => {
   );
   cronList_.push(
     new CronJob({
-      cronTime: '0 1 0 * * *',
+      cronTime: '15 37 * * * *',
       onTick: () => {
-        const date = moment()
-          .tz('Europe/Paris')
-          .add(1, 'hours')
-          .format('YYYY-MM-DD');
+        const date = dayjs().add(1, 'h').format('YYYY-MM-DD');
 
         const send = sendScrambles(date);
 
@@ -76,10 +74,7 @@ const startCron = (bot) => {
     new CronJob({
       cronTime: '30 0 0 1 * *',
       onTick: () => {
-        const date = moment()
-          .tz('Europe/Paris')
-          .subtract(1, 'hours')
-          .format('YYYY-MM');
+        const date = dayjs().subtract(1, 'h').format('YYYY-MM');
 
         const [standings, rankings] = R.ap(
           [getMonthStandings, monthlyRankingsFormat],
@@ -91,11 +86,15 @@ const startCron = (bot) => {
 
           R.pipe(
             standings,
-            R.andThen((ranks) => {
-              addRole(bot, ranks);
-              return rankings(chan, ranks);
-            }),
-            R.andThen((x) => chan.send(x))
+            R.andThen(
+              R.pipe(
+                (ranks) => {
+                  addRole(bot, ranks);
+                  return rankings(chan, ranks);
+                },
+                (x) => chan.send(x)
+              )
+            )
           )(event);
         };
 
@@ -110,7 +109,7 @@ const startCron = (bot) => {
     new CronJob({
       cronTime: '0 0 * * * *',
       onTick: () => {
-        const time = moment().tz('Europe/Paris').hour();
+        const time = dayjs().hour();
 
         if (R.includes(time, hours)) {
           const chan = bot.channels.cache.get(process.env.CHANNEL_SPAM);
@@ -143,4 +142,4 @@ const stopCron = () => {
   logger.log('info', 'Cron Stopped');
 };
 
-module.exports = { startCron, stopCron };
+export { startCron, stopCron };

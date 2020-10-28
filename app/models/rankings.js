@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const { events: availableEvents } = require('../config');
+import mongoose from 'mongoose';
+import { events as availableEvents } from '../config.js';
 
 const rankingsSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
@@ -9,4 +9,4 @@ const rankingsSchema = new mongoose.Schema({
   attendances: { type: Number, default: 0 },
 });
 
-module.exports = { Ranking: mongoose.model('Ranking', rankingsSchema) };
+export default mongoose.model('Ranking', rankingsSchema);

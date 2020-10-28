@@ -1,9 +1,9 @@
-const fs = require('fs-extra');
-const moment = require('moment-timezone');
-const {
+import fs from 'fs-extra';
+import dayjs from 'dayjs';
+import {
   helpMessage,
   displayMonthDate_,
-} = require('../../app/helpers/messages-helpers');
+} from '../../app/helpers/messages-helpers.js';
 
 describe('helpMessage', () => {
   test('returns help message with discord markdown tag', async () => {
@@ -17,9 +17,7 @@ describe('helpMessage', () => {
 
 describe('displayMonthDate_', () => {
   test("returns 'en cours' if it's the current month", () => {
-    expect(
-      displayMonthDate_(moment().tz('Europe/Paris').format('YYYY-MM'))
-    ).toBe('en cours');
+    expect(displayMonthDate_(dayjs().format('YYYY-MM'))).toBe('en cours');
   });
 
   test("returns the date in YYYY-MM if it's not the current month", () => {
