@@ -3,6 +3,10 @@ import R from 'ramda';
 import dayjs from 'dayjs';
 
 import { computeScore, secondsToTime } from '../tools/calculators.js';
+import {
+  events as availableEvents,
+  hours as availableTimes,
+} from '../config.js';
 
 const helpMessage = async () =>
   R.join('\n', [
@@ -46,26 +50,64 @@ const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
   ])
 );
 
-const ensureDate = (date) => {
-  const minDate = dayjs();
-  const wantedDate = dayjs(date).isValid() ? dayjs(date) : undefined;
-  return wantedDate < minDate ? wantedDate : minDate;
-};
+const getEvent = (args, messageSender) =>
+  R.pipe(
+    R.head,
+    R.ifElse(R.flip(R.includes)(availableEvents), R.identity, () => {
+      messageSender(`Veuillez entrer un event valide : ${availableEvents}`);
+      return undefined;
+    })
+  )(args);
 
-const pbFormat = R.curry(
-  (user, { single, singleDate, average, averageDate }) =>
-    `__PB de ${user.username}:__\nPB Single: ${secondsToTime(single)} ${
-      singleDate ? `(${dayjs(singleDate).format('YYYY-MM-DD')})` : ''
-    }\nPB Average: ${secondsToTime(average)} ${
-      averageDate ? `(${dayjs(averageDate).format('YYYY-MM-DD')})` : ''
-    }`
+const getDate = (args, messageSender) =>
+  R.pipe(R.nth(1), (d) => {
+    const date = dayjs(d);
+
+    return date.isValid()
+      ? date.format('YYYY-MM')
+      : R.pipe(
+          () => messageSender(`Veuillez entrer une date valide.`),
+          () => undefined
+        )();
+  })(args);
+
+const getTime = (args, messageSender) =>
+  R.pipe(
+    R.head,
+    R.ifElse(R.flip(R.includes)(availableTimes), R.identity, () => {
+      messageSender(`Veuillez entrer une heure valide : ${availableTimes}`);
+      return undefined;
+    })
+  )(args);
+
+const displayPB = R.curry((user, pb) =>
+  R.join('\n', [
+    `__PB de ${user.username}:__`,
+    R.pipe(
+      R.filter(([_, x]) => x),
+      R.map(([e, { single, singleDate, average, averageDate }]) =>
+        R.join('\n', [
+          `__${e}:__`,
+          `PB Single: ${secondsToTime(single)} ${
+            singleDate ? `(${moment(singleDate).format('YYYY-MM-DD')})` : ''
+          }`,
+          `PB Average: ${secondsToTime(average)} ${
+            averageDate ? `(${moment(averageDate).format('YYYY-MM-DD')})` : ''
+          }`,
+        ])
+      ),
+      R.join('\n')
+    )(pb),
+  ])
 );
 
 export {
   helpMessage,
   dailyRankingsFormat,
   monthlyRankingsFormat,
-  ensureDate,
+  getEvent,
+  getDate,
+  getTime,
   displayMonthDate_,
-  pbFormat,
+  displayPB,
 };

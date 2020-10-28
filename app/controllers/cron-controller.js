@@ -16,7 +16,7 @@ import {
 } from './cube-db.js';
 
 import { removeRole, addRole } from './role-controller.js';
-import { sendScrambles, scrambles } from './scrambler.js';
+import { sendScrambles, getScrambles } from './scrambler.js';
 
 const cronList_ = [];
 
@@ -50,7 +50,7 @@ const startCron = (bot) => {
         const scrambleSend = (event) => {
           const chan = bot.channels.cache.get(R.path(['env', event], process));
 
-          R.pipe(scrambles, send(chan))(formatNameForScrambow(event));
+          R.pipe(getScrambles, send(chan))(formatNameForScrambow(event), 5);
           chan.send(dailyRankingsFormat(date, chan, []));
         };
 
@@ -74,7 +74,7 @@ const startCron = (bot) => {
 
   cronList_.push(
     new CronJob({
-      cronTime: '20 10 * * * *',
+      cronTime: '30 0 0 1 * *',
       onTick: () => {
         const date = dayjs().subtract(1, 'h').format('YYYY-MM');
 

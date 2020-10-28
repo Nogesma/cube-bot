@@ -10,7 +10,7 @@ const spawnBot = (cb) => {
     node.kill();
   }
 
-  node = spawn('node', ['index-cube.js'], { stdio: 'inherit' });
+  node = spawn('yarn', ['run', 'start'], { stdio: 'inherit' });
   return cb();
 };
 

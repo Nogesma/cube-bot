@@ -1,5 +1,4 @@
 import R from 'ramda';
-import dayjs from 'dayjs';
 import {
   helpCommand,
   newTimesCommand,
@@ -9,6 +8,7 @@ import {
   idoCommand,
   idonotdoCommand,
   pbCommand,
+  scrCommand,
 } from '../helpers/messages-handler.js';
 
 const messageIsCommand = R.both(
@@ -25,22 +25,17 @@ const commandChoose = R.cond([
   [R.propEq('command', '?ido'), idoCommand],
   [R.propEq('command', '?idonotdo'), idonotdoCommand],
   [R.propEq('command', '?pb'), pbCommand],
+  [R.propEq('command', '?scr'), scrCommand],
 ]);
 
 const applyCommand = (message) => {
-  const date = dayjs();
   const { author, channel } = message;
-  const [command, event, ...args] = R.pipe(
-    R.prop('content'),
-    R.split(' ')
-  )(message);
+  const [command, ...args] = R.pipe(R.prop('content'), R.split(' '))(message);
 
   return commandChoose({
-    date,
     author,
     channel,
     command,
-    event: R.when(R.identity, R.toUpper)(event),
     args,
   });
 };

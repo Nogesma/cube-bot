@@ -1,10 +1,8 @@
 import R from 'ramda';
 import dayjs from 'dayjs';
 
-import {
-  events as availableEvents,
-  hours as availableTimes,
-} from '../config.js';
+import { events as availableEvents } from '../config.js';
+import { getScrambles } from '../controllers/scrambler.js';
 import {
   insertNewTimes,
   getDayStandings,
@@ -16,62 +14,71 @@ import {
 } from '../controllers/cube-db.js';
 import {
   helpMessage,
-  ensureDate,
+  getEvent,
+  getDate,
   dailyRankingsFormat,
   monthlyRankingsFormat,
-  pbFormat,
+  displayPB,
+  getTime,
 } from './messages-helpers.js';
 
 const sendMessageToChannel = R.curry((channel, msg) => channel.send(msg));
 
-const includesEvent = (event, messageSender, func) =>
-  R.includes(event, availableEvents)
-    ? func()
-    : messageSender(`Veuillez entrer un event valide : ${availableEvents}`);
-
-const includesTime = (time, messageSender, func) =>
-  R.includes(time, availableTimes)
-    ? func()
-    : messageSender(`Veuillez entrer une heure valide : ${availableTimes}`);
-
-const helpCommand = ({ channel }) =>
-  R.pipe(helpMessage, R.andThen(sendMessageToChannel(channel)))();
-
-const newTimesCommand = (x) =>
+const helpCommand = (x) =>
   R.pipe(
-    insertNewTimes,
-    R.andThen(sendMessageToChannel(R.prop('channel', x)))
+    R.prop('channel'),
+    helpMessage,
+    R.andThen(sendMessageToChannel(x.channel))
   )(x);
 
-const dailyRanksCommand = ({ channel, event, args: [date] }) => {
-  const formattedDate = ensureDate(date).format('YYYY-MM-DD');
+const newTimesCommand = ({ channel, author, args }) => {
   const messageSender = sendMessageToChannel(channel);
-  return includesEvent(event, messageSender, () =>
+  const event = getEvent(args, messageSender);
+  const date = dayjs();
+  const solves = R.tail(args);
+
+  if (event)
+    R.pipe(insertNewTimes, R.andThen(messageSender))(
+      channel,
+      date,
+      author,
+      event,
+      solves
+    );
+};
+
+const dailyRanksCommand = ({ channel, args }) => {
+  const messageSender = sendMessageToChannel(channel);
+
+  const event = getEvent(args, messageSender);
+  const date = getDate(args, messageSender);
+
+  if (R.and(date, event))
     R.pipe(
       getDayStandings,
-      R.andThen(
-        R.pipe(dailyRankingsFormat(formattedDate, channel), messageSender)
-      )
-    )(formattedDate, event)
-  );
+      R.andThen(R.pipe(dailyRankingsFormat(date, channel), messageSender))
+    )(date, event);
 };
 
-const monthlyRanksCommand = ({ channel, event, args: [date] }) => {
-  const formattedDate = ensureDate(date).format('YYYY-MM');
+const monthlyRanksCommand = ({ channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
-  return includesEvent(event, messageSender, () =>
+
+  const event = getEvent(args, messageSender);
+  const date = getDate(args, messageSender);
+
+  if (R.and(date, event))
     R.pipe(
       getMonthStandings,
-      R.andThen(
-        R.pipe(monthlyRankingsFormat(formattedDate, channel), messageSender)
-      )
-    )(formattedDate, event)
-  );
+      R.andThen(R.pipe(monthlyRankingsFormat(date, channel), messageSender))
+    )(date, event);
 };
 
-const dididoCommand = ({ date, author, event, channel }) => {
+const dididoCommand = ({ author, channel, args }) => {
+  const date = dayjs().format('YYYY-MM-DD');
   const messageSender = sendMessageToChannel(channel);
-  return includesEvent(event, messageSender, () =>
+  const event = getEvent(args, messageSender);
+
+  if (event)
     R.pipe(
       haveTimesForToday,
       R.andThen(
@@ -80,58 +87,62 @@ const dididoCommand = ({ date, author, event, channel }) => {
           messageSender
         )
       )
-    )(date.format('YYYY-MM-DD'), R.prop('id', author), event)
-  );
+    )(date, R.prop('id', author), event);
 };
 
-const idoCommand = ({ author, event, channel }) => {
-  const time = Number(event);
+const idoCommand = ({ author, channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
-  return includesTime(time, messageSender, () =>
+  const time = getTime(args, messageSender);
+  if (time)
     R.pipe(
       addNotifSquad,
       R.andThen(messageSender('Vous avez bien été ajouté a la notif squad !'))
-    )(R.prop('id', author), time)
-  );
+    )(R.prop('id', author), time);
 };
 
-const idonotdoCommand = ({ author, event, channel }) => {
-  const time = Number(event);
+const idonotdoCommand = ({ author, channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
-  return includesTime(time, messageSender, () =>
+  const time = getTime(args, messageSender);
+  if (time)
     R.pipe(
       deleteNotifSquad,
       R.andThen(
         messageSender('Vous avez bien été supprimé de la notif squad !')
       )
-    )(R.prop('id', author), time)
-  );
+    )(R.prop('id', author), time);
 };
 
-const pbCommand = ({ author, event, channel, args }) => {
+const pbCommand = ({ author, channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
 
-  const userName = R.join(' ', args);
+  const event = getEvent(args, messageSender);
+
+  const userName = R.join(' ', event ? R.tail(args) : args);
   const user =
-    channel.members?.find(
+    channel.members.find(
       R.either(
         R.pipe(R.prop('nickname'), R.equals(userName)),
         R.pipe(R.path(['user', 'username']), R.equals(userName))
       )
     )?.user ?? author;
 
-  return includesEvent(event, messageSender, () =>
-    R.pipe(
-      getUserPB,
-      R.andThen(
-        R.pipe(
-          (x) => x ?? { single: Infinity, average: Infinity },
-          pbFormat(user),
-          messageSender
-        )
-      )
-    )(user, event)
-  );
+  const displayPBforUser = displayPB(user);
+
+  R.pipe(
+    (events) =>
+      Promise.all(R.map(async (e) => [e, await getUserPB(user, e)], events)),
+    R.andThen(displayPBforUser),
+    R.andThen(messageSender)
+  )(event ? [event] : availableEvents);
+};
+
+const scrCommand = ({ channel, args }) => {
+  const messageSender = sendMessageToChannel(channel);
+  const event = getEvent(args, messageSender);
+  const n = Number(args[1]);
+  const numberOfAlgs = n <= 5 ? n : 1;
+
+  if (event) messageSender(getScrambles(event, numberOfAlgs));
 };
 
 export {
@@ -143,4 +154,5 @@ export {
   idoCommand,
   idonotdoCommand,
   pbCommand,
+  scrCommand,
 };

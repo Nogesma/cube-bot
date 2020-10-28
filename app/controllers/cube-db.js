@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween.js';
 import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 
-import { events as availableEvents } from '../config.js';
 import Cube from '../models/cubes.js';
 import User from '../models/user.js';
 import Squad from '../models/notif.js';
@@ -28,13 +27,7 @@ mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/test', {
 
 dayjs.extend(isBetween).extend(customParseFormat);
 
-const insertNewTimes = async ({
-  channel,
-  date,
-  author,
-  event,
-  args: solves,
-}) => {
+const insertNewTimes = async (channel, date, author, event, solves) => {
   if (channel.type !== 'dm') {
     return 'Veuillez envoyer vos temps en message privé';
   }
@@ -47,10 +40,6 @@ const insertNewTimes = async ({
 
   if (solves.length !== 5) {
     return 'Veuillez entrer 5 temps';
-  }
-
-  if (R.not(R.includes(event, availableEvents))) {
-    return `Veuillez entrer un event valide : ${availableEvents}`;
   }
 
   const times = R.map(timeToSeconds, solves);
