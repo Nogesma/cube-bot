@@ -22,7 +22,8 @@ import {
   getTime,
 } from './messages-helpers.js';
 
-const sendMessageToChannel = (channel) => R.pipe((x) => channel.send(x), R.F);
+const sendMessageToChannel = (channel) =>
+  R.pipe((x) => channel.send(x), R.always(undefined));
 
 const helpCommand = (x) =>
   R.pipe(
@@ -51,9 +52,10 @@ const dailyRanksCommand = ({ channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
 
   const event = getEvent(args, messageSender);
-  const date = getDate(args, event ? messageSender : R.identity)?.format(
-    'YYYY-MM-DD'
-  );
+  const date = getDate(
+    args,
+    event ? messageSender : R.always(undefined)
+  )?.format('YYYY-MM-DD');
 
   if (R.and(date)(event))
     R.pipe(
@@ -66,9 +68,10 @@ const monthlyRanksCommand = ({ channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
 
   const event = getEvent(args, messageSender);
-  const date = getDate(args, event ? messageSender : R.identity)?.format(
-    'YYYY-MM'
-  );
+  const date = getDate(
+    args,
+    event ? messageSender : R.always(undefined)
+  )?.format('YYYY-MM');
 
   if (R.and(date)(event))
     R.pipe(
@@ -119,11 +122,11 @@ const idonotdoCommand = ({ author, channel, args }) => {
 const pbCommand = ({ author, channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
 
-  const event = getEvent(args, R.identity);
+  const event = getEvent(args, R.F);
 
   const userName = R.join(' ', event ? R.tail(args) : args);
   const user =
-    channel.members.find(
+    channel.members?.find(
       R.either(R.pipe(R.prop('nickname'), R.equals(userName)))(
         R.pipe(R.path(['user', 'username']), R.equals(userName))
       )
