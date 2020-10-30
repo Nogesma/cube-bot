@@ -21,7 +21,7 @@ const cronList_ = [];
 const startCron = (bot) => {
   cronList_.push(
     new CronJob({
-      cronTime: '0 59 23 * * *',
+      cronTime: '30 59 23 * * *',
       onTick: () => {
         const standingsDate = dayjs().format('YYYY-MM-DD');
 
@@ -49,7 +49,7 @@ const startCron = (bot) => {
           const chan = bot.channels.cache.get(R.path(['env', event], process));
 
           R.pipe(getScrambles, send(chan))(formatNameForScrambow(event), 5);
-          chan.send(dailyRankingsFormat(date, chan, []));
+          chan.send(dailyRankingsFormat(date)(chan)([]));
         };
 
         R.map(scrambleSend, events);
@@ -76,10 +76,10 @@ const startCron = (bot) => {
       onTick: () => {
         const date = dayjs().subtract(1, 'h').format('YYYY-MM');
 
-        const [standings, rankings] = R.ap(
-          [getMonthStandings, monthlyRankingsFormat],
-          [date]
-        );
+        const [standings, rankings] = R.ap([
+          getMonthStandings,
+          monthlyRankingsFormat,
+        ])([date]);
 
         const monthStandings = (event) => {
           const chan = bot.channels.cache.get(R.path(['env', event], process));
@@ -116,7 +116,7 @@ const startCron = (bot) => {
           R.pipe(
             getNotifSquad,
             R.andThen(
-              R.unless(R.isEmpty, (doc) =>
+              R.unless(R.isEmpty)((doc) =>
                 chan.send(
                   `Participez au tournoi ! ${R.join(
                     ' ',

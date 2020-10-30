@@ -52,14 +52,14 @@ const insertNewTimes = async (channel, date, author, event, solves) => {
   }
 
   const entry = await Cube.findOne({
-    author: R.prop('id', author),
+    author: R.prop('id')(author),
     date: formattedDate,
     event,
   }).exec();
 
   if (entry) {
     await Cube.findOne({
-      author: R.prop('id', author),
+      author: R.prop('id')(author),
       date: formattedDate,
       event,
     }).then((cube) => {
@@ -70,7 +70,7 @@ const insertNewTimes = async (channel, date, author, event, solves) => {
     });
   } else {
     await new Cube({
-      author: R.prop('id', author),
+      author: R.prop('id')(author),
       solves: R.map(secondsToTime, times),
       average,
       single,
@@ -89,7 +89,7 @@ const insertNewTimes = async (channel, date, author, event, solves) => {
 
   R.pipe(
     getDayStandings(formattedDate),
-    R.andThen(dailyRankingsFormat(formattedDate, chan)),
+    R.andThen(dailyRankingsFormat(formattedDate)(chan)),
     R.andThen((x) => chan.send(x))
   )(event);
 
@@ -191,7 +191,7 @@ const deleteNotifSquad = (author, time) =>
   ).exec();
 
 const getNotifSquad = async (time) =>
-  R.prop('authors', await Squad.findOne({ event: time }).exec());
+  R.prop('authors')(await Squad.findOne({ event: time }).exec());
 
 const getUserPB = async (author, event) =>
   User.findOne({ author: author.id, event }).exec();

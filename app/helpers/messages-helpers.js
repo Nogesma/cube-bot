@@ -21,7 +21,7 @@ const dailyRankingsFormat = R.curry((date, channel, ranks) =>
     `Classement du ${date} :`,
     ...ranks.map((cuber, idx) => {
       const user = channel.client.users.cache.get(cuber.author);
-      const name = user ? user.username : 'RAGE-QUITTER';
+      const name = user?.username ?? 'RAGE-QUITTER';
       const pts = computeScore(ranks.length, idx);
       return R.join('\n', [
         `#${idx + 1} ${name}: ${cuber.average} ao5, ${
@@ -43,7 +43,7 @@ const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
     `Classement du mois (${displayMonthDate_(date)}) :`,
     ...ranks.map((cuber, idx) => {
       const user = channel.client.users.cache.get(cuber.author);
-      const name = user ? user.username : 'RAGE-QUITTER';
+      const name = user?.username ?? 'RAGE-QUITTER';
       return `#${idx + 1} ${name} : ${cuber.score} pts (${cuber.attendances})`;
     }),
     '```',
@@ -53,10 +53,10 @@ const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
 const getEvent = (args, messageSender) =>
   R.pipe(
     R.head,
-    R.ifElse(R.flip(R.includes)(availableEvents), R.identity, () => {
-      messageSender(`Veuillez entrer un event valide : ${availableEvents}`);
-      return undefined;
-    })
+    R.when(R.identity)(R.toUpper),
+    R.ifElse(R.flip(R.includes)(availableEvents), R.identity, () =>
+      messageSender(`Veuillez entrer un event valide : ${availableEvents}`)
+    )
   )(args);
 
 const getDate = (args, messageSender) =>
@@ -65,22 +65,15 @@ const getDate = (args, messageSender) =>
 
     return date.isValid()
       ? date
-      : R.pipe(
-          () => messageSender(`Veuillez entrer une date valide.`),
-          () => undefined
-        )();
+      : messageSender(`Veuillez entrer une date valide.`);
   })(args);
 
 const getTime = (args, messageSender) =>
   R.pipe(
     R.head,
-    R.ifElse(
-      R.pipe(Number, R.flip(R.includes)(availableTimes)),
-      R.identity,
-      () => {
-        messageSender(`Veuillez entrer une heure valide : ${availableTimes}`);
-        return undefined;
-      }
+    Number,
+    R.ifElse(R.flip(R.includes)(availableTimes), R.identity, () =>
+      messageSender(`Veuillez entrer une heure valide : ${availableTimes}`)
     )
   )(args);
 

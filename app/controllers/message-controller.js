@@ -17,15 +17,15 @@ const messageIsCommand = R.both(
 );
 
 const commandChoose = R.cond([
-  [R.propEq('command', '?t'), newTimesCommand],
-  [R.propSatisfies(R.includes(R.__, ['?h', '?help']), 'command'), helpCommand],
-  [R.propEq('command', '?classement'), dailyRanksCommand],
-  [R.propEq('command', '?classementmois'), monthlyRanksCommand],
-  [R.propEq('command', '?didido'), dididoCommand],
-  [R.propEq('command', '?ido'), idoCommand],
-  [R.propEq('command', '?idonotdo'), idonotdoCommand],
-  [R.propEq('command', '?pb'), pbCommand],
-  [R.propEq('command', '?scr'), scrCommand],
+  [R.propEq('command')('?t'), newTimesCommand],
+  [R.propSatisfies(R.includes(R.__, ['?h', '?help']))('command'), helpCommand],
+  [R.propEq('command')('?classement'), dailyRanksCommand],
+  [R.propEq('command')('?classementmois'), monthlyRanksCommand],
+  [R.propEq('command')('?didido'), dididoCommand],
+  [R.propEq('command')('?ido'), idoCommand],
+  [R.propEq('command')('?idonotdo'), idonotdoCommand],
+  [R.propEq('command')('?pb'), pbCommand],
+  [R.propEq('command')('?scr'), scrCommand],
 ]);
 
 const applyCommand = (message) => {
@@ -40,6 +40,6 @@ const applyCommand = (message) => {
   });
 };
 
-const incomingMessage = R.when(messageIsCommand, applyCommand);
+const incomingMessage = R.when(messageIsCommand)(applyCommand);
 
 export { incomingMessage };
