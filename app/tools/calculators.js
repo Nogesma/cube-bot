@@ -49,13 +49,10 @@ const sorter = R.map(R.pipe(R.prop, R.ascend), ['average', 'single']);
 
 const sortRankings = (ranks) =>
   R.sortWith(
-    R.ifElse(
-      R.pipe(R.path([0, 'event']), R.equals('3BLD')),
-      R.always(R.reverse(sorter)),
-      R.always(sorter)
-    )(ranks),
-    ranks
-  );
+    R.ifElse(R.pipe(R.path([0, 'event']), R.equals('3BLD')))(
+      R.always(R.reverse(sorter))
+    )(R.always(sorter))(ranks)
+  )(ranks);
 
 export {
   averageOfFiveCalculator,

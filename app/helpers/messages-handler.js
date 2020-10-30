@@ -22,7 +22,7 @@ import {
   getTime,
 } from './messages-helpers.js';
 
-const sendMessageToChannel = R.curry((channel, msg) => channel.send(msg));
+const sendMessageToChannel = (channel) => R.pipe((x) => channel.send(x), R.F);
 
 const helpCommand = (x) =>
   R.pipe(
@@ -55,10 +55,10 @@ const dailyRanksCommand = ({ channel, args }) => {
     'YYYY-MM-DD'
   );
 
-  if (R.and(date, event))
+  if (R.and(date)(event))
     R.pipe(
       getDayStandings,
-      R.andThen(R.pipe(dailyRankingsFormat(date, channel), messageSender))
+      R.andThen(R.pipe(dailyRankingsFormat(date)(channel), messageSender))
     )(date, event);
 };
 
@@ -70,10 +70,10 @@ const monthlyRanksCommand = ({ channel, args }) => {
     'YYYY-MM'
   );
 
-  if (R.and(date, event))
+  if (R.and(date)(event))
     R.pipe(
       getMonthStandings,
-      R.andThen(R.pipe(monthlyRankingsFormat(date, channel), messageSender))
+      R.andThen(R.pipe(monthlyRankingsFormat(date)(channel), messageSender))
     )(date, event);
 };
 
@@ -91,7 +91,7 @@ const dididoCommand = ({ author, channel, args }) => {
           messageSender
         )
       )
-    )(date, R.prop('id', author), event);
+    )(date, R.prop('id')(author), event);
 };
 
 const idoCommand = ({ author, channel, args }) => {
@@ -101,7 +101,7 @@ const idoCommand = ({ author, channel, args }) => {
     R.pipe(
       addNotifSquad,
       R.andThen(messageSender('Vous avez bien été ajouté a la notif squad !'))
-    )(R.prop('id', author), time);
+    )(R.prop('id')(author), time);
 };
 
 const idonotdoCommand = ({ author, channel, args }) => {
@@ -124,8 +124,7 @@ const pbCommand = ({ author, channel, args }) => {
   const userName = R.join(' ', event ? R.tail(args) : args);
   const user =
     channel.members.find(
-      R.either(
-        R.pipe(R.prop('nickname'), R.equals(userName)),
+      R.either(R.pipe(R.prop('nickname'), R.equals(userName)))(
         R.pipe(R.path(['user', 'username']), R.equals(userName))
       )
     )?.user ?? author;
