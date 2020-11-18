@@ -34,13 +34,13 @@ const dailyRankingsFormat = R.curry((date, channel, ranks) =>
   ])
 );
 
-const displayMonthDate_ = (date) =>
+const _displayMonthDate = (date) =>
   dayjs().format('YYYY-MM') === date ? 'en cours' : date;
 
 const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
   R.join('\n', [
     '```xl',
-    `Classement du mois (${displayMonthDate_(date)}) :`,
+    `Classement du mois (${_displayMonthDate(date)}) :`,
     ...ranks.map((cuber, idx) => {
       const user = channel.client.users.cache.get(cuber.author);
       const name = user?.username ?? 'RAGE-QUITTER';
@@ -105,6 +105,6 @@ export {
   getEvent,
   getDate,
   getTime,
-  displayMonthDate_,
+  _displayMonthDate,
   displayPB,
 };

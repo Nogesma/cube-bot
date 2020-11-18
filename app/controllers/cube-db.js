@@ -1,102 +1,25 @@
-import mongoose from 'mongoose';
 import R from 'ramda';
-import dayjs from 'dayjs';
-import isBetween from 'dayjs/plugin/isBetween.js';
-import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 
 import Cube from '../models/cubes.js';
 import User from '../models/user.js';
 import Squad from '../models/notif.js';
 import Ranking from '../models/rankings.js';
+import Scrambles from '../models/scrambles.js';
 import {
-  averageOfFiveCalculator,
-  timeToSeconds,
   secondsToTime,
   computeScore,
-  getBestTime,
   sortRankings,
 } from '../tools/calculators.js';
-import { dailyRankingsFormat } from '../helpers/messages-helpers.js';
+import dayjs from 'dayjs';
 
-mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/test', {
-  useNewUrlParser: true,
-  useFindAndModify: false,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-});
+const updateCube = (author, date, event, average, single, solves) =>
+  Cube.findOneAndUpdate(
+    { author, date, event },
+    { $set: { average, single, solves } }
+  ).exec();
 
-dayjs.extend(isBetween).extend(customParseFormat);
-
-const insertNewTimes = async (channel, date, author, event, solves) => {
-  if (channel.type !== 'dm') {
-    return 'Veuillez envoyer vos temps en message privé';
-  }
-
-  if (
-    date.isBetween(dayjs('23:59', 'H:m'), dayjs('23:59', 'H:m').add(2, 'm'))
-  ) {
-    return 'Vous ne pouvez pas soumettre de temps pendant la phase des résultats';
-  }
-
-  if (solves.length !== 5) {
-    return 'Veuillez entrer 5 temps';
-  }
-
-  const times = R.map(timeToSeconds, solves);
-  const average = averageOfFiveCalculator(times);
-  const single = getBestTime(times);
-  const formattedDate = date.format('YYYY-MM-DD');
-
-  if (average < 0) {
-    return 'Veuillez entrer des temps valides';
-  }
-
-  const entry = await Cube.findOne({
-    author: R.prop('id')(author),
-    date: formattedDate,
-    event,
-  }).exec();
-
-  if (entry) {
-    await Cube.findOne({
-      author: R.prop('id')(author),
-      date: formattedDate,
-      event,
-    }).then((cube) => {
-      cube.solves = R.map(secondsToTime, times);
-      cube.average = average;
-      cube.single = single;
-      return cube.save();
-    });
-  } else {
-    await new Cube({
-      author: R.prop('id')(author),
-      solves: R.map(secondsToTime, times),
-      average,
-      single,
-      date: formattedDate,
-      event,
-    }).save();
-  }
-
-  const chan = await R.path(['client', 'channels', 'cache'], channel).get(
-    R.path(['env', event], process)
-  );
-
-  chan.messages
-    .fetch({ limit: 1 })
-    .then((messages) => messages.first().delete());
-
-  R.pipe(
-    getDayStandings(formattedDate),
-    R.andThen(dailyRankingsFormat(formattedDate)(chan)),
-    R.andThen((x) => chan.send(x))
-  )(event);
-
-  return `Vos temps ont bien été ${
-    entry ? 'modifiés' : 'enregistrés'
-  }! ao5: ${secondsToTime(average)}`;
-};
+const writeCube = (author, date, event, average, single, solves) =>
+  new Cube({ author, date, event, average, single, solves }).save();
 
 /**
  * Compute the daily standings and saves them to db
@@ -193,11 +116,17 @@ const deleteNotifSquad = (author, time) =>
 const getNotifSquad = async (time) =>
   R.prop('authors')(await Squad.findOne({ event: time }).exec());
 
-const getUserPB = async (author, event) =>
+const getUserPB = (author, event) =>
   User.findOne({ author: author.id, event }).exec();
 
+const writeScramble = (scrambles, date, event) =>
+  new Scrambles({ scrambles, date, event }).save();
+
+const getScramble = (date, event) => Scrambles.findOne({ date, event }).exec();
+
 export {
-  insertNewTimes,
+  updateCube,
+  writeCube,
   updateStandings,
   getDayStandings,
   getMonthStandings,
@@ -206,4 +135,6 @@ export {
   deleteNotifSquad,
   getNotifSquad,
   getUserPB,
+  writeScramble,
+  getScramble,
 };

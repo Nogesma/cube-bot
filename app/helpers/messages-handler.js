@@ -2,9 +2,8 @@ import R from 'ramda';
 import dayjs from 'dayjs';
 
 import { events as availableEvents } from '../config.js';
-import { getScrambles } from '../controllers/scrambler.js';
+import { genScrambles } from '../controllers/scrambler.js';
 import {
-  insertNewTimes,
   getDayStandings,
   getMonthStandings,
   haveTimesForToday,
@@ -21,6 +20,7 @@ import {
   displayPB,
   getTime,
 } from './messages-helpers.js';
+import { inserNewTimes } from './global-helpers.js';
 
 const sendMessageToChannel = (channel) =>
   R.pipe((x) => channel.send(x), R.always(undefined));
@@ -35,14 +35,11 @@ const helpCommand = (x) =>
 const newTimesCommand = ({ channel, author, args }) => {
   const messageSender = sendMessageToChannel(channel);
   const event = getEvent(args, messageSender);
-  const date = dayjs();
   const solves = R.tail(args);
 
   if (event)
-    R.pipe(insertNewTimes, R.andThen(messageSender))(
-      channel,
-      date,
-      author,
+    R.pipe(inserNewTimes, R.andThen(messageSender))(
+      R.prop('id')(author),
       event,
       solves
     );
@@ -146,9 +143,9 @@ const scrCommand = ({ channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
   const event = getEvent(args, messageSender);
   const n = Number(args[1]);
-  const numberOfAlgs = n <= 5 ? n : 1;
+  const numberOfAlgs = R.both(R.gt(6), R.lt(0))(n) ? n : 1;
 
-  if (event) messageSender(getScrambles(event, numberOfAlgs));
+  if (event) messageSender(genScrambles(event, numberOfAlgs));
 };
 
 export {

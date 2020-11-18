@@ -31,6 +31,9 @@ describe('averageOfFiveCalculator', () => {
     expect(averageOfFiveCalculator([12.34, 0.05, 78.32, 34.21, 9.95])).toBe(
       18.83
     );
+    expect(averageOfFiveCalculator([12.34, 0.05, 78.32, 34.21, 9.99])).toBe(
+      18.85
+    );
   });
 });
 
@@ -44,6 +47,7 @@ describe('timeToSeconds', () => {
     expect(timeToSeconds('12.3')).toBe(12.3);
     expect(timeToSeconds('12')).toBe(12);
     expect(timeToSeconds('12.345')).toBe(12.34);
+    expect(timeToSeconds('1.0151')).toBe(1.01);
     expect(timeToSeconds('12.340')).toBe(12.34);
     expect(timeToSeconds('12.349')).toBe(12.34);
     expect(timeToSeconds('74.4052929')).toBe(74.4);
