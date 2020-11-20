@@ -43,25 +43,25 @@ const scrambles = (req, res) => {
   )(formattedDate, event);
 };
 
-const authDiscord = (request, response) => {
+const authDiscord = async (request, response) => {
   const getJSON = (res) => res.json();
 
   const code = request.params.code;
-  const data = {
+  const data = new URLSearchParams({
     client_id: process.env.CLIENT_ID,
     client_secret: process.env.CLIENT_SECRET,
     grant_type: 'authorization_code',
     code,
     scope: 'identify guilds',
     redirect_uri: process.env.WEBSITE_URL,
-  };
+  });
 
-  const { token_type, access_token } = R.pipe(fetch, R.andThen(getJSON))(
+  const { token_type, access_token } = await R.pipe(fetch, R.andThen(getJSON))(
     'https://discord.com/api/oauth2/token',
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      data,
+      body: data,
     }
   );
 
@@ -69,12 +69,12 @@ const authDiscord = (request, response) => {
     authorization: `${token_type} ${access_token}`,
   };
 
-  const { id, username, avatar } = R.pipe(
+  const { id, username, avatar } = await R.pipe(
     fetch,
     R.andThen(getJSON)
   )('https://discord.com/api/users/@me', { headers });
 
-  const isInGuild = R.pipe(
+  const isInGuild = await R.pipe(
     fetch,
     R.andThen(getJSON),
     R.andThen(R.find(R.propEq('id')(process.env.GUILD_ID)))

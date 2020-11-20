@@ -34,7 +34,7 @@ const startCron = (bot) => {
   );
   cronList_.push(
     new CronJob({
-      cronTime: '45 46 * * * *',
+      cronTime: '0 1 0 * * *',
       onTick: () => {
         const date = dayjs().format('YYYY-MM-DD');
 

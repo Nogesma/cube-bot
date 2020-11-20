@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 
 import {
   scrambles,
@@ -11,13 +10,12 @@ import {
 
 const api = express.Router();
 
-api.get('/oauth/discord/:code', cors(), authDiscord);
+api.get('/oauth/discord/:code', authDiscord);
 
-api.get('/scrambles/:event/(:date)?', cors(), scrambles);
-api.get('/rankings/day/:event/(:date)?', cors(), dailyRankings);
-api.get('/rankings/month/:event/(:date)?', cors(), monthlyRankings);
+api.get('/scrambles/:event/?(:date)', scrambles);
+api.get('/rankings/day/:event/(:date)?', dailyRankings);
+api.get('/rankings/month/:event/(:date)?', monthlyRankings);
 
-api.options('/times', cors({ origin: process.env.WEBSITE_URL }));
-api.post('/times', cors({ origin: process.env.WEBSITE_URL }), times);
+api.post('/times', times);
 
 export { api };
