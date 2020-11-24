@@ -12,10 +12,10 @@ import {
   updateStandings,
   getMonthStandings,
   getNotifSquad,
-  writeScramble,
+  getScramble,
 } from './cube-db.js';
 import { removeRole, addRole } from './roles-controller.js';
-import { sendScrambles, genScrambles, formatScrambles } from './scrambler.js';
+import { sendScrambles, formatScrambles } from './scrambler.js';
 
 const cronList_ = [];
 
@@ -35,25 +35,19 @@ const startCron = (bot) => {
   cronList_.push(
     new CronJob({
       cronTime: '0 1 0 * * *',
-      onTick: () => {
+      onTick: async () => {
         const date = dayjs().format('YYYY-MM-DD');
 
         const send = sendScrambles(date);
 
-        const formatNameForScrambow = R.ifElse(
-          R.includes(R.__, ['3BLD', 'OH']),
-          R.always('333'),
-          R.toLower
-        );
-
-        const scrambleSend = (event) => {
+        const scrambleSend = async (event) => {
           const chan = bot.channels.cache.get(R.path(['env', event], process));
-          const scrambles = genScrambles(formatNameForScrambow(event), 5);
+          const scrambles = R.prop('scrambles', await getScramble(date, event));
+          const scrambleArray = R.map(R.prop('scrambleString'), scrambles);
 
-          send(chan, formatScrambles(scrambles)).then(
+          send(chan, formatScrambles(scrambleArray)).then(
             chan.send(dailyRankingsFormat(date)(chan)([]))
           );
-          writeScramble(scrambles, date, event);
         };
 
         R.map(scrambleSend, events);

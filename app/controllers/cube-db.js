@@ -116,11 +116,16 @@ const deleteNotifSquad = (author, time) =>
 const getNotifSquad = async (time) =>
   R.prop('authors')(await Squad.findOne({ event: time }).exec());
 
-const getUserPB = (author, event) =>
-  User.findOne({ author: author.id, event }).exec();
+const getUserByApi = (apiKey) => User.findOne({ apiKey }).exec();
 
-const writeScramble = (scrambles, date, event) =>
-  new Scrambles({ scrambles, date, event }).save();
+const getUserById = (author) => User.findOne({ author }).exec();
+
+const getUserByToken = (token) => User.findOne({ token }).exec();
+
+const writeUser = (author, token) => new User({ author, token }).save();
+
+const updateUser = (author, token) =>
+  User.findOneAndUpdate({ author }, { $set: { token } }).exec();
 
 const getScramble = (date, event) => Scrambles.findOne({ date, event }).exec();
 
@@ -134,7 +139,10 @@ export {
   addNotifSquad,
   deleteNotifSquad,
   getNotifSquad,
-  getUserPB,
-  writeScramble,
+  getUserById,
+  getUserByApi,
+  getUserByToken,
+  writeUser,
+  updateUser,
   getScramble,
 };

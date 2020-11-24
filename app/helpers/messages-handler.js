@@ -9,7 +9,7 @@ import {
   haveTimesForToday,
   addNotifSquad,
   deleteNotifSquad,
-  getUserPB,
+  getUserById,
 } from '../controllers/cube-db.js';
 import {
   helpMessage,
@@ -133,7 +133,10 @@ const pbCommand = ({ author, channel, args }) => {
 
   R.pipe(
     (events) =>
-      Promise.all(R.map(async (e) => [e, await getUserPB(user, e)], events)),
+      R.filter(
+        R.propSatisfies(R.includes(R.__, events), 'event'),
+        getUser(user)
+      ),
     R.andThen(displayPBforUser),
     R.andThen(messageSender)
   )(event ? [event] : availableEvents);

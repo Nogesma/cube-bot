@@ -81,10 +81,9 @@ const displayPB = R.curry((user, pb) =>
   R.join('\n', [
     `__PB de ${user.username}:__`,
     R.pipe(
-      R.filter(([_, x]) => x),
-      R.map(([e, { single, singleDate, average, averageDate }]) =>
+      R.map(({ event, single, singleDate, average, averageDate }) =>
         R.join('\n', [
-          `__${e}:__`,
+          `__${event}:__`,
           `PB Single: ${secondsToTime(single)} ${
             singleDate ? `(${dayjs(singleDate).format('YYYY-MM-DD')})` : ''
           }`,

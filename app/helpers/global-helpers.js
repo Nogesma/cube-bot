@@ -9,14 +9,16 @@ import {
   timeToSeconds,
 } from '../tools/calculators.js';
 import {
+  getDayStandings,
   haveTimesForToday,
   updateCube,
   writeCube,
 } from '../controllers/cube-db.js';
+import { dailyRankingsFormat } from './messages-helpers.js';
 
 dayjs.extend(customParseFormat).extend(isBetween);
 
-const inserNewTimes = async (author, event, solves) => {
+const inserNewTimes = async (author, event, solves, bot) => {
   const resultTime = dayjs('23:59', 'H:m');
   if (dayjs().isBetween(resultTime, resultTime.add(2, 'm'))) {
     return 'Vous ne pouvez pas soumettre de temps pendant la phase des résultats';
@@ -47,9 +49,25 @@ const inserNewTimes = async (author, event, solves) => {
     solves
   );
 
+  updateDiscordRanking(date, event, bot);
+
   return `Vos temps ont bien été ${
     hasCube ? 'modifiés' : 'enregistrés'
   }, ao5: ${secondsToTime(average)}`;
+};
+
+const updateDiscordRanking = async (date, event, bot) => {
+  const chan = await bot.channels.fetch(R.path(['env', event], process));
+
+  chan.messages
+    .fetch({ limit: 1 })
+    .then((messages) => messages.first().delete());
+
+  R.pipe(
+    getDayStandings,
+    R.andThen(dailyRankingsFormat(date)(chan)),
+    R.andThen((x) => chan.send(x))
+  )(date, event);
 };
 
 export { inserNewTimes };

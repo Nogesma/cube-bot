@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat.js';
-import fetch from 'node-fetch';
+import { nanoid } from 'nanoid';
 import R from 'ramda';
 
 import {
@@ -9,18 +9,50 @@ import {
   getScramble,
 } from '../controllers/cube-db.js';
 import { inserNewTimes } from './global-helpers.js';
+import {
+  getDiscordToken,
+  getGuildData,
+  getUserData,
+  getUserId,
+  rejectRequest,
+  setUserToken,
+} from './routes-helpers.js';
 import { dailyRankingsFormat } from './messages-helpers.js';
 
 dayjs.extend(customParseFormat);
 
-const rejectRequest = (req, res, message) => {
-  res.writeHead(404, {
+const authDiscord = async (request, response) => {
+  const code = request.params.code;
+  const data = new URLSearchParams({
+    client_id: process.env.CLIENT_ID,
+    client_secret: process.env.CLIENT_SECRET,
+    grant_type: 'authorization_code',
+    code,
+    scope: 'identify guilds',
+    redirect_uri: process.env.WEBSITE_URL,
+  });
+
+  const { token_type, access_token } = await getDiscordToken(data);
+
+  const { id, username, avatar } = await getUserData(token_type, access_token);
+
+  const userInGuild = Boolean(await getGuildData(token_type, access_token));
+
+  if (!id) return response.writeHead(400).end();
+  const token = nanoid();
+
+  setUserToken(id, token);
+
+  response.writeHead(200, {
     'Content-Type': 'application/json',
   });
-  res.end(JSON.stringify({ message }));
+  response.cookie('token', token, { expire: dayjs().add(1, 'w').toDate() });
+
+  response.end(JSON.stringify({ id, username, avatar, userInGuild }));
 };
 
 const scrambles = (req, res) => {
+  console.log(req.headers['x-api-key']);
   const event = req.params.event;
   const date = dayjs(req.params.date);
 
@@ -43,77 +75,33 @@ const scrambles = (req, res) => {
   )(formattedDate, event);
 };
 
-const authDiscord = async (request, response) => {
-  const getJSON = (res) => res.json();
+const times = async (request, response) => {
+  console.log('Call');
+  const { token } = request.cookies;
+  const { event, solves } = request.body;
+  const { bot } = request;
 
-  const code = request.params.code;
-  const data = new URLSearchParams({
-    client_id: process.env.CLIENT_ID,
-    client_secret: process.env.CLIENT_SECRET,
-    grant_type: 'authorization_code',
-    code,
-    scope: 'identify guilds',
-    redirect_uri: process.env.WEBSITE_URL,
-  });
+  const { id } = await getUserId(token);
 
-  const { token_type, access_token } = await R.pipe(fetch, R.andThen(getJSON))(
-    'https://discord.com/api/oauth2/token',
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: data,
-    }
-  );
+  const userInGuild = false;
 
-  const headers = {
-    authorization: `${token_type} ${access_token}`,
-  };
-
-  const { id, username, avatar } = await R.pipe(
-    fetch,
-    R.andThen(getJSON)
-  )('https://discord.com/api/users/@me', { headers });
-
-  const isInGuild = await R.pipe(
-    fetch,
-    R.andThen(getJSON),
-    R.andThen(R.find(R.propEq('id')(process.env.GUILD_ID)))
-  )('https://discord.com/api/users/@me/guilds', { headers });
+  if (!userInGuild)
+    return response
+      .status(401)
+      .send
+      // 'Veuillez rejoindre le serveur discord <a href="https://discord.gg/B76mDkX">Cubeurs Francophones</a> pour participer.'
+      ();
 
   response.writeHead(200, {
     'Content-Type': 'application/json',
   });
-  response.end(JSON.stringify({ id, username, avatar, isInGuild }));
-};
 
-const times = (req, res) => {
-  const { author, event, solves } = req.body;
-
-  res.writeHead(200, {
-    'Content-Type': 'application/json',
-  });
-
-  R.pipe(
+  await R.pipe(
     inserNewTimes,
-    R.andThen(async (result) => {
-      res.end(JSON.stringify({ result }));
-      if (R.test(/^Vos/, result)) {
-        const chan = await req.bot.channels.fetch(
-          R.path(['env', event], process)
-        );
-        const date = dayjs().format('YYYY-MM-DD');
-
-        chan.messages
-          .fetch({ limit: 1 })
-          .then((messages) => messages.first().delete());
-        R.pipe(
-          getDayStandings,
-          R.andThen(dailyRankingsFormat(date)(chan)),
-          R.andThen((x) => chan.send(x))
-        )(date, event);
-      }
+    R.andThen((result) => {
+      response.end(JSON.stringify({ result }));
     })
-  )(author, event, solves);
+  )(id, event, solves, bot);
 };
 
 const dailyRankings = (req, res) => {
