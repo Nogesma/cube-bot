@@ -28,10 +28,6 @@ mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/test', {
 dayjs.extend(isBetween).extend(customParseFormat);
 
 const insertNewTimes = async (channel, date, author, event, solves) => {
-  if (channel.type !== 'dm') {
-    return 'Veuillez envoyer vos temps en message privé';
-  }
-
   if (
     date.isBetween(dayjs('23:59', 'H:m'), dayjs('23:59', 'H:m').add(2, 'm'))
   ) {
