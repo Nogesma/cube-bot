@@ -51,10 +51,8 @@ const getUserId = R.pipe(getUserByToken, R.andThen(R.prop('author')));
 
 const hasValidToken = R.pipe(getUserByToken, R.andThen(Boolean));
 
-const hasValidApiKey = async (apikey) => {
-  console.log('abc');
-  console.log(Boolean(await getUserByApi(apikey)));
-};
+const hasValidApiKey = async (apikey) =>
+  Boolean(await getUserByApi(apikey ?? ''));
 
 export {
   rejectRequest,

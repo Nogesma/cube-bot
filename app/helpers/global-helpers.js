@@ -59,14 +59,14 @@ const inserNewTimes = async (author, event, solves, bot) => {
 const updateDiscordRanking = async (date, event, bot) => {
   const chan = await bot.channels.fetch(R.path(['env', event], process));
 
-  chan.messages
-    .fetch({ limit: 1 })
-    .then((messages) => messages.first().delete());
-
   R.pipe(
     getDayStandings,
     R.andThen(dailyRankingsFormat(date)(chan)),
-    R.andThen((x) => chan.send(x))
+    R.andThen((x) =>
+      chan.messages
+        .fetch({ limit: 1 })
+        .then((messages) => messages.first().edit(x))
+    )
   )(date, event);
 };
 

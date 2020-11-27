@@ -52,7 +52,6 @@ const authDiscord = async (request, response) => {
 };
 
 const scrambles = (req, res) => {
-  console.log(req.headers['x-api-key']);
   const event = req.params.event;
   const date = dayjs(req.params.date);
 
@@ -76,21 +75,27 @@ const scrambles = (req, res) => {
 };
 
 const times = async (request, response) => {
-  console.log('Call');
   const { token } = request.cookies;
   const { event, solves } = request.body;
   const { bot } = request;
 
-  const { id } = await getUserId(token);
+  const id = await getUserId(token);
 
-  const userInGuild = false;
+  const userInGuild = await bot.guilds.get(process.env.GUILD_ID).then((guild) =>
+    guild.members
+      .get(id ?? '0')
+      .then((x) => console.log(x))
+      .catch((err) => console.error(err))
+  );
+
+  console.log(userInGuild);
 
   if (!userInGuild)
     return response
       .status(401)
-      .send
-      // 'Veuillez rejoindre le serveur discord <a href="https://discord.gg/B76mDkX">Cubeurs Francophones</a> pour participer.'
-      ();
+      .send(
+        'Veuillez rejoindre le serveur discord <a href="https://discord.gg/B76mDkX">Cubeurs Francophones</a> pour participer.'
+      );
 
   response.writeHead(200, {
     'Content-Type': 'application/json',

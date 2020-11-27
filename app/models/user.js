@@ -2,12 +2,18 @@ import mongoose from 'mongoose';
 import { events as availableEvents } from '../config.js';
 
 const userSchema = new mongoose.Schema({
-  single: { type: Number, required: true },
-  average: { type: Number, required: true },
-  singleDate: { type: Date },
-  averageDate: { type: Date },
+  pb: [
+    {
+      event: { type: String, enum: availableEvents },
+      single: { type: Number },
+      average: { type: Number },
+      singleDate: { type: Date },
+      averageDate: { type: Date },
+    },
+  ],
   author: { type: String, required: true },
-  event: { type: String, enum: availableEvents, require: true },
+  token: { type: String },
+  apiKey: { type: String },
 });
 
 export default mongoose.model('User', userSchema);
