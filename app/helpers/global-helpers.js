@@ -18,7 +18,7 @@ import { dailyRankingsFormat } from './messages-helpers.js';
 
 dayjs.extend(customParseFormat).extend(isBetween);
 
-const inserNewTimes = async (author, event, solves, channels) => {
+const insertNewTimes = async (author, event, solves, channels) => {
   const resultTime = dayjs('23:59', 'H:m');
   if (dayjs().isBetween(resultTime, resultTime.add(2, 'm'))) {
     return 'Vous ne pouvez pas soumettre de temps pendant la phase des résultats';
@@ -28,9 +28,8 @@ const inserNewTimes = async (author, event, solves, channels) => {
     return 'Veuillez entrer 5 temps';
   }
 
-  const times = R.map(timeToSeconds, solves);
-  const average = averageOfFiveCalculator(times);
-  const single = getBestTime(times);
+  const average = averageOfFiveCalculator(solves);
+  const single = getBestTime(solves);
 
   if (average < 0) {
     return 'Veuillez entrer des temps valides';
@@ -46,7 +45,7 @@ const inserNewTimes = async (author, event, solves, channels) => {
     event,
     average,
     single,
-    times
+    solves
   );
 
   updateDiscordRanking(date, event, channels);
@@ -57,7 +56,7 @@ const inserNewTimes = async (author, event, solves, channels) => {
 };
 
 const updateDiscordRanking = async (date, event, channels) => {
-  const chan = await channels.fetch(R.path(['env', event], process));
+  const chan = await channels.cache.get(R.path(['env', event], process));
 
   R.pipe(
     getDayStandings,
@@ -70,4 +69,4 @@ const updateDiscordRanking = async (date, event, channels) => {
   )(date, event);
 };
 
-export { inserNewTimes };
+export { insertNewTimes };

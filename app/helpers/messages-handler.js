@@ -9,7 +9,6 @@ import {
   haveTimesForToday,
   addNotifSquad,
   deleteNotifSquad,
-  getUserById,
 } from '../controllers/cube-db.js';
 import {
   helpMessage,
@@ -20,7 +19,8 @@ import {
   displayPB,
   getTime,
 } from './messages-helpers.js';
-import { inserNewTimes } from './global-helpers.js';
+import { insertNewTimes } from './global-helpers.js';
+import { timeToSeconds } from '../tools/calculators.js';
 
 const sendMessageToChannel = (channel) =>
   R.pipe((x) => channel.send(x), R.always(undefined));
@@ -35,10 +35,10 @@ const helpCommand = (x) =>
 const newTimesCommand = ({ channel, author, args }) => {
   const messageSender = sendMessageToChannel(channel);
   const event = getEvent(args, messageSender);
-  const solves = R.tail(args);
+  const solves = R.map(timeToSeconds, R.tail(args));
 
   if (event)
-    R.pipe(inserNewTimes, R.andThen(messageSender))(
+    R.pipe(insertNewTimes, R.andThen(messageSender))(
       R.prop('id')(author),
       event,
       solves,
@@ -117,6 +117,7 @@ const idonotdoCommand = ({ author, channel, args }) => {
     )(R.prop('id', author), time);
 };
 
+//TODO: Change pb command to handle new user model
 const pbCommand = ({ author, channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
 
@@ -143,6 +144,7 @@ const pbCommand = ({ author, channel, args }) => {
   )(event ? [event] : availableEvents);
 };
 
+// TODO: Fix display of scrambles
 const scrCommand = ({ channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
   const event = getEvent(args, messageSender);

@@ -8,7 +8,7 @@ import {
   getMonthStandings,
   getScramble,
 } from '../controllers/cube-db.js';
-import { inserNewTimes } from './global-helpers.js';
+import { insertNewTimes } from './global-helpers.js';
 import {
   getDiscordToken,
   getGuildData,
@@ -17,12 +17,10 @@ import {
   rejectRequest,
   setUserToken,
 } from './routes-helpers.js';
-import { dailyRankingsFormat } from './messages-helpers.js';
 
 dayjs.extend(customParseFormat);
 
 const authDiscord = async (request, response) => {
-  console.log('Trying to auth');
   const code = request.params.code;
   const data = new URLSearchParams({
     client_id: process.env.CLIENT_ID,
@@ -100,7 +98,7 @@ const times = async (request, response) => {
   });
 
   await R.pipe(
-    inserNewTimes,
+    insertNewTimes,
     R.andThen((result) => {
       response.end(JSON.stringify({ result }));
     })
