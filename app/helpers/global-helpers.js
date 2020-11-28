@@ -46,7 +46,7 @@ const inserNewTimes = async (author, event, solves, bot) => {
     event,
     average,
     single,
-    solves
+    times
   );
 
   updateDiscordRanking(date, event, bot);
