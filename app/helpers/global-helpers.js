@@ -18,7 +18,7 @@ import { dailyRankingsFormat } from './messages-helpers.js';
 
 dayjs.extend(customParseFormat).extend(isBetween);
 
-const inserNewTimes = async (author, event, solves, bot) => {
+const inserNewTimes = async (author, event, solves, channels) => {
   const resultTime = dayjs('23:59', 'H:m');
   if (dayjs().isBetween(resultTime, resultTime.add(2, 'm'))) {
     return 'Vous ne pouvez pas soumettre de temps pendant la phase des résultats';
@@ -49,15 +49,15 @@ const inserNewTimes = async (author, event, solves, bot) => {
     times
   );
 
-  updateDiscordRanking(date, event, bot);
+  updateDiscordRanking(date, event, channels);
 
   return `Vos temps ont bien été ${
     hasCube ? 'modifiés' : 'enregistrés'
   }, ao5: ${secondsToTime(average)}`;
 };
 
-const updateDiscordRanking = async (date, event, bot) => {
-  const chan = await bot.channels.fetch(R.path(['env', event], process));
+const updateDiscordRanking = async (date, event, channels) => {
+  const chan = await channels.fetch(R.path(['env', event], process));
 
   R.pipe(
     getDayStandings,

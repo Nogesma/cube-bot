@@ -37,8 +37,8 @@ app.use((req, res, next) => {
 });
 app.use(cookieParser());
 
+app.get('/api/oauth/discord/:code', oauth);
 app.use('/api', api);
-app.get('/oauth/discord/:code', oauth);
 
 app.listen(port, () => {
   logger.info(`Server listenning on port ${port}`);

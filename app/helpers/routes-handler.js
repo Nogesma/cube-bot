@@ -22,6 +22,7 @@ import { dailyRankingsFormat } from './messages-helpers.js';
 dayjs.extend(customParseFormat);
 
 const authDiscord = async (request, response) => {
+  console.log('Trying to auth');
   const code = request.params.code;
   const data = new URLSearchParams({
     client_id: process.env.CLIENT_ID,
@@ -39,14 +40,14 @@ const authDiscord = async (request, response) => {
   const userInGuild = Boolean(await getGuildData(token_type, access_token));
 
   if (!id) return response.writeHead(400).end();
-  const token = nanoid();
 
+  const token = nanoid();
   setUserToken(id, token);
 
+  response.cookie('token', token, { expire: dayjs().add(1, 'w').toDate() });
   response.writeHead(200, {
     'Content-Type': 'application/json',
   });
-  response.cookie('token', token, { expire: dayjs().add(1, 'w').toDate() });
 
   response.end(JSON.stringify({ id, username, avatar, userInGuild }));
 };
@@ -76,19 +77,16 @@ const scrambles = (req, res) => {
 
 const times = async (request, response) => {
   const { token } = request.cookies;
+
   const { event, solves } = request.body;
   const { bot } = request;
 
   const id = await getUserId(token);
 
-  const userInGuild = await bot.guilds.get(process.env.GUILD_ID).then((guild) =>
-    guild.members
-      .get(id ?? '0')
-      .then((x) => console.log(x))
-      .catch((err) => console.error(err))
-  );
-
-  console.log(userInGuild);
+  // TODO: If user not in guil handle possible discord error
+  const userInGuild = await bot.guilds
+    .fetch(process.env.GUILD_ID)
+    .then((guild) => guild.members.fetch(id));
 
   if (!userInGuild)
     return response
@@ -106,7 +104,7 @@ const times = async (request, response) => {
     R.andThen((result) => {
       response.end(JSON.stringify({ result }));
     })
-  )(id, event, solves, bot);
+  )(id, event, solves, bot.channels);
 };
 
 const dailyRankings = (req, res) => {

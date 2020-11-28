@@ -41,7 +41,8 @@ const newTimesCommand = ({ channel, author, args }) => {
     R.pipe(inserNewTimes, R.andThen(messageSender))(
       R.prop('id')(author),
       event,
-      solves
+      solves,
+      channel.client.channels
     );
 };
 

@@ -1,5 +1,4 @@
 import express from 'express';
-import expressBasicAuth from 'express-basic-auth';
 import {
   scrambles,
   authDiscord,
