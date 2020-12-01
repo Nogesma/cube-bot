@@ -15,7 +15,6 @@ const helpMessage = async () =>
     '```',
   ]);
 
-// TODO: Convert solves to string
 const dailyRankingsFormat = R.curry((date, channel, ranks) =>
   R.join('\n', [
     '```glsl',

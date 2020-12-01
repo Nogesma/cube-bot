@@ -56,7 +56,7 @@ const insertNewTimes = async (author, event, solves, channels) => {
 };
 
 const updateDiscordRanking = async (date, event, channels) => {
-  const chan = await channels.cache.get(R.path(['env', event], process));
+  const chan = await channels.fetch(R.path(['env', event], process));
 
   R.pipe(
     getDayStandings,

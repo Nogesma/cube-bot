@@ -8,11 +8,8 @@ Donnera le classement du 03 mai 2018 (spoiler, y en a pas)
 # Afficher le classement d'un mois : ?classementmois <event> [date]
 Exemple : ?classementmois 333 2018-05
 
-# Afficher vos pb : ?pb <event>
+# Afficher vos pb : ?pb [event] [pseudo]
 Exemple : ?pb 333
-
-# Afficher votre participation d'aujourd'hui : ?didido <event>
-Exemple : ?didido 333
 
 # Recevoir une notification pour vous rappeler de participer : ?ido <heure>
 Exemple : ?ido 19
@@ -21,4 +18,5 @@ Vous pouvez rentrer des heures de 1h à 23h
 # Ne plus recevoir de notifications : ?idonotdo <heure>
 Exemple : ?idonotdo 19
 
-# Events disponibles : 333, 222, 444, 3bld, oh, sq1, minx, pyram
+# Events disponibles : 333, 222, 444, 3bld, oh, sq1, mega, pyra
+Les arguments obligatoires sont entre <>, ceux faculatifs sont entre []
