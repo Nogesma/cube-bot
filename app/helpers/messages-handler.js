@@ -1,16 +1,13 @@
 import R from 'ramda';
-import dayjs from 'dayjs';
 
 import { events as availableEvents } from '../config.js';
-import { getScrambles } from '../controllers/scrambler.js';
+import { formatScrambles, genScrambles } from '../controllers/scrambler.js';
 import {
-  insertNewTimes,
   getDayStandings,
   getMonthStandings,
-  haveTimesForToday,
   addNotifSquad,
   deleteNotifSquad,
-  getUserPB,
+  getUserById,
 } from '../controllers/cube-db.js';
 import {
   helpMessage,
@@ -21,6 +18,8 @@ import {
   displayPB,
   getTime,
 } from './messages-helpers.js';
+import { insertNewTimes } from './global-helpers.js';
+import { timeToSeconds } from '../tools/calculators.js';
 
 const sendMessageToChannel = (channel) =>
   R.pipe((x) => channel.send(x), R.always(undefined));
@@ -35,16 +34,14 @@ const helpCommand = (x) =>
 const newTimesCommand = ({ channel, author, args }) => {
   const messageSender = sendMessageToChannel(channel);
   const event = getEvent(args, messageSender);
-  const date = dayjs();
-  const solves = R.tail(args);
+  const solves = R.map(timeToSeconds, R.tail(args));
 
   if (event)
     R.pipe(insertNewTimes, R.andThen(messageSender))(
-      channel,
-      date,
-      author,
+      R.prop('id')(author),
       event,
-      solves
+      solves,
+      channel.client.channels
     );
 };
 
@@ -78,23 +75,6 @@ const monthlyRanksCommand = ({ channel, args }) => {
       getMonthStandings,
       R.andThen(R.pipe(monthlyRankingsFormat(date)(channel), messageSender))
     )(date, event);
-};
-
-const dididoCommand = ({ author, channel, args }) => {
-  const date = dayjs().format('YYYY-MM-DD');
-  const messageSender = sendMessageToChannel(channel);
-  const event = getEvent(args, messageSender);
-
-  if (event)
-    R.pipe(
-      haveTimesForToday,
-      R.andThen(
-        R.pipe(
-          (participation) => (participation ? 'Oui' : 'Non'),
-          messageSender
-        )
-      )
-    )(date, R.prop('id')(author), event);
 };
 
 const idoCommand = ({ author, channel, args }) => {
@@ -135,8 +115,11 @@ const pbCommand = ({ author, channel, args }) => {
   const displayPBforUser = displayPB(user);
 
   R.pipe(
-    (events) =>
-      Promise.all(R.map(async (e) => [e, await getUserPB(user, e)], events)),
+    async (events) =>
+      R.filter(
+        R.propSatisfies(R.includes(R.__, events), 'event'),
+        (await getUserById(user.id))?.pb
+      ),
     R.andThen(displayPBforUser),
     R.andThen(messageSender)
   )(event ? [event] : availableEvents);
@@ -146,9 +129,9 @@ const scrCommand = ({ channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
   const event = getEvent(args, messageSender);
   const n = Number(args[1]);
-  const numberOfAlgs = n <= 5 ? n : 1;
+  const numberOfAlgs = R.both(R.gt(6), R.lt(0))(n) ? n : 1;
 
-  if (event) messageSender(getScrambles(event, numberOfAlgs));
+  if (event) messageSender(formatScrambles(genScrambles(event, numberOfAlgs)));
 };
 
 export {
@@ -156,7 +139,6 @@ export {
   newTimesCommand,
   dailyRanksCommand,
   monthlyRanksCommand,
-  dididoCommand,
   idoCommand,
   idonotdoCommand,
   pbCommand,

@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import dayjs from 'dayjs';
 import {
   helpMessage,
-  displayMonthDate_,
+  _displayMonthDate,
 } from '../../app/helpers/messages-helpers.js';
 
 describe('helpMessage', () => {
@@ -17,11 +17,11 @@ describe('helpMessage', () => {
 
 describe('displayMonthDate_', () => {
   test("returns 'en cours' if it's the current month", () => {
-    expect(displayMonthDate_(dayjs().format('YYYY-MM'))).toBe('en cours');
+    expect(_displayMonthDate(dayjs().format('YYYY-MM'))).toBe('en cours');
   });
 
   test("returns the date in YYYY-MM if it's not the current month", () => {
-    expect(displayMonthDate_('2020-03')).toBe('2020-03');
-    expect(displayMonthDate_('2012-01')).toBe('2012-01');
+    expect(_displayMonthDate('2020-03')).toBe('2020-03');
+    expect(_displayMonthDate('2012-01')).toBe('2012-01');
   });
 });

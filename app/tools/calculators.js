@@ -31,14 +31,18 @@ const secondsToTime = (time) => {
   return `${min ? min + ':' : ''}${s}`;
 };
 
-const averageOfFiveCalculator = (times) => {
-  if (R.length(R.filter(R.lt(0), times)) === 5) {
-    times = R.slice(1, -1, R.sort(R.subtract, times));
-    return Number((R.sum(times) / 3).toFixed(2));
-  }
-
-  return -Infinity;
-};
+const averageOfFiveCalculator = R.ifElse(
+  R.pipe(R.filter(R.lt(0)), R.length, R.equals(5)),
+  R.pipe(
+    R.sort(R.subtract),
+    R.slice(1, -1),
+    R.sum,
+    R.divide(R.__, 3),
+    (x) => x.toFixed(2),
+    Number
+  ),
+  R.always(-Infinity)
+);
 
 const getBestTime = R.reduce(R.min, Infinity);
 

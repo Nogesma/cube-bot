@@ -20,8 +20,7 @@ const dailyRankingsFormat = R.curry((date, channel, ranks) =>
     '```glsl',
     `Classement du ${date} :`,
     ...ranks.map((cuber, idx) => {
-      const user = channel.client.users.cache.get(cuber.author);
-      const name = user?.username ?? 'RAGE-QUITTER';
+      const name = parseUsername(cuber.author, channel);
       const pts = computeScore(ranks.length, idx);
       return R.join('\n', [
         `#${idx + 1} ${name}: ${cuber.average} ao5, ${
@@ -34,21 +33,26 @@ const dailyRankingsFormat = R.curry((date, channel, ranks) =>
   ])
 );
 
-const displayMonthDate_ = (date) =>
+const _displayMonthDate = (date) =>
   dayjs().format('YYYY-MM') === date ? 'en cours' : date;
 
 const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
   R.join('\n', [
     '```xl',
-    `Classement du mois (${displayMonthDate_(date)}) :`,
+    `Classement du mois (${_displayMonthDate(date)}) :`,
     ...ranks.map((cuber, idx) => {
-      const user = channel.client.users.cache.get(cuber.author);
-      const name = user?.username ?? 'RAGE-QUITTER';
+      const name = parseUsername(cuber.author, channel);
       return `#${idx + 1} ${name} : ${cuber.score} pts (${cuber.attendances})`;
     }),
     '```',
   ])
 );
+
+const parseUsername = (author, channel) => {
+  const user = channel.client.users.cache.get(author);
+  const name = user?.username ?? 'RAGE-QUITTER';
+  return R.replace(/'/g, 'ˈ', name);
+};
 
 const getEvent = (args, messageSender) =>
   R.pipe(
@@ -81,10 +85,9 @@ const displayPB = R.curry((user, pb) =>
   R.join('\n', [
     `__PB de ${user.username}:__`,
     R.pipe(
-      R.filter(([_, x]) => x),
-      R.map(([e, { single, singleDate, average, averageDate }]) =>
+      R.map(({ event, single, singleDate, average, averageDate }) =>
         R.join('\n', [
-          `__${e}:__`,
+          `__${event}:__`,
           `PB Single: ${secondsToTime(single)} ${
             singleDate ? `(${dayjs(singleDate).format('YYYY-MM-DD')})` : ''
           }`,
@@ -105,6 +108,6 @@ export {
   getEvent,
   getDate,
   getTime,
-  displayMonthDate_,
+  _displayMonthDate,
   displayPB,
 };
