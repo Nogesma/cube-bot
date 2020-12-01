@@ -118,7 +118,7 @@ const pbCommand = ({ author, channel, args }) => {
     async (events) =>
       R.filter(
         R.propSatisfies(R.includes(R.__, events), 'event'),
-        (await getUserById(user.id))?.pb
+        (await getUserById(user.id))?.pb ?? []
       ),
     R.andThen(displayPBforUser),
     R.andThen(messageSender)

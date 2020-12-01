@@ -16,6 +16,7 @@ import {
 } from './cube-db.js';
 import { removeRole, addRole } from './roles-controller.js';
 import { sendScrambles, formatScrambles } from './scrambler.js';
+import { prependEvent } from '../helpers/global-helpers.js';
 
 const cronList_ = [];
 
@@ -41,7 +42,9 @@ const startCron = (bot) => {
         const send = sendScrambles(date);
 
         const scrambleSend = async (event) => {
-          const chan = bot.channels.cache.get(R.path(['env', event], process));
+          const chan = bot.channels.cache.get(
+            R.path(['env', prependEvent(event)], process)
+          );
           const scrambles = R.prop('scrambles', await getScramble(date, event));
           const scrambleArray = R.map(R.prop('scrambleString'), scrambles);
 
@@ -80,7 +83,9 @@ const startCron = (bot) => {
         ])([date]);
 
         const monthStandings = (event) => {
-          const chan = bot.channels.cache.get(R.path(['env', event], process));
+          const chan = bot.channels.cache.get(
+            R.path(['env', prependEvent(event)], process)
+          );
 
           R.pipe(
             standings,
