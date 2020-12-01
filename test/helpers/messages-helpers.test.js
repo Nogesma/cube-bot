@@ -15,7 +15,7 @@ describe('helpMessage', () => {
   });
 });
 
-describe('displayMonthDate_', () => {
+describe('_displayMonthDate', () => {
   test("returns 'en cours' if it's the current month", () => {
     expect(_displayMonthDate(dayjs().format('YYYY-MM'))).toBe('en cours');
   });

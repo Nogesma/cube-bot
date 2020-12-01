@@ -6,7 +6,6 @@ import {
   averageOfFiveCalculator,
   getBestTime,
   secondsToTime,
-  timeToSeconds,
 } from '../tools/calculators.js';
 import {
   getDayStandings,
@@ -45,7 +44,7 @@ const insertNewTimes = async (author, event, solves, channels) => {
     event,
     average,
     single,
-    solves
+    R.map(removeInfinity, solves)
   );
 
   updateDiscordRanking(date, event, channels);
@@ -55,8 +54,16 @@ const insertNewTimes = async (author, event, solves, channels) => {
   }, ao5: ${secondsToTime(average)}`;
 };
 
+const removeInfinity = (time) => (time === Infinity ? -1 : time);
+
+const addInfinity = (time) => (time === -1 ? Infinity : time);
+
+const prependEvent = (event) => 'EVENT_' + event;
+
 const updateDiscordRanking = async (date, event, channels) => {
-  const chan = await channels.fetch(R.path(['env', event], process));
+  const chan = await channels.fetch(
+    R.path(['env', prependEvent(event)], process)
+  );
 
   R.pipe(
     getDayStandings,
@@ -69,4 +76,4 @@ const updateDiscordRanking = async (date, event, channels) => {
   )(date, event);
 };
 
-export { insertNewTimes };
+export { insertNewTimes, removeInfinity, addInfinity, prependEvent };
