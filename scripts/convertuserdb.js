@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
 import Bromise from 'bluebird';
-import User from './app/models/user.js';
-import Author from './app/models/author.js';
+import User from '../app/models/user.js';
+import OldUser from '../app/models/author.js';
 
 mongoose.Promise = Bromise;
 mongoose.connect(process.env.MONGO_URL, {
@@ -13,7 +13,7 @@ mongoose.connect(process.env.MONGO_URL, {
 });
 
 const isOldUser = async (author) =>
-  Boolean(await Author.findOne({ author }).exec());
+  Boolean(await User.findOne({ author }).exec());
 
 const createUsers = async ({
   event,
@@ -35,9 +35,9 @@ const createUsers = async ({
   const pb = { event: e, single, singleDate, average, averageDate };
 
   if (isNotNew) {
-    await Author.findOneAndUpdate({ author }, { $addToSet: { pb } }).exec();
+    await User.findOneAndUpdate({ author }, { $addToSet: { pb } }).exec();
   } else {
-    await new Author({
+    await new User({
       author,
       pb: [pb],
     }).save();
@@ -45,13 +45,13 @@ const createUsers = async ({
 };
 
 const update = async () => {
-  const users = await User.find();
+  const users = await OldUser.find();
   for (const user of users) {
     await createUsers(user);
   }
 
-  const newAuthors = await Author.find();
-  for (const author of newAuthors) {
+  const newUsers = await User.find();
+  for (const author of newUsers) {
     if (author.pb.length > 8) {
       console.log({ author: author.author });
     }
@@ -59,4 +59,3 @@ const update = async () => {
 };
 
 update().then((x) => console.log(x));
-// isOldUser('465948420230873089').then((x) => console.log(x));

@@ -18,14 +18,14 @@ const rejectRequest = (req, res, message) => {
 };
 
 const getDiscordToken = (body) =>
-  R.pipe(fetch, R.andThen(getJSON))('https://discord.com/api/oauth2/token', {
+  R.pipe(fetch, R.andThen(getJSON))('https://discord.com/api/v8/oauth2/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body,
   });
 
 const getUserData = (token_type, access_token) =>
-  R.pipe(fetch, R.andThen(getJSON))('https://discord.com/api/users/@me', {
+  R.pipe(fetch, R.andThen(getJSON))('https://discord.com/api/v8/users/@me', {
     headers: {
       authorization: `${token_type} ${access_token}`,
     },
@@ -36,7 +36,7 @@ const getGuildData = (token_type, access_token) =>
     fetch,
     R.andThen(getJSON),
     R.andThen(R.find(R.propEq('id')(process.env.GUILD_ID)))
-  )('https://discord.com/api/users/@me/guilds', {
+  )('https://discord.com/api/v8/users/@me/guilds', {
     headers: {
       authorization: `${token_type} ${access_token}`,
     },

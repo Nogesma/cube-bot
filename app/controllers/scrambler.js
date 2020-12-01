@@ -10,7 +10,7 @@ const genScrambles = (event, number) =>
 
 const formatScrambles = R.pipe(
   R.map(R.replace(/\n/g, ' ')),
-  R.join('``````'),
+  R.join('```\n```'),
   (x) => R.join('', ['```', x, '```'])
 );
 

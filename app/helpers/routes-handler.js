@@ -42,7 +42,7 @@ const authDiscord = async (request, response) => {
   const token = nanoid();
   setUserToken(id, token);
 
-  response.cookie('token', token, { expire: dayjs().add(1, 'w').toDate() });
+  response.cookie('token', token, { expire: dayjs().add(1, 'w').toDate(), sameSite: "strict" });
   response.writeHead(200, {
     'Content-Type': 'application/json',
   });

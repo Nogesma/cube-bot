@@ -1,14 +1,13 @@
 import R from 'ramda';
-import dayjs from 'dayjs';
 
 import { events as availableEvents } from '../config.js';
-import { genScrambles } from '../controllers/scrambler.js';
+import { formatScrambles, genScrambles } from '../controllers/scrambler.js';
 import {
   getDayStandings,
   getMonthStandings,
-  haveTimesForToday,
   addNotifSquad,
   deleteNotifSquad,
+  getUserById,
 } from '../controllers/cube-db.js';
 import {
   helpMessage,
@@ -78,23 +77,6 @@ const monthlyRanksCommand = ({ channel, args }) => {
     )(date, event);
 };
 
-const dididoCommand = ({ author, channel, args }) => {
-  const date = dayjs().format('YYYY-MM-DD');
-  const messageSender = sendMessageToChannel(channel);
-  const event = getEvent(args, messageSender);
-
-  if (event)
-    R.pipe(
-      haveTimesForToday,
-      R.andThen(
-        R.pipe(
-          (participation) => (participation ? 'Oui' : 'Non'),
-          messageSender
-        )
-      )
-    )(date, R.prop('id')(author), event);
-};
-
 const idoCommand = ({ author, channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
   const time = getTime(args, messageSender);
@@ -117,7 +99,6 @@ const idonotdoCommand = ({ author, channel, args }) => {
     )(R.prop('id', author), time);
 };
 
-//TODO: Change pb command to handle new user model
 const pbCommand = ({ author, channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
 
@@ -134,24 +115,23 @@ const pbCommand = ({ author, channel, args }) => {
   const displayPBforUser = displayPB(user);
 
   R.pipe(
-    (events) =>
+    async (events) =>
       R.filter(
         R.propSatisfies(R.includes(R.__, events), 'event'),
-        getUser(user)
+        (await getUserById(user.id))?.pb
       ),
     R.andThen(displayPBforUser),
     R.andThen(messageSender)
   )(event ? [event] : availableEvents);
 };
 
-// TODO: Fix display of scrambles
 const scrCommand = ({ channel, args }) => {
   const messageSender = sendMessageToChannel(channel);
   const event = getEvent(args, messageSender);
   const n = Number(args[1]);
   const numberOfAlgs = R.both(R.gt(6), R.lt(0))(n) ? n : 1;
 
-  if (event) messageSender(genScrambles(event, numberOfAlgs));
+  if (event) messageSender(formatScrambles(genScrambles(event, numberOfAlgs)));
 };
 
 export {
@@ -159,7 +139,6 @@ export {
   newTimesCommand,
   dailyRanksCommand,
   monthlyRanksCommand,
-  dididoCommand,
   idoCommand,
   idonotdoCommand,
   pbCommand,

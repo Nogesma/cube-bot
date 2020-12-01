@@ -21,46 +21,58 @@ const updateCube = (author, date, event, average, single, solves) =>
 const writeCube = (author, date, event, average, single, solves) =>
   new Cube({ author, date, event, average, single, solves }).save();
 
-/**
- * Compute the daily standings and saves them to db
- * @param {String} date - Format : YYYY-MM-DD
- * @param {String} event - 333 the event for which we compete
- */
+const updateUserPB = (author, event, date, single, average) =>
+  User.findOne({ author })
+    .then((user) => {
+      const eventIndex = R.findIndex(R.propEq('event', event), user.pb);
+      if (eventIndex === -1) {
+        user.pb = [
+          ...user,
+          {
+            event,
+            single: single,
+            average: average,
+            singleDate: date,
+            averageDate: date,
+          },
+        ];
+      } else {
+        const eventPB = user[eventIndex] ? user[eventIndex] : {};
+
+        if (eventPB.single > single) {
+          eventPB.single = single;
+          eventPB.singleDate = date;
+        }
+
+        if (eventPB.average > average) {
+          eventPB.average = average;
+          eventPB.averageDate = date;
+        }
+        user.pb = [...R.remove(eventIndex, 1, user), eventPB];
+      }
+      return user.save();
+    })
+    .catch(() => {
+      return new User({
+        author,
+        pb: [
+          {
+            event,
+            single: single,
+            average: average,
+            singleDate: date,
+            averageDate: date,
+          },
+        ],
+      }).save();
+    });
+
 const updateStandings = R.curry(async (date, event) => {
   const monthDate = dayjs(date).format('YYYY-MM');
   const todayStandings = sortRankings(await Cube.find({ date, event }));
   const promisesUpdate = [];
 
   R.addIndex(R.forEach)(async (entry, index) => {
-    promisesUpdate.push(
-      User.findOne({
-        author: entry.author,
-        event,
-      })
-        .then((user) => {
-          if (user.single > entry.single) {
-            user.single = entry.single;
-            user.singleDate = date;
-          }
-
-          if (user.average > entry.average) {
-            user.average = entry.average;
-            user.averageDate = date;
-          }
-          return user.save();
-        })
-        .catch(() => {
-          return new User({
-            author: entry.author,
-            single: entry.single,
-            singleDate: date,
-            average: entry.average,
-            averageDate: date,
-            event,
-          }).save();
-        })
-    );
-
     promisesUpdate.push(
       Ranking.findOne({ date: monthDate, author: entry.author, event })
         .then((currentStanding) => {
@@ -77,6 +89,9 @@ const updateStandings = R.curry(async (date, event) => {
             event,
           }).save();
         })
+    );
+    promisesUpdate.push(
+      updateUserPB(entry.user, event, date, entry.single, entry.average)
     );
   }, todayStandings);
   await Promise.all(promisesUpdate);
@@ -122,7 +137,7 @@ const getUserById = (author) => User.findOne({ author }).exec();
 
 const getUserByToken = (token) => User.findOne({ token }).exec();
 
-const writeUser = (author, token) => new User({ author, token }).save();
+const writeUser = (author, token) => new User({ author, token, pb: [] }).save();
 
 const updateUser = (author, token) =>
   User.findOneAndUpdate({ author }, { $set: { token } }).exec();

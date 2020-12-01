@@ -1,9 +1,6 @@
 import mongoose from 'mongoose';
-import Cube from './app/models/cubes.js';
-import Bromise from 'bluebird';
-import User from './app/models/user.js';
-import Ranking from './app/models/rankings.js';
-import Scrambles from './app/models/scrambles.js';
+import Cube from '../app/models/cubes.js';
+import Ranking from '../app/models/rankings.js';
 
 mongoose.connect(process.env.MONGO_URL);
 
