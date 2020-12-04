@@ -42,7 +42,7 @@ const startCron = (bot) => {
         const send = sendScrambles(date);
 
         const scrambleSend = async (event) => {
-          const chan = bot.channels.cache.get(
+          const chan = await bot.channels.fetch(
             R.path(['env', prependEvent(event)], process)
           );
           const scrambles = R.prop('scrambles', await getScramble(date, event));
