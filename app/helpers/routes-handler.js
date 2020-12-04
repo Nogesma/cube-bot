@@ -42,7 +42,10 @@ const authDiscord = async (request, response) => {
   const token = nanoid();
   setUserToken(id, token);
 
-  response.cookie('token', token, { expire: dayjs().add(1, 'w').toDate(), sameSite: "strict" });
+  response.cookie('token', token, {
+    expire: dayjs().add(1, 'w').toDate(),
+    sameSite: 'strict',
+  });
   response.writeHead(200, {
     'Content-Type': 'application/json',
   });
@@ -102,7 +105,12 @@ const times = async (request, response) => {
     R.andThen((result) => {
       response.end(JSON.stringify({ result }));
     })
-  )(id, event, solves, bot.channels);
+  )(
+    id,
+    event,
+    R.map((s) => s ?? Infinity, solves),
+    bot.channels
+  );
 };
 
 const dailyRankings = (req, res) => {

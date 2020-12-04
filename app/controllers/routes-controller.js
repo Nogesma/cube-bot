@@ -22,8 +22,8 @@ api.use(async (req, res, next) => {
 });
 
 api.get('/scrambles/:event/?(:date)', scrambles);
-api.get('/rankings/day/:event/(:date)?', dailyRankings);
-api.get('/rankings/month/:event/(:date)?', monthlyRankings);
+api.get('/rankings/day/:event/?(:date)', dailyRankings);
+api.get('/rankings/month/:event/?(:date)', monthlyRankings);
 
 api.post('/times', times);
 
