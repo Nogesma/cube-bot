@@ -26,9 +26,10 @@ const updateUserPB = (author, event, date, single, average) =>
   User.findOne({ author })
     .then((user) => {
       const eventIndex = R.findIndex(R.propEq('event', event), user.pb);
+      console.log({ eventIndex });
       if (eventIndex === -1) {
         user.pb = [
-          ...user,
+          ...user.pb,
           {
             event,
             single: single,
@@ -38,8 +39,8 @@ const updateUserPB = (author, event, date, single, average) =>
           },
         ];
       } else {
-        const eventPB = user[eventIndex] ? user[eventIndex] : {};
-
+        const eventPB = user.pb[eventIndex];
+        console.log({ eventPB });
         if (eventPB.single > single) {
           eventPB.single = single;
           eventPB.singleDate = date;
@@ -49,7 +50,8 @@ const updateUserPB = (author, event, date, single, average) =>
           eventPB.average = average;
           eventPB.averageDate = date;
         }
-        user.pb = [...R.remove(eventIndex, 1, user), eventPB];
+        user.pb = [...R.remove(eventIndex, 1, user.pb), eventPB];
+        console.log(user.pb);
       }
       return user.save();
     })
@@ -92,7 +94,7 @@ const updateStandings = R.curry(async (date, event) => {
         })
     );
     promisesUpdate.push(
-      updateUserPB(entry.user, event, date, entry.single, entry.average)
+      updateUserPB(entry.author, event, date, entry.single, entry.average)
     );
   }, todayStandings);
   await Promise.all(promisesUpdate);
