@@ -33,7 +33,12 @@ const authDiscord = async (request, response) => {
 
   const { token_type, access_token } = await getDiscordToken(data);
 
-  const { id, username, avatar } = await getUserData(token_type, access_token);
+  const { id, username, avatar, discriminator } = await getUserData(
+    token_type,
+    access_token
+  );
+
+  const userAvatar = avatar ?? discriminator % 5;
 
   const userInGuild = Boolean(await getGuildData(token_type, access_token));
 
@@ -50,7 +55,9 @@ const authDiscord = async (request, response) => {
     'Content-Type': 'application/json',
   });
 
-  response.end(JSON.stringify({ id, username, avatar, userInGuild }));
+  response.end(
+    JSON.stringify({ id, username, avatar: userAvatar, userInGuild })
+  );
 };
 
 const scrambles = (req, res) => {
