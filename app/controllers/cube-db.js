@@ -61,8 +61,8 @@ const updateUserPB = (author, event, date, single, average) =>
         pb: [
           {
             event,
-            single: single,
-            average: average,
+            single,
+            average,
             singleDate: date,
             averageDate: date,
           },
