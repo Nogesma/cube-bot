@@ -9,7 +9,7 @@ COPY yarn.lock .
 
 RUN yarn
 
-COPY app/ .
+COPY app app/
 COPY index.js .
 
 CMD ["yarn", "run", "prod"]
