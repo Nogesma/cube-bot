@@ -11,7 +11,6 @@ import {
   sortRankings,
 } from '../tools/calculators.js';
 import dayjs from 'dayjs';
-import { addInfinity } from '../helpers/global-helpers.js';
 
 const updateCube = (author, date, event, average, single, solves) =>
   Cube.findOneAndUpdate(
@@ -109,17 +108,12 @@ const getDayStandings = R.curry(async (date, event) =>
     (x) =>
       R.over(
         R.lensProp('average'),
-        R.pipe(addInfinity, secondsToTime)
+        secondsToTime
       )(
         R.over(
           R.lensProp('single'),
-          R.pipe(addInfinity, secondsToTime)
-        )(
-          R.over(
-            R.lensProp('solves'),
-            R.map(R.pipe(addInfinity, secondsToTime))
-          )(x)
-        )
+          secondsToTime
+        )(R.over(R.lensProp('solves'), R.map(secondsToTime))(x))
       ),
     sortRankings(await Cube.find({ date, event }).exec())
   )
