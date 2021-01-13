@@ -11,6 +11,7 @@
     "test": "prettier -c **/*.js *.json && node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "dependencies": {
+    "bluebird": "^3.7.2",
     "chalk": "^4.1.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
@@ -29,7 +30,7 @@
   },
   "devDependencies": {
     "@shelf/jest-mongodb": "^1.2.3",
-    "@types/express": "^4.17.9",
+    "@types/express": "^4.17.11",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.20",
     "dotenv": "^8.2.0",

@@ -1,6 +1,8 @@
 import { CronJob } from 'cron';
 import dayjs from 'dayjs';
 import R from 'ramda';
+import pkg from 'bluebird';
+const { Promise } = pkg;
 
 import { events, hours } from '../config.js';
 import {
@@ -26,8 +28,7 @@ const startCron = (bot) => {
       cronTime: '30 59 23 * * *',
       onTick: () => {
         const standingsDate = dayjs().format('YYYY-MM-DD');
-
-        R.map(updateStandings(standingsDate), events);
+        Promise.each(events, updateStandings(standingsDate));
       },
       start: false,
       timeZone: 'Europe/Paris',

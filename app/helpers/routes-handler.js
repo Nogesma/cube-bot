@@ -61,10 +61,7 @@ const authDiscord = async (request, response) => {
 };
 
 const scrambles = (req, res) => {
-  const event = req.params.event;
-  const date = dayjs(req.params.date);
-
-  const formattedDate = (date.isValid() ? date : dayjs()).format('YYYY-MM-DD');
+  const { event, date } = req.params;
 
   R.pipe(
     getScramble,
@@ -80,7 +77,7 @@ const scrambles = (req, res) => {
         () => rejectRequest(req, res, 'Scrambles not found')
       )
     )
-  )(formattedDate, event);
+  )(date || dayjs().format('YYYY-MM-DD'), event);
 };
 
 const times = async (request, response) => {
@@ -133,7 +130,7 @@ const dailyRankings = (req, res) => {
     ),
     R.andThen(JSON.stringify),
     R.andThen((x) => res.end(x))
-  )(date, event);
+  )(date || dayjs().format('YYYY-MM-DD'), event);
 };
 
 const monthlyRankings = (req, res) => {
@@ -149,7 +146,7 @@ const monthlyRankings = (req, res) => {
     ),
     R.andThen(JSON.stringify),
     R.andThen((x) => res.end(x))
-  )(date, event);
+  )(date || dayjs().format('YYYY-MM-DD'), event);
 };
 
 export { scrambles, authDiscord, times, dailyRankings, monthlyRankings };
