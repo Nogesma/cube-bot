@@ -44,7 +44,7 @@ const insertNewTimes = async (author, event, solves, channels) => {
     event,
     average,
     single,
-    R.map(removeInfinity, solves)
+    solves
   );
 
   updateDiscordRanking(date, event, channels);
@@ -53,10 +53,6 @@ const insertNewTimes = async (author, event, solves, channels) => {
     hasCube ? 'modifiés' : 'enregistrés'
   }, ao5: ${secondsToTime(average)}`;
 };
-
-const removeInfinity = (time) => (time === Infinity ? -1 : time);
-
-const addInfinity = (time) => (time === -1 ? Infinity : time);
 
 const prependEvent = (event) => 'EVENT_' + event;
 
@@ -76,4 +72,4 @@ const updateDiscordRanking = async (date, event, channels) => {
   )(date, event);
 };
 
-export { insertNewTimes, removeInfinity, addInfinity, prependEvent };
+export { insertNewTimes, prependEvent };

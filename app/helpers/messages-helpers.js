@@ -7,7 +7,6 @@ import {
   events as availableEvents,
   hours as availableTimes,
 } from '../config.js';
-import { addInfinity } from './global-helpers.js';
 
 const helpMessage = async () =>
   R.join('\n', [
@@ -89,10 +88,10 @@ const displayPB = R.curry((user, pb) =>
       R.map(({ event, single, singleDate, average, averageDate }) =>
         R.join('\n', [
           `__${event}:__`,
-          `PB Single: ${secondsToTime(addInfinity(single))} ${
+          `PB Single: ${secondsToTime(single)} ${
             singleDate ? `(${dayjs(singleDate).format('YYYY-MM-DD')})` : ''
           }`,
-          `PB Average: ${secondsToTime(addInfinity(average))} ${
+          `PB Average: ${secondsToTime(average)} ${
             averageDate ? `(${dayjs(averageDate).format('YYYY-MM-DD')})` : ''
           }`,
         ])
