@@ -6,8 +6,8 @@ import Squad from '../models/notif.js';
 import Ranking from '../models/rankings.js';
 import Scrambles from '../models/scrambles.js';
 import {
-  secondsToTime,
   computeScore,
+  secondsToTime,
   sortRankings,
 } from '../tools/calculators.js';
 import dayjs from 'dayjs';
@@ -22,53 +22,59 @@ const updateCube = (author, date, event, average, single, solves) =>
 const writeCube = (author, date, event, average, single, solves) =>
   new Cube({ author, date, event, average, single, solves }).save();
 
-const updateUserPB = (author, event, date, single, average) =>
-  User.findOne({ author })
-    .then((user) => {
-      const eventIndex = R.findIndex(R.propEq('event', event), user.pb);
-      console.log({ eventIndex });
-      if (eventIndex === -1) {
-        user.pb = [
-          ...user.pb,
-          {
-            event,
-            single: single,
-            average: average,
-            singleDate: date,
-            averageDate: date,
-          },
-        ];
-      } else {
-        const eventPB = user.pb[eventIndex];
-        console.log({ eventPB });
-        if (eventPB.single > single) {
-          eventPB.single = single;
-          eventPB.singleDate = date;
-        }
-
-        if (eventPB.average > average) {
-          eventPB.average = average;
-          eventPB.averageDate = date;
-        }
-        user.pb = [...R.remove(eventIndex, 1, user.pb), eventPB];
-        console.log(user.pb);
+const modifyUserPB = (event, date, pb, single, average) =>
+  R.ifElse(
+    R.equals(-1),
+    (_, pbArray) =>
+      R.append(
+        {
+          event,
+          single: single,
+          average: average,
+          singleDate: date,
+          averageDate: date,
+        },
+        pbArray
+      ),
+    (i, pbArray) => {
+      const eventPB = R.nth(i, pbArray);
+      if (eventPB.single > single) {
+        eventPB.single = single;
+        eventPB.singleDate = date;
       }
-      return user.save();
-    })
-    .catch(() => {
-      return new User({
-        author,
-        pb: [
-          {
-            event,
-            single,
-            average,
-            singleDate: date,
-            averageDate: date,
-          },
-        ],
-      }).save();
-    });
+      if (eventPB.average > average) {
+        eventPB.average = average;
+        eventPB.averageDate = date;
+      }
+      return R.update(i, eventPB, pbArray);
+    }
+  )(R.findIndex(R.propEq('event', event), pb), pb);
+
+const getUserPB = async (author) =>
+  R.prop('pb', await User.findOne({ author }).exec());
+
+const updateUserPB = async ({ author, event, date, single, average }) => {
+  const userPB = await getUserPB(author);
+  if (userPB) {
+    return User.findOneAndUpdate(
+      { author },
+      { $set: { pb: modifyUserPB(event, date, userPB, single, average) } }
+    ).exec();
+  } else {
+    return new User({
+      author,
+      pb: [
+        {
+          event,
+          single,
+          average,
+          singleDate: date,
+          averageDate: date,
+        },
+      ],
+    }).save();
+  }
+};
 
 const updateStandings = R.curry(async (date, event) => {
   const monthDate = dayjs(date).format('YYYY-MM');
@@ -93,11 +99,9 @@ const updateStandings = R.curry(async (date, event) => {
           }).save();
         })
     );
-    promisesUpdate.push(
-      updateUserPB(entry.author, event, date, entry.single, entry.average)
-    );
+    promisesUpdate.push(updateUserPB(entry));
   }, todayStandings);
-  await Promise.all(promisesUpdate);
+  return await Promise.all(promisesUpdate);
 });
 
 const getDayStandings = R.curry(async (date, event) =>
@@ -173,4 +177,5 @@ export {
   writeUser,
   updateUser,
   getScramble,
+  updateUserPB,
 };
