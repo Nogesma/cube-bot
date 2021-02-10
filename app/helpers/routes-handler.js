@@ -2,6 +2,8 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 import { nanoid } from 'nanoid';
 import R from 'ramda';
+import pkg from 'bluebird';
+const { Promise } = pkg;
 
 import {
   getDayStandings,
@@ -42,10 +44,10 @@ const authDiscord = async (request, response) => {
 
   const userInGuild = Boolean(await getGuildData(token_type, access_token));
 
-  if (!id) return response.writeHead(400).end();
+  if (!id || !userInGuild) return response.writeHead(400).end();
 
   const token = nanoid();
-  setUserToken(id, token);
+  await setUserToken(id, token);
 
   response.cookie('token', token, {
     expire: dayjs().add(1, 'w').toDate(),
@@ -55,9 +57,7 @@ const authDiscord = async (request, response) => {
     'Content-Type': 'application/json',
   });
 
-  response.end(
-    JSON.stringify({ id, username, avatar: userAvatar, userInGuild })
-  );
+  response.end(JSON.stringify({ id, username, avatar: userAvatar }));
 };
 
 const scrambles = (req, res) => {
@@ -88,7 +88,6 @@ const times = async (request, response) => {
 
   const id = await getUserId(token);
 
-  // TODO: If user not in guil handle possible discord error
   const userInGuild = await bot.guilds
     .fetch(process.env.GUILD_ID)
     .then((guild) => guild.members.fetch(id));
@@ -117,36 +116,48 @@ const times = async (request, response) => {
   );
 };
 
-const dailyRankings = (req, res) => {
+const rankings = R.curry(async (fetchRankings, req, res) => {
   const { event, date } = req.params;
+  const guild = await req.bot.guilds.cache.get(process.env.GUILD_ID);
 
   res.writeHead(200, {
     'Content-Type': 'application/json',
   });
+
+  R.pipe(
+    fetchRankings,
+    R.andThen(
+      R.map((x) => R.mergeLeft(x, getAvatarAndUsername(guild, x.author)))
+    ),
+    R.andThen(JSON.stringify),
+    R.andThen((x) => res.end(x))
+  )(date || dayjs().format('YYYY-MM-DD'), event);
+});
+
+const dailyRankings = rankings(
   R.pipe(
     getDayStandings,
     R.andThen(
       R.map(R.pick(['solves', 'event', 'author', 'average', 'single', 'date']))
-    ),
-    R.andThen(JSON.stringify),
-    R.andThen((x) => res.end(x))
-  )(date || dayjs().format('YYYY-MM-DD'), event);
-};
+    )
+  )
+);
 
-const monthlyRankings = (req, res) => {
-  const { event, date } = req.params;
-
-  res.writeHead(200, {
-    'Content-Type': 'application/json',
-  });
+const monthlyRankings = rankings(
   R.pipe(
     getMonthStandings,
     R.andThen(
-      R.map(R.pick(['score', 'attendaces', 'author', 'date', 'event']))
-    ),
-    R.andThen(JSON.stringify),
-    R.andThen((x) => res.end(x))
-  )(date || dayjs().format('YYYY-MM-DD'), event);
-};
+      R.map(R.pick(['score', 'attendances', 'author', 'date', 'event']))
+    )
+  )
+);
+
+const getAvatarAndUsername = R.pipe(
+  (guild, author) => guild.member(author),
+  (member) => ({
+    avatar: member?.user.avatar,
+    username: member?.user.username,
+  })
+);
 
 export { scrambles, authDiscord, times, dailyRankings, monthlyRankings };
