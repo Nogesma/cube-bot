@@ -5,7 +5,7 @@ name: Build and publish docker image
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 env:
   IMAGE_NAME: cube-bot
