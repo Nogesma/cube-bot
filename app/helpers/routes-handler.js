@@ -2,8 +2,6 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 import { nanoid } from 'nanoid';
 import R from 'ramda';
-import pkg from 'bluebird';
-const { Promise } = pkg;
 
 import {
   getDayStandings,
