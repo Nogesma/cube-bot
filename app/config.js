@@ -10,6 +10,8 @@ const events = [
   'SQ1',
   'MEGA',
   'PYRA',
+  'CLOCK',
+  'SKEWB',
 ];
 const hours = R.range(1)(24);
 

@@ -1,6 +1,6 @@
 import { CronJob } from 'cron';
 import dayjs from 'dayjs';
-import R from 'ramda';
+import * as R from 'ramda';
 import pkg from 'bluebird';
 const { Promise } = pkg;
 
