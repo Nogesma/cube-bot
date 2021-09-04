@@ -9,7 +9,8 @@ const genScrambles = (event, number) =>
   )(new Scrambow().setType(event).get(number));
 
 const formatScrambles = pipe(
-  map(replace(/\n/g, '```\n```')),
+  map(replace(/\n/g, ' ')),
+  join('```\n```'),
   (x) => '```' + x + '```'
 );
 
