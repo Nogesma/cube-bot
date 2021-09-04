@@ -1,12 +1,11 @@
-FROM node:14
+FROM node:14-alpine
 
 ENV NODE_ENV production
 
 WORKDIR /usr/src/app
 
-COPY package.json .
-COPY yarn.lock .
-
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn .yarn/
 RUN yarn
 
 COPY app app/

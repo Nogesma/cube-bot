@@ -1,4 +1,29 @@
-import R from 'ramda';
+import {
+  __,
+  always,
+  ascend,
+  divide,
+  equals,
+  filter,
+  head,
+  ifElse,
+  lt,
+  map,
+  match,
+  min,
+  pipe,
+  prop,
+  reduce,
+  slice,
+  sort,
+  sortWith,
+  split,
+  subtract,
+  sum,
+  reverse,
+  path,
+  length,
+} from 'ramda';
 
 const timeToSeconds = (time) => {
   if (time === 'DNF') {
@@ -6,12 +31,10 @@ const timeToSeconds = (time) => {
   }
 
   return Number(
-    R.head(
-      R.match(
+    head(
+      match(
         /\d+(\.\d{1,2})?/g,
-        String(
-          R.reduce((acc, t) => 60 * acc + Number(t), 0, R.split(':', time))
-        )
+        String(reduce((acc, t) => 60 * acc + Number(t), 0, split(':', time)))
       )
     )
   );
@@ -31,31 +54,31 @@ const secondsToTime = (time) => {
   return `${min ? min + ':' : ''}${s}`;
 };
 
-const averageOfFiveCalculator = R.ifElse(
-  R.pipe(R.filter(R.lt(0)), R.length, R.equals(5)),
-  R.pipe(
-    R.sort(R.subtract),
-    R.slice(1, -1),
-    R.sum,
-    R.divide(R.__, 3),
+const averageOfFiveCalculator = ifElse(
+  pipe(filter(lt(0)), length, equals(5)),
+  pipe(
+    sort(subtract),
+    slice(1, -1),
+    sum,
+    divide(__, 3),
     (x) => x.toFixed(2),
     Number
   ),
-  R.always(-Infinity)
+  always(-Infinity)
 );
 
-const getBestTime = R.reduce(R.min, Infinity);
+const getBestTime = reduce(min, Infinity);
 
 const computeScore = (numberOfContestants, rank) =>
-  R.min(100, Math.ceil((-50 / (numberOfContestants - 1)) * rank) + 100);
+  min(100, Math.ceil((-50 / (numberOfContestants - 1)) * rank) + 100);
 
-const sorter = R.map(R.pipe(R.prop, R.ascend), ['average', 'single']);
+const sorter = map(pipe(prop, ascend), ['average', 'single']);
 
 const sortRankings = (ranks) =>
-  R.sortWith(
-    R.ifElse(R.pipe(R.path([0, 'event']), R.equals('3BLD')))(
-      R.always(R.reverse(sorter))
-    )(R.always(sorter))(ranks)
+  sortWith(
+    ifElse(pipe(path([0, 'event']), equals('3BLD')))(always(reverse(sorter)))(
+      always(sorter)
+    )(ranks)
   )(ranks);
 
 export {

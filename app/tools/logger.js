@@ -1,24 +1,24 @@
 import chalk from 'chalk';
-import R from 'ramda';
+import { always, cond, equals, join, T, toUpper } from 'ramda';
 import pkg from 'winston';
 const { createLogger, format, transports } = pkg;
 
 const { combine, timestamp, printf } = format;
 
-const chooseColor = R.cond([
-  [R.equals('silly'), R.always(chalk.gray)],
-  [R.equals('debug'), R.always(chalk.yellow)],
-  [R.equals('verbose'), R.always(chalk.green)],
-  [R.equals('info'), R.always(chalk.blue)],
-  [R.equals('warn'), R.always(chalk.magenta)],
-  [R.equals('error'), R.always(chalk.red)],
-  [R.T, R.always(chalk.white)],
+const chooseColor = cond([
+  [equals('silly'), always(chalk.gray)],
+  [equals('debug'), always(chalk.yellow)],
+  [equals('verbose'), always(chalk.green)],
+  [equals('info'), always(chalk.blue)],
+  [equals('warn'), always(chalk.magenta)],
+  [equals('error'), always(chalk.red)],
+  [T, always(chalk.white)],
 ]);
 
 const myFormat = printf((info) => {
   const color = chooseColor(info.level);
-  return R.join(' ', [
-    color(`[${info.timestamp}] ${R.toUpper(info.level)}:`),
+  return join(' ', [
+    color(`[${info.timestamp}] ${toUpper(info.level)}:`),
     info.message,
   ]);
 });

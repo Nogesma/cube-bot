@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 import isBetween from 'dayjs/plugin/isBetween.js';
-import R from 'ramda';
+import { andThen, path, pipe } from 'ramda';
 import {
   averageOfFiveCalculator,
   getBestTime,
@@ -47,7 +47,7 @@ const insertNewTimes = async (author, event, solves, channels) => {
     solves
   );
 
-  updateDiscordRanking(date, event, channels);
+  await updateDiscordRanking(date, event, channels);
 
   return `Vos temps ont bien été ${
     hasCube ? 'modifiés' : 'enregistrés'
@@ -58,13 +58,13 @@ const prependEvent = (event) => 'EVENT_' + event;
 
 const updateDiscordRanking = async (date, event, channels) => {
   const chan = await channels.fetch(
-    R.path(['env', prependEvent(event)], process)
+    path(['env', prependEvent(event)], process)
   );
 
-  R.pipe(
+  pipe(
     getDayStandings,
-    R.andThen(dailyRankingsFormat(date)(chan)),
-    R.andThen((x) =>
+    andThen(dailyRankingsFormat(date)(chan)),
+    andThen((x) =>
       chan.messages
         .fetch({ limit: 1 })
         .then((messages) => messages.first().edit(x))

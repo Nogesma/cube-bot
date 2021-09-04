@@ -1,4 +1,4 @@
-import R from 'ramda';
+import { andThen, find, pipe, prop, propEq } from 'ramda';
 import fetch from 'node-fetch';
 import {
   getUserByApi,
@@ -18,24 +18,24 @@ const rejectRequest = (req, res, message) => {
 };
 
 const getDiscordToken = (body) =>
-  R.pipe(fetch, R.andThen(getJSON))('https://discord.com/api/v8/oauth2/token', {
+  pipe(fetch, andThen(getJSON))('https://discord.com/api/v8/oauth2/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body,
   });
 
 const getUserData = (token_type, access_token) =>
-  R.pipe(fetch, R.andThen(getJSON))('https://discord.com/api/v8/users/@me', {
+  pipe(fetch, andThen(getJSON))('https://discord.com/api/v8/users/@me', {
     headers: {
       authorization: `${token_type} ${access_token}`,
     },
   });
 
 const getGuildData = (token_type, access_token) =>
-  R.pipe(
+  pipe(
     fetch,
-    R.andThen(getJSON),
-    R.andThen(R.find(R.propEq('id')(process.env.GUILD_ID)))
+    andThen(getJSON),
+    andThen(find(propEq('id')(process.env.GUILD_ID)))
   )('https://discord.com/api/v8/users/@me/guilds', {
     headers: {
       authorization: `${token_type} ${access_token}`,
@@ -47,9 +47,9 @@ const setUserToken = async (author, token) =>
     ? updateUser(author, token)
     : writeUser(author, token);
 
-const getUserId = R.pipe(getUserByToken, R.andThen(R.prop('author')));
+const getUserId = pipe(getUserByToken, andThen(prop('author')));
 
-const hasValidToken = R.pipe(getUserByToken, R.andThen(Boolean));
+const hasValidToken = pipe(getUserByToken, andThen(Boolean));
 
 const hasValidApiKey = async (apikey) =>
   Boolean(await getUserByApi(apikey ?? ''));

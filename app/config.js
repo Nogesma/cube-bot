@@ -1,4 +1,4 @@
-import R from 'ramda';
+import { range } from 'ramda';
 
 const events = [
   '333',
@@ -13,6 +13,6 @@ const events = [
   'CLOCK',
   'SKEWB',
 ];
-const hours = R.range(1)(24);
+const hours = range(1)(24);
 
 export { events, hours };

@@ -1,6 +1,17 @@
 import { CronJob } from 'cron';
 import dayjs from 'dayjs';
-import * as R from 'ramda';
+import {
+  path,
+  prop,
+  map,
+  ap,
+  pipe,
+  andThen,
+  includes,
+  isEmpty,
+  unless,
+  join,
+} from 'ramda';
 import pkg from 'bluebird';
 const { Promise } = pkg;
 
@@ -44,17 +55,17 @@ const startCron = (bot) => {
 
         const scrambleSend = async (event) => {
           const chan = await bot.channels.fetch(
-            R.path(['env', prependEvent(event)], process)
+            path(['env', prependEvent(event)], process)
           );
-          const scrambles = R.prop('scrambles', await getScramble(date, event));
-          const scrambleArray = R.map(R.prop('scrambleString'), scrambles);
+          const scrambles = prop('scrambles', await getScramble(date, event));
+          const scrambleArray = map(prop('scrambleString'), scrambles);
 
           send(chan, formatScrambles(scrambleArray)).then(
             chan.send(dailyRankingsFormat(date)(chan)([]))
           );
         };
 
-        R.map(scrambleSend, events);
+        map(scrambleSend, events);
       },
       start: false,
       timeZone: 'Europe/Paris',
@@ -78,20 +89,20 @@ const startCron = (bot) => {
       onTick: () => {
         const date = dayjs().subtract(1, 'h').format('YYYY-MM');
 
-        const [standings, rankings] = R.ap([
+        const [standings, rankings] = ap([
           getMonthStandings,
           monthlyRankingsFormat,
         ])([date]);
 
         const monthStandings = (event) => {
           const chan = bot.channels.cache.get(
-            R.path(['env', prependEvent(event)], process)
+            path(['env', prependEvent(event)], process)
           );
 
-          R.pipe(
+          pipe(
             standings,
-            R.andThen(
-              R.pipe(
+            andThen(
+              pipe(
                 (ranks) => {
                   addRole(bot, ranks);
                   return rankings(chan, ranks);
@@ -102,7 +113,7 @@ const startCron = (bot) => {
           )(event);
         };
 
-        R.map(monthStandings, events);
+        map(monthStandings, events);
       },
       start: false,
       timeZone: 'Europe/Paris',
@@ -115,16 +126,16 @@ const startCron = (bot) => {
       onTick: () => {
         const time = dayjs().hour();
 
-        if (R.includes(time, hours)) {
+        if (includes(time, hours)) {
           const chan = bot.channels.cache.get(process.env.CHANNEL_SPAM);
-          R.pipe(
+          pipe(
             getNotifSquad,
-            R.andThen(
-              R.unless(R.isEmpty)((doc) =>
+            andThen(
+              unless(isEmpty)((doc) =>
                 chan.send(
-                  `Participez au tournoi ! ${R.join(
+                  `Participez au tournoi ! ${join(
                     ' ',
-                    R.map((x) => `<@${x}>`, doc)
+                    map((x) => `<@${x}>`, doc)
                   )}`
                 )
               )

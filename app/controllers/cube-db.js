@@ -1,4 +1,21 @@
-import R from 'ramda';
+import {
+  addIndex,
+  append,
+  curry,
+  descend,
+  equals,
+  findIndex,
+  forEach,
+  ifElse,
+  lensProp,
+  map,
+  nth,
+  over,
+  prop,
+  propEq,
+  sort,
+  update,
+} from 'ramda';
 
 import Cube from '../models/cubes.js';
 import User from '../models/user.js';
@@ -22,10 +39,10 @@ const writeCube = (author, date, event, average, single, solves) =>
   new Cube({ author, date, event, average, single, solves }).save();
 
 const modifyUserPB = (event, date, pb, single, average) =>
-  R.ifElse(
-    R.equals(-1),
+  ifElse(
+    equals(-1),
     (_, pbArray) =>
-      R.append(
+      append(
         {
           event,
           single: single,
@@ -36,7 +53,7 @@ const modifyUserPB = (event, date, pb, single, average) =>
         pbArray
       ),
     (i, pbArray) => {
-      const eventPB = R.nth(i, pbArray);
+      const eventPB = nth(i, pbArray);
       if (eventPB.single > single) {
         eventPB.single = single;
         eventPB.singleDate = date;
@@ -45,12 +62,12 @@ const modifyUserPB = (event, date, pb, single, average) =>
         eventPB.average = average;
         eventPB.averageDate = date;
       }
-      return R.update(i, eventPB, pbArray);
+      return update(i, eventPB, pbArray);
     }
-  )(R.findIndex(R.propEq('event', event), pb), pb);
+  )(findIndex(propEq('event', event), pb), pb);
 
 const getUserPB = async (author) =>
-  R.prop('pb', await User.findOne({ author }).exec());
+  prop('pb', await User.findOne({ author }).exec());
 
 const updateUserPB = async ({ author, event, date, single, average }) => {
   const userPB = await getUserPB(author);
@@ -75,12 +92,12 @@ const updateUserPB = async ({ author, event, date, single, average }) => {
   }
 };
 
-const updateStandings = R.curry(async (date, event) => {
+const updateStandings = curry(async (date, event) => {
   const monthDate = dayjs(date).format('YYYY-MM');
   const todayStandings = sortRankings(await Cube.find({ date, event }));
   const promisesUpdate = [];
 
-  R.addIndex(R.forEach)(async (entry, index) => {
+  addIndex(forEach)(async (entry, index) => {
     promisesUpdate.push(
       Ranking.findOne({ date: monthDate, author: entry.author, event })
         .then((currentStanding) => {
@@ -103,25 +120,25 @@ const updateStandings = R.curry(async (date, event) => {
   return await Promise.all(promisesUpdate);
 });
 
-const getDayStandings = R.curry(async (date, event) =>
-  R.map(
+const getDayStandings = curry(async (date, event) =>
+  map(
     (x) =>
-      R.over(
-        R.lensProp('average'),
+      over(
+        lensProp('average'),
         secondsToTime
       )(
-        R.over(
-          R.lensProp('single'),
+        over(
+          lensProp('single'),
           secondsToTime
-        )(R.over(R.lensProp('solves'), R.map(secondsToTime))(x))
+        )(over(lensProp('solves'), map(secondsToTime))(x))
       ),
     sortRankings(await Cube.find({ date, event }).exec())
   )
 );
 
-const getMonthStandings = R.curry(async (date, event) => {
+const getMonthStandings = curry(async (date, event) => {
   const monthStandings = await Ranking.find({ date, event }).exec();
-  return R.sort(R.descend(R.prop('score')), monthStandings);
+  return sort(descend(prop('score')), monthStandings);
 });
 
 const haveTimesForToday = async (date, author, event) =>
@@ -140,7 +157,7 @@ const deleteNotifSquad = (author, time) =>
   ).exec();
 
 const getNotifSquad = async (time) =>
-  R.prop('authors')(await Squad.findOne({ event: time }).exec());
+  prop('authors')(await Squad.findOne({ event: time }).exec());
 
 const getUserByApi = (apiKey) => User.findOne({ apiKey }).exec();
 

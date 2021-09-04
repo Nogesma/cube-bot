@@ -12,12 +12,7 @@ const bot = new discord.Client();
 const app = express();
 const port = 3000;
 
-mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/test', {
-  useNewUrlParser: true,
-  useFindAndModify: false,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/test');
 
 bot.on('ready', () => {
   logger.info('Bot ready');

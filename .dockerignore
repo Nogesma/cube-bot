@@ -118,10 +118,9 @@ tmp/
 
 # MacOS
 .DS_Store
-app/.DS_Store
-
-# Yarn
+# Yarn v2
 .yarn/*
+!.yarn/patches
 !.yarn/releases
 !.yarn/plugins
 !.yarn/sdks

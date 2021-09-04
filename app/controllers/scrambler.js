@@ -1,21 +1,20 @@
-import R from 'ramda';
+import { curry, join, map, pipe, pluck, replace, trim } from 'ramda';
 import pkg from 'scrambow';
 const { Scrambow } = pkg;
 
 const genScrambles = (event, number) =>
-  R.pipe(
-    R.pluck('scramble_string'),
-    R.map(R.trim)
+  pipe(
+    pluck('scramble_string'),
+    map(trim)
   )(new Scrambow().setType(event).get(number));
 
-const formatScrambles = R.pipe(
-  R.map(R.replace(/\n/g, ' ')),
-  R.join('```\n```'),
-  (x) => R.join('', ['```', x, '```'])
+const formatScrambles = pipe(
+  map(replace(/\n/g, '```\n```')),
+  (x) => '```' + x + '```'
 );
 
-const sendScrambles = R.curry((date, chan, scrambles) =>
-  chan.send(R.join('\n', [`**Scrambles du ${date}:**`, scrambles]))
+const sendScrambles = curry((date, chan, scrambles) =>
+  chan.send(`**Scrambles du ${date}:**\n${scrambles}`)
 );
 
 export { genScrambles, sendScrambles, formatScrambles };

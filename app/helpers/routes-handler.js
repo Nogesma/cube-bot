@@ -1,7 +1,16 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 import { nanoid } from 'nanoid';
-import R from 'ramda';
+import {
+  andThen,
+  curry,
+  identity,
+  ifElse,
+  map,
+  mergeLeft,
+  pick,
+  pipe,
+} from 'ramda';
 
 import {
   getDayStandings,
@@ -61,11 +70,11 @@ const authDiscord = async (request, response) => {
 const scrambles = (req, res) => {
   const { event, date } = req.params;
 
-  R.pipe(
+  pipe(
     getScramble,
-    R.andThen(
-      R.ifElse(
-        R.identity,
+    andThen(
+      ifElse(
+        identity,
         ({ scrambles }) => {
           res.writeHead(200, {
             'Content-Type': 'application/json',
@@ -101,20 +110,20 @@ const times = async (request, response) => {
     'Content-Type': 'application/json',
   });
 
-  await R.pipe(
+  await pipe(
     insertNewTimes,
-    R.andThen((result) => {
+    andThen((result) => {
       response.end(JSON.stringify({ result }));
     })
   )(
     id,
     event,
-    R.map((s) => s ?? Infinity, solves),
+    map((s) => s ?? Infinity, solves),
     bot.channels
   );
 };
 
-const rankings = R.curry(async (fetchRankings, req, res) => {
+const rankings = curry(async (fetchRankings, req, res) => {
   const { event, date } = req.params;
   const guild = await req.bot.guilds.cache.get(process.env.GUILD_ID);
 
@@ -122,35 +131,31 @@ const rankings = R.curry(async (fetchRankings, req, res) => {
     'Content-Type': 'application/json',
   });
 
-  R.pipe(
+  pipe(
     fetchRankings,
-    R.andThen(
-      R.map((x) => R.mergeLeft(x, getAvatarAndUsername(guild, x.author)))
-    ),
-    R.andThen(JSON.stringify),
-    R.andThen((x) => res.end(x))
+    andThen(map((x) => mergeLeft(x, getAvatarAndUsername(guild, x.author)))),
+    andThen(JSON.stringify),
+    andThen((x) => res.end(x))
   )(date || dayjs().format('YYYY-MM-DD'), event);
 });
 
 const dailyRankings = rankings(
-  R.pipe(
+  pipe(
     getDayStandings,
-    R.andThen(
-      R.map(R.pick(['solves', 'event', 'author', 'average', 'single', 'date']))
+    andThen(
+      map(pick(['solves', 'event', 'author', 'average', 'single', 'date']))
     )
   )
 );
 
 const monthlyRankings = rankings(
-  R.pipe(
+  pipe(
     getMonthStandings,
-    R.andThen(
-      R.map(R.pick(['score', 'attendances', 'author', 'date', 'event']))
-    )
+    andThen(map(pick(['score', 'attendances', 'author', 'date', 'event'])))
   )
 );
 
-const getAvatarAndUsername = R.pipe(
+const getAvatarAndUsername = pipe(
   (guild, author) => guild.member(author),
   (member) => ({
     avatar: member?.user.avatar ?? member?.user.discriminator % 5,

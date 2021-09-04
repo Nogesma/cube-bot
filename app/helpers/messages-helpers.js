@@ -1,5 +1,19 @@
 import fs from 'fs-extra';
-import R from 'ramda';
+import {
+  curry,
+  flip,
+  head,
+  identity,
+  ifElse,
+  includes,
+  join,
+  map,
+  nth,
+  pipe,
+  replace,
+  toUpper,
+  when,
+} from 'ramda';
 import dayjs from 'dayjs';
 
 import { computeScore, secondsToTime } from '../tools/calculators.js';
@@ -9,24 +23,24 @@ import {
 } from '../config.js';
 
 const helpMessage = async () =>
-  R.join('\n', [
+  join('\n', [
     '```Markdown',
     await fs.readFile('./app/raw-data/help.md', 'utf8'),
     '```',
   ]);
 
-const dailyRankingsFormat = R.curry((date, channel, ranks) =>
-  R.join('\n', [
+const dailyRankingsFormat = curry((date, channel, ranks) =>
+  join('\n', [
     '```glsl',
     `Classement du ${date} :`,
     ...ranks.map((cuber, idx) => {
       const name = parseUsername(cuber.author, channel);
       const pts = computeScore(ranks.length, idx);
-      return R.join('\n', [
+      return join('\n', [
         `#${idx + 1} ${name}: ${cuber.average} ao5, ${
           cuber.single
         } single, ${pts} pts`,
-        `[${R.join(', ', cuber.solves)}]`,
+        `[${join(', ', cuber.solves)}]`,
       ]);
     }),
     '```',
@@ -36,14 +50,16 @@ const dailyRankingsFormat = R.curry((date, channel, ranks) =>
 const _displayMonthDate = (date) =>
   dayjs().format('YYYY-MM') === date ? 'en cours' : date;
 
-const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
-  R.join('\n', [
+const monthlyRankingsFormat = curry((date, channel, ranks) =>
+  join('\n', [
     '```xl',
     `Classement du mois (${_displayMonthDate(date)}) :`,
-    ...ranks.map((cuber, idx) => {
-      const name = parseUsername(cuber.author, channel);
-      return `#${idx + 1} ${name} : ${cuber.score} pts (${cuber.attendances})`;
-    }),
+    ...ranks.map(
+      (cuber, idx) =>
+        `#${idx + 1} ${parseUsername(cuber.author, channel)} : ${
+          cuber.score
+        } pts (${cuber.attendances})`
+    ),
     '```',
   ])
 );
@@ -51,20 +67,20 @@ const monthlyRankingsFormat = R.curry((date, channel, ranks) =>
 const parseUsername = (author, channel) => {
   const user = channel.client.users.cache.get(author);
   const name = user?.username ?? 'RAGE-QUITTER';
-  return R.replace(/'/g, 'ˈ', name);
+  return replace(/'/g, 'ˈ', name);
 };
 
 const getEvent = (args, messageSender) =>
-  R.pipe(
-    R.head,
-    R.when(R.identity)(R.toUpper),
-    R.ifElse(R.flip(R.includes)(availableEvents), R.identity, () =>
+  pipe(
+    head,
+    when(identity)(toUpper),
+    ifElse(flip(includes)(availableEvents), identity, () =>
       messageSender(`Veuillez entrer un event valide : ${availableEvents}`)
     )
   )(args);
 
 const getDate = (args, messageSender) =>
-  R.pipe(R.nth(1), (d) => {
+  pipe(nth(1), (d) => {
     const date = dayjs(d);
 
     return date.isValid()
@@ -73,20 +89,20 @@ const getDate = (args, messageSender) =>
   })(args);
 
 const getTime = (args, messageSender) =>
-  R.pipe(
-    R.head,
+  pipe(
+    head,
     Number,
-    R.ifElse(R.flip(R.includes)(availableTimes), R.identity, () =>
+    ifElse(flip(includes)(availableTimes), identity, () =>
       messageSender(`Veuillez entrer une heure valide : ${availableTimes}`)
     )
   )(args);
 
-const displayPB = R.curry((user, pb) =>
-  R.join('\n', [
+const displayPB = curry((user, pb) =>
+  join('\n', [
     `__PB de ${user.username}:__`,
-    R.pipe(
-      R.map(({ event, single, singleDate, average, averageDate }) =>
-        R.join('\n', [
+    pipe(
+      map(({ event, single, singleDate, average, averageDate }) =>
+        join('\n', [
           `__${event}:__`,
           `PB Single: ${secondsToTime(single)} ${
             singleDate ? `(${dayjs(singleDate).format('YYYY-MM-DD')})` : ''
@@ -96,7 +112,7 @@ const displayPB = R.curry((user, pb) =>
           }`,
         ])
       ),
-      R.join('\n')
+      join('\n')
     )(pb),
   ])
 );
