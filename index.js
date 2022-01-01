@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import discord from 'discord.js';
+import discord, { Intents } from 'discord.js';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 
@@ -8,7 +8,15 @@ import logger from './app/tools/logger.js';
 import { startCron, stopCron } from './app/controllers/crons-controller.js';
 import { api, oauth } from './app/controllers/routes-controller.js';
 
-const bot = new discord.Client();
+const bot = new discord.Client({
+  intents: [
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+  ],
+});
+
 const app = express();
 const port = 3000;
 
@@ -17,12 +25,10 @@ mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/test');
 bot.on('ready', () => {
   logger.info('Bot ready');
   startCron(bot);
-  bot.user.setPresence({
-    activity: { name: 'for new PB | ?h', type: 3 },
-  });
+  bot.user.setActivity({ name: 'for new PB | ?h', type: 3 });
 });
 
-bot.on('message', incomingMessage);
+bot.on('messageCreate', incomingMessage);
 bot.login(process.env.TOKEN);
 
 app.use(express.json());
