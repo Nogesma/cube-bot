@@ -35,5 +35,6 @@
     "jest": "^27.1.0",
     "nodemon": "^2.0.12",
     "prettier": "^2.3.2"
-  }
+  },
+  "packageManager": "yarn@3.1.1"
 }
