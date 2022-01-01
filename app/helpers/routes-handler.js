@@ -156,7 +156,7 @@ const monthlyRankings = rankings(
 );
 
 const getAvatarAndUsername = pipe(
-  (guild, author) => guild.member(author),
+  (guild, author) => guild.members.cache.get(author),
   (member) => ({
     avatar: member?.user.avatar ?? member?.user.discriminator % 5,
     username: member?.user.username,
