@@ -107,7 +107,7 @@ const startCron = (bot) => {
                   addRole(bot, ranks);
                   return rankings(chan, ranks);
                 },
-                (x) => chan.send(x)
+                andThen((x) => chan.send(x))
               )
             )
           )(event);

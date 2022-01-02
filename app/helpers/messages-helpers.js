@@ -12,6 +12,7 @@ import {
   pipe,
   replace,
   toUpper,
+  addIndex,
   when,
 } from 'ramda';
 import dayjs from 'dayjs';
@@ -29,20 +30,24 @@ const helpMessage = async () =>
     '```',
   ]);
 
-const dailyRankingsFormat = curry((date, channel, ranks) =>
+const dailyRankingsFormat = curry(async (date, channel, ranks) =>
   join('\n', [
     '```glsl',
     `Classement du ${date} :`,
-    ...ranks.map((cuber, idx) => {
-      const name = parseUsername(cuber.author, channel);
-      const pts = computeScore(ranks.length, idx);
-      return join('\n', [
-        `#${idx + 1} ${name}: ${cuber.average} ao5, ${
-          cuber.single
-        } single, ${pts} pts`,
-        `[${join(', ', cuber.solves)}]`,
-      ]);
-    }),
+    (
+      await Promise.all(
+        addIndex(map)(async (cuber, idx) => {
+          const name = await parseUsername(cuber.author, channel);
+          const pts = computeScore(ranks.length, idx);
+          return join('\n', [
+            `#${idx + 1} ${name}: ${cuber.average} ao5, ${
+              cuber.single
+            } single, ${pts} pts`,
+            `[${join(', ', cuber.solves)}]`,
+          ]);
+        }, ranks)
+      )
+    ).join('\n'),
     '```',
   ])
 );
@@ -50,22 +55,27 @@ const dailyRankingsFormat = curry((date, channel, ranks) =>
 const _displayMonthDate = (date) =>
   dayjs().format('YYYY-MM') === date ? 'en cours' : date;
 
-const monthlyRankingsFormat = curry((date, channel, ranks) =>
+const monthlyRankingsFormat = curry(async (date, channel, ranks) =>
   join('\n', [
     '```xl',
     `Classement du mois (${_displayMonthDate(date)}) :`,
-    ...ranks.map(
-      (cuber, idx) =>
-        `#${idx + 1} ${parseUsername(cuber.author, channel)} : ${
-          cuber.score
-        } pts (${cuber.attendances})`
-    ),
+    (
+      await Promise.all(
+        addIndex(map)(
+          async (cuber, idx) =>
+            `#${idx + 1} ${await parseUsername(cuber.author, channel)} : ${
+              cuber.score
+            } pts (${cuber.attendances})`,
+          ranks
+        )
+      )
+    ).join('\n'),
     '```',
   ])
 );
 
-const parseUsername = (author, channel) => {
-  const user = channel.client.users.cache.get(author);
+const parseUsername = async (author, channel) => {
+  const user = await channel.client.users.fetch(author);
   const name = user?.username ?? 'RAGE-QUITTER';
   return replace(/'/g, 'ˈ', name);
 };

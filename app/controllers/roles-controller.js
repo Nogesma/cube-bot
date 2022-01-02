@@ -3,7 +3,7 @@ import { forEach, head, prop } from 'ramda';
 const addRole = (bot, ranks) => {
   const guild = bot.guilds.cache.get(process.env.GUILD_ID);
   const role = guild.roles.cache.get(process.env.ROLE_ID);
-  const member = guild.member(prop('author')(head(ranks)));
+  const member = guild.members.cache.get(prop('author')(head(ranks)));
 
   if (member) member.roles.add(role);
 };

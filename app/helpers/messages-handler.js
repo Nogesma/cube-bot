@@ -76,7 +76,7 @@ const dailyRanksCommand = ({ channel, args }) => {
   if (and(date)(event))
     pipe(
       getDayStandings,
-      andThen(pipe(dailyRankingsFormat(date)(channel), messageSender))
+      andThen(pipe(dailyRankingsFormat(date)(channel), andThen(messageSender)))
     )(date, event);
 };
 
@@ -91,7 +91,9 @@ const monthlyRanksCommand = ({ channel, args }) => {
   if (and(date)(event))
     pipe(
       getMonthStandings,
-      andThen(pipe(monthlyRankingsFormat(date)(channel), messageSender))
+      andThen(
+        pipe(monthlyRankingsFormat(date)(channel), andThen(messageSender))
+      )
     )(date, event);
 };
 
