@@ -61,6 +61,8 @@ const updateDiscordRanking = async (date, event, channels) => {
     path(['env', prependEvent(event)], process)
   );
 
+  await chan.guild.members.fetch();
+
   pipe(
     getDayStandings,
     andThen(dailyRankingsFormat(date)(chan)),
