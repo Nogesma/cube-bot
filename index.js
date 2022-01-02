@@ -16,6 +16,7 @@ const bot = new discord.Client({
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     Intents.FLAGS.DIRECT_MESSAGES,
   ],
+  partials: ['CHANNEL'],
 });
 
 const app = express();
