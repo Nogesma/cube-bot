@@ -14,6 +14,7 @@ const bot = new discord.Client({
     Intents.FLAGS.GUILDS,
     Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    Intents.FLAGS.DIRECT_MESSAGES,
   ],
 });
 
