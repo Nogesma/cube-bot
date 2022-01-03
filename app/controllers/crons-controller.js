@@ -61,7 +61,7 @@ const startCron = (bot) => {
           const scrambleArray = map(prop('scrambleString'), scrambles);
 
           send(chan, formatScrambles(scrambleArray)).then(
-            chan.send(dailyRankingsFormat(date)(chan)([]))
+            chan.send(await dailyRankingsFormat(date)(chan)([]))
           );
         };
 
