@@ -1,48 +1,48 @@
 import {
-  pipe,
-  path,
-  prop,
+  __,
   both,
-  startsWith,
-  not,
-  propEq,
-  propSatisfies,
   cond,
   includes,
-  __,
+  not,
+  path,
+  pipe,
+  prop,
+  propEq,
+  propSatisfies,
   split,
+  startsWith,
   when,
-} from 'ramda';
+} from "ramda";
 import {
-  helpCommand,
-  newTimesCommand,
   dailyRanksCommand,
-  monthlyRanksCommand,
+  helpCommand,
   idoCommand,
   idonotdoCommand,
+  monthlyRanksCommand,
+  newTimesCommand,
   pbCommand,
   scrCommand,
-} from '../helpers/messages-handler.js';
+} from "../helpers/messages-handler.js";
 
 const messageIsCommand = both(
-  pipe(prop('content'), startsWith('?')),
-  pipe(path(['author', 'bot']), not)
+  pipe(prop("content"), startsWith("?")),
+  pipe(path(["author", "bot"]), not)
 );
 
 const commandChoose = cond([
-  [propEq('command')('?t'), newTimesCommand],
-  [propSatisfies(includes(__, ['?h', '?help']))('command'), helpCommand],
-  [propEq('command')('?classement'), dailyRanksCommand],
-  [propEq('command')('?classementmois'), monthlyRanksCommand],
-  [propEq('command')('?ido'), idoCommand],
-  [propEq('command')('?idonotdo'), idonotdoCommand],
-  [propEq('command')('?pb'), pbCommand],
-  [propEq('command')('?scr'), scrCommand],
+  [propEq("command")("?t"), newTimesCommand],
+  [propSatisfies(includes(__, ["?h", "?help"]))("command"), helpCommand],
+  [propEq("command")("?classement"), dailyRanksCommand],
+  [propEq("command")("?classementmois"), monthlyRanksCommand],
+  [propEq("command")("?ido"), idoCommand],
+  [propEq("command")("?idonotdo"), idonotdoCommand],
+  [propEq("command")("?pb"), pbCommand],
+  [propEq("command")("?scr"), scrCommand],
 ]);
 
 const applyCommand = (message) => {
   const { author, channel } = message;
-  const [command, ...args] = pipe(prop('content'), split(' '))(message);
+  const [command, ...args] = pipe(prop("content"), split(" "))(message);
 
   return commandChoose({
     author,

@@ -1,6 +1,6 @@
-import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat.js';
-import { nanoid } from 'nanoid';
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat.js";
+import { nanoid } from "nanoid";
 import {
   andThen,
   curry,
@@ -10,14 +10,14 @@ import {
   mergeLeft,
   pick,
   pipe,
-} from 'ramda';
+} from "ramda";
 
 import {
   getDayStandings,
   getMonthStandings,
   getScramble,
-} from '../controllers/cube-db.js';
-import { insertNewTimes } from './global-helpers.js';
+} from "../controllers/cube-db.js";
+import { insertNewTimes } from "./global-helpers.js";
 import {
   getDiscordToken,
   getGuildData,
@@ -25,7 +25,7 @@ import {
   getUserId,
   rejectRequest,
   setUserToken,
-} from './routes-helpers.js';
+} from "./routes-helpers.js";
 
 dayjs.extend(customParseFormat);
 
@@ -34,9 +34,9 @@ const authDiscord = async (request, response) => {
   const data = new URLSearchParams({
     client_id: process.env.CLIENT_ID,
     client_secret: process.env.CLIENT_SECRET,
-    grant_type: 'authorization_code',
+    grant_type: "authorization_code",
     code,
-    scope: 'identify guilds',
+    scope: "identify guilds",
     redirect_uri: process.env.WEBSITE_URL,
   });
 
@@ -56,18 +56,18 @@ const authDiscord = async (request, response) => {
   const token = nanoid();
   await setUserToken(id, token);
 
-  response.cookie('token', token, {
-    expire: dayjs().add(1, 'w').toDate(),
-    sameSite: 'strict',
+  response.cookie("token", token, {
+    expire: dayjs().add(1, "w").toDate(),
+    sameSite: "strict",
   });
   response.writeHead(200, {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   });
 
   response.end(JSON.stringify({ id, username, avatar: userAvatar }));
 };
 
-const scrambles = (req, res) => {
+const scrambleString = (req, res) => {
   const { event, date } = req.params;
 
   pipe(
@@ -77,14 +77,36 @@ const scrambles = (req, res) => {
         identity,
         ({ scrambles }) => {
           res.writeHead(200, {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           });
-          res.end(JSON.stringify({ scrambles }));
+          const scrambleString = map((scr) => scr.scrambleString, scrambles);
+          res.end(JSON.stringify({ scrambles: scrambleString }));
         },
-        () => rejectRequest(req, res, 'Scrambles not found')
+        () => rejectRequest(req, res, "Scrambles not found")
       )
     )
-  )(date || dayjs().format('YYYY-MM-DD'), event);
+  )(date || dayjs().format("YYYY-MM-DD"), event);
+};
+
+const scrambleSvg = (req, res) => {
+  const { event, date } = req.params;
+
+  pipe(
+    getScramble,
+    andThen(
+      ifElse(
+        identity,
+        ({ scrambles }) => {
+          res.writeHead(200, {
+            "Content-Type": "application/json",
+          });
+          const svg = map((scr) => scr.svg, scrambles);
+          res.end(JSON.stringify({ svg }));
+        },
+        () => rejectRequest(req, res, "Scrambles not found")
+      )
+    )
+  )(date || dayjs().format("YYYY-MM-DD"), event);
 };
 
 const times = async (request, response) => {
@@ -107,7 +129,7 @@ const times = async (request, response) => {
       );
 
   response.writeHead(200, {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   });
 
   await pipe(
@@ -128,7 +150,7 @@ const rankings = curry(async (fetchRankings, req, res) => {
   const guild = await req.bot.guilds.cache.get(process.env.GUILD_ID);
 
   res.writeHead(200, {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   });
 
   pipe(
@@ -136,14 +158,14 @@ const rankings = curry(async (fetchRankings, req, res) => {
     andThen(map((x) => mergeLeft(x, getAvatarAndUsername(guild, x.author)))),
     andThen(JSON.stringify),
     andThen((x) => res.end(x))
-  )(date || dayjs().format('YYYY-MM-DD'), event);
+  )(date || dayjs().format("YYYY-MM-DD"), event);
 });
 
 const dailyRankings = rankings(
   pipe(
     getDayStandings,
     andThen(
-      map(pick(['solves', 'event', 'author', 'average', 'single', 'date']))
+      map(pick(["solves", "event", "author", "average", "single", "date"]))
     )
   )
 );
@@ -151,7 +173,7 @@ const dailyRankings = rankings(
 const monthlyRankings = rankings(
   pipe(
     getMonthStandings,
-    andThen(map(pick(['score', 'attendances', 'author', 'date', 'event'])))
+    andThen(map(pick(["score", "attendances", "author", "date", "event"])))
   )
 );
 
@@ -163,4 +185,11 @@ const getAvatarAndUsername = pipe(
   })
 );
 
-export { scrambles, authDiscord, times, dailyRankings, monthlyRankings };
+export {
+  scrambleString,
+  scrambleSvg,
+  authDiscord,
+  times,
+  dailyRankings,
+  monthlyRankings,
+};

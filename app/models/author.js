@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import { events as availableEvents } from '../config.js';
+import mongoose from "mongoose";
+import { events as availableEvents } from "../config.js";
 
 const userSchema = new mongoose.Schema({
   single: { type: Number, required: true },
@@ -10,4 +10,4 @@ const userSchema = new mongoose.Schema({
   event: { type: String, enum: availableEvents, require: true },
 });
 
-export default mongoose.model('Author', userSchema);
+export default mongoose.model("Author", userSchema);

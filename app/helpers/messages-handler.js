@@ -1,52 +1,52 @@
 import {
+  __,
   always,
   and,
   andThen,
+  both,
   either,
   equals,
   F,
+  filter,
+  gt,
+  includes,
   join,
+  lt,
   map,
+  path,
   pipe,
   prop,
-  tail,
-  path,
-  __,
-  includes,
   propSatisfies,
-  filter,
-  both,
-  gt,
-  lt,
-} from 'ramda';
+  tail,
+} from "ramda";
 
-import { events as availableEvents } from '../config.js';
-import { formatScrambles, genScrambles } from '../controllers/scrambler.js';
+import { events as availableEvents } from "../config.js";
+import { formatScrambles, genScrambles } from "../controllers/scrambler.js";
 import {
-  getDayStandings,
-  getMonthStandings,
   addNotifSquad,
   deleteNotifSquad,
+  getDayStandings,
+  getMonthStandings,
   getUserById,
-} from '../controllers/cube-db.js';
+} from "../controllers/cube-db.js";
 import {
-  helpMessage,
-  getEvent,
-  getDate,
   dailyRankingsFormat,
-  monthlyRankingsFormat,
   displayPB,
+  getDate,
+  getEvent,
   getTime,
-} from './messages-helpers.js';
-import { insertNewTimes } from './global-helpers.js';
-import { timeToSeconds } from '../tools/calculators.js';
+  helpMessage,
+  monthlyRankingsFormat,
+} from "./messages-helpers.js";
+import { insertNewTimes } from "./global-helpers.js";
+import { timeToSeconds } from "../tools/calculators.js";
 
 const sendMessageToChannel = (channel) =>
   pipe((x) => channel.send(x), always(undefined));
 
 const helpCommand = (x) =>
   pipe(
-    prop('channel'),
+    prop("channel"),
     helpMessage,
     andThen(sendMessageToChannel(x.channel))
   )(x);
@@ -58,7 +58,7 @@ const newTimesCommand = ({ channel, author, args }) => {
 
   if (event)
     pipe(insertNewTimes, andThen(messageSender))(
-      prop('id')(author),
+      prop("id")(author),
       event,
       solves,
       channel.client.channels
@@ -70,7 +70,7 @@ const dailyRanksCommand = ({ channel, args }) => {
 
   const event = getEvent(args, messageSender);
   const date = getDate(args, event ? messageSender : always(undefined))?.format(
-    'YYYY-MM-DD'
+    "YYYY-MM-DD"
   );
 
   if (and(date)(event))
@@ -85,7 +85,7 @@ const monthlyRanksCommand = ({ channel, args }) => {
 
   const event = getEvent(args, messageSender);
   const date = getDate(args, event ? messageSender : always(undefined))?.format(
-    'YYYY-MM'
+    "YYYY-MM"
   );
 
   if (and(date)(event))
@@ -103,8 +103,8 @@ const idoCommand = ({ author, channel, args }) => {
   if (time)
     pipe(
       addNotifSquad,
-      andThen(messageSender('Vous avez bien été ajouté a la notif squad !'))
-    )(prop('id')(author), time);
+      andThen(messageSender("Vous avez bien été ajouté a la notif squad !"))
+    )(prop("id")(author), time);
 };
 
 const idonotdoCommand = ({ author, channel, args }) => {
@@ -113,8 +113,8 @@ const idonotdoCommand = ({ author, channel, args }) => {
   if (time)
     pipe(
       deleteNotifSquad,
-      andThen(messageSender('Vous avez bien été supprimé de la notif squad !'))
-    )(prop('id', author), time);
+      andThen(messageSender("Vous avez bien été supprimé de la notif squad !"))
+    )(prop("id", author), time);
 };
 
 const pbCommand = ({ author, channel, args }) => {
@@ -122,11 +122,11 @@ const pbCommand = ({ author, channel, args }) => {
 
   const event = getEvent(args, F);
 
-  const userName = join(' ', event ? tail(args) : args);
+  const userName = join(" ", event ? tail(args) : args);
   const user =
     channel.members?.find(
-      either(pipe(prop('nickname'), equals(userName)))(
-        pipe(path(['user', 'username']), equals(userName))
+      either(pipe(prop("nickname"), equals(userName)))(
+        pipe(path(["user", "username"]), equals(userName))
       )
     )?.user ?? author;
 
@@ -135,7 +135,7 @@ const pbCommand = ({ author, channel, args }) => {
   pipe(
     async (events) =>
       filter(
-        propSatisfies(includes(__, events), 'event'),
+        propSatisfies(includes(__, events), "event"),
         (await getUserById(user.id))?.pb ?? []
       ),
     andThen(displayPBforUser),

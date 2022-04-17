@@ -1,5 +1,6 @@
-import fs from 'fs-extra';
+import fs from "fs-extra";
 import {
+  addIndex,
   curry,
   flip,
   head,
@@ -12,52 +13,51 @@ import {
   pipe,
   replace,
   toUpper,
-  addIndex,
   when,
-} from 'ramda';
-import dayjs from 'dayjs';
+} from "ramda";
+import dayjs from "dayjs";
 
-import { computeScore, secondsToTime } from '../tools/calculators.js';
+import { computeScore, secondsToTime } from "../tools/calculators.js";
 import {
   events as availableEvents,
   hours as availableTimes,
-} from '../config.js';
+} from "../config.js";
 
 const helpMessage = async () =>
-  join('\n', [
-    '```Markdown',
-    await fs.readFile('./app/raw-data/help.md', 'utf8'),
-    '```',
+  join("\n", [
+    "```Markdown",
+    await fs.readFile("./app/raw-data/help.md", "utf8"),
+    "```",
   ]);
 
 const dailyRankingsFormat = curry(async (date, channel, ranks) =>
-  join('\n', [
-    '```glsl',
+  join("\n", [
+    "```glsl",
     `Classement du ${date} :`,
     (
       await Promise.all(
         addIndex(map)(async (cuber, idx) => {
           const name = await parseUsername(cuber.author, channel);
           const pts = computeScore(ranks.length, idx);
-          return join('\n', [
+          return join("\n", [
             `#${idx + 1} ${name}: ${cuber.average} ao5, ${
               cuber.single
             } single, ${pts} pts`,
-            `[${join(', ', cuber.solves)}]`,
+            `[${join(", ", cuber.solves)}]`,
           ]);
         }, ranks)
       )
-    ).join('\n'),
-    '```',
+    ).join("\n"),
+    "```",
   ])
 );
 
 const _displayMonthDate = (date) =>
-  dayjs().format('YYYY-MM') === date ? 'en cours' : date;
+  dayjs().format("YYYY-MM") === date ? "en cours" : date;
 
 const monthlyRankingsFormat = curry(async (date, channel, ranks) =>
-  join('\n', [
-    '```xl',
+  join("\n", [
+    "```xl",
     `Classement du mois (${_displayMonthDate(date)}) :`,
     (
       await Promise.all(
@@ -69,15 +69,15 @@ const monthlyRankingsFormat = curry(async (date, channel, ranks) =>
           ranks
         )
       )
-    ).join('\n'),
-    '```',
+    ).join("\n"),
+    "```",
   ])
 );
 
 const parseUsername = async (author, channel) => {
   const user = await channel.client.users.fetch(author);
-  const name = user?.username ?? 'RAGE-QUITTER';
-  return replace(/'/g, 'ˈ', name);
+  const name = user?.username ?? "RAGE-QUITTER";
+  return replace(/'/g, "ˈ", name);
 };
 
 const getEvent = (args, messageSender) =>
@@ -108,21 +108,21 @@ const getTime = (args, messageSender) =>
   )(args);
 
 const displayPB = curry((user, pb) =>
-  join('\n', [
+  join("\n", [
     `__PB de ${user.username}:__`,
     pipe(
       map(({ event, single, singleDate, average, averageDate }) =>
-        join('\n', [
+        join("\n", [
           `__${event}:__`,
           `PB Single: ${secondsToTime(single)} ${
-            singleDate ? `(${dayjs(singleDate).format('YYYY-MM-DD')})` : ''
+            singleDate ? `(${dayjs(singleDate).format("YYYY-MM-DD")})` : ""
           }`,
           `PB Average: ${secondsToTime(average)} ${
-            averageDate ? `(${dayjs(averageDate).format('YYYY-MM-DD')})` : ''
+            averageDate ? `(${dayjs(averageDate).format("YYYY-MM-DD")})` : ""
           }`,
         ])
       ),
-      join('\n')
+      join("\n")
     )(pb),
   ])
 );

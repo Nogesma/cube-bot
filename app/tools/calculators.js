@@ -7,26 +7,26 @@ import {
   filter,
   head,
   ifElse,
+  length,
   lt,
   map,
   match,
   min,
+  path,
   pipe,
   prop,
   reduce,
+  reverse,
   slice,
   sort,
   sortWith,
   split,
   subtract,
   sum,
-  reverse,
-  path,
-  length,
-} from 'ramda';
+} from "ramda";
 
 const timeToSeconds = (time) => {
-  if (time === 'DNF') {
+  if (time === "DNF") {
     return Infinity;
   }
 
@@ -34,7 +34,7 @@ const timeToSeconds = (time) => {
     head(
       match(
         /\d+(\.\d{1,2})?/g,
-        String(reduce((acc, t) => 60 * acc + Number(t), 0, split(':', time)))
+        String(reduce((acc, t) => 60 * acc + Number(t), 0, split(":", time)))
       )
     )
   );
@@ -42,16 +42,16 @@ const timeToSeconds = (time) => {
 
 const secondsToTime = (time) => {
   if (time === Infinity) {
-    return 'DNF';
+    return "DNF";
   }
 
   const min = Math.floor(time / 60);
   let s = (time - min * 60).toFixed(2);
   if (min > 0 && s.length === 4) {
-    s = '0' + s;
+    s = "0" + s;
   }
 
-  return `${min ? min + ':' : ''}${s}`;
+  return `${min ? min + ":" : ""}${s}`;
 };
 
 const averageOfFiveCalculator = ifElse(
@@ -72,11 +72,11 @@ const getBestTime = reduce(min, Infinity);
 const computeScore = (numberOfContestants, rank) =>
   min(100, Math.ceil((-50 / (numberOfContestants - 1)) * rank) + 100);
 
-const sorter = map(pipe(prop, ascend), ['average', 'single']);
+const sorter = map(pipe(prop, ascend), ["average", "single"]);
 
 const sortRankings = (ranks) =>
   sortWith(
-    ifElse(pipe(path([0, 'event']), equals('3BLD')))(always(reverse(sorter)))(
+    ifElse(pipe(path([0, "event"]), equals("3BLD")))(always(reverse(sorter)))(
       always(sorter)
     )(ranks)
   )(ranks);

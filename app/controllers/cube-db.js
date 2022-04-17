@@ -15,19 +15,19 @@ import {
   propEq,
   sort,
   update,
-} from 'ramda';
+} from "ramda";
 
-import Cube from '../models/cubes.js';
-import User from '../models/user.js';
-import Squad from '../models/notif.js';
-import Ranking from '../models/rankings.js';
-import Scrambles from '../models/scrambles.js';
+import Cube from "../models/cubes.js";
+import User from "../models/user.js";
+import Squad from "../models/notif.js";
+import Ranking from "../models/rankings.js";
+import Scrambles from "../models/scrambles.js";
 import {
   computeScore,
   secondsToTime,
   sortRankings,
-} from '../tools/calculators.js';
-import dayjs from 'dayjs';
+} from "../tools/calculators.js";
+import dayjs from "dayjs";
 
 const updateCube = (author, date, event, average, single, solves) =>
   Cube.findOneAndUpdate(
@@ -64,10 +64,10 @@ const modifyUserPB = (event, date, pb, single, average) =>
       }
       return update(i, eventPB, pbArray);
     }
-  )(findIndex(propEq('event', event), pb), pb);
+  )(findIndex(propEq("event", event), pb), pb);
 
 const getUserPB = async (author) =>
-  prop('pb', await User.findOne({ author }).exec());
+  prop("pb", await User.findOne({ author }).exec());
 
 const updateUserPB = async ({ author, event, date, single, average }) => {
   const userPB = await getUserPB(author);
@@ -93,7 +93,7 @@ const updateUserPB = async ({ author, event, date, single, average }) => {
 };
 
 const updateStandings = curry(async (date, event) => {
-  const monthDate = dayjs(date).format('YYYY-MM');
+  const monthDate = dayjs(date).format("YYYY-MM");
   const todayStandings = sortRankings(await Cube.find({ date, event }));
   const promisesUpdate = [];
 
@@ -124,13 +124,13 @@ const getDayStandings = curry(async (date, event) =>
   map(
     (x) =>
       over(
-        lensProp('average'),
+        lensProp("average"),
         secondsToTime
       )(
         over(
-          lensProp('single'),
+          lensProp("single"),
           secondsToTime
-        )(over(lensProp('solves'), map(secondsToTime))(x))
+        )(over(lensProp("solves"), map(secondsToTime))(x))
       ),
     sortRankings(await Cube.find({ date, event }).exec())
   )
@@ -138,7 +138,7 @@ const getDayStandings = curry(async (date, event) =>
 
 const getMonthStandings = curry(async (date, event) => {
   const monthStandings = await Ranking.find({ date, event }).exec();
-  return sort(descend(prop('score')), monthStandings);
+  return sort(descend(prop("score")), monthStandings);
 });
 
 const haveTimesForToday = async (date, author, event) =>
@@ -157,7 +157,7 @@ const deleteNotifSquad = (author, time) =>
   ).exec();
 
 const getNotifSquad = async (time) =>
-  prop('authors')(await Squad.findOne({ event: time }).exec());
+  prop("authors")(await Squad.findOne({ event: time }).exec());
 
 const getUserByApi = (apiKey) => User.findOne({ apiKey }).exec();
 

@@ -1,5 +1,5 @@
 export default {
-  testEnvironment: 'node',
+  testEnvironment: "node",
   collectCoverage: true,
-  coverageReporters: ['text', 'lcov'],
+  coverageReporters: ["text", "lcov"],
 };

@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import { events as availableEvents } from '../config.js';
+import mongoose from "mongoose";
+import { events as availableEvents } from "../config.js";
 
 const userSchema = new mongoose.Schema({
   pb: [
@@ -16,4 +16,4 @@ const userSchema = new mongoose.Schema({
   apiKey: { type: String },
 });
 
-export default mongoose.model('User', userSchema);
+export default mongoose.model("User", userSchema);
