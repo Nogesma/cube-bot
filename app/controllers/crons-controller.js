@@ -58,9 +58,8 @@ const startCron = (bot) => {
             path(["env", prependEvent(event)], process)
           );
           const scrambles = prop("scrambles", await getScramble(date, event));
-          const scrambleArray = map(prop("scrambleString"), scrambles);
 
-          send(chan, formatScrambles(scrambleArray)).then(
+          send(chan, formatScrambles(scrambles)).then(
             chan.send(await dailyRankingsFormat(date)(chan)([]))
           );
         };
