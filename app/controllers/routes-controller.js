@@ -12,13 +12,13 @@ import { hasValidApiKey, hasValidToken } from "../helpers/routes-helpers.js";
 const api = express.Router();
 
 api.use(async (req, res, next) => {
-  // if (
-  //   !(
-  //     (req.cookies.token && (await hasValidToken(req.cookies.token))) ||
-  //     (await hasValidApiKey(req.headers["x-api-key"]))
-  //   )
-  // )
-  //   return res.status(401).end();
+  if (
+    !(
+      (req.cookies.token && (await hasValidToken(req.cookies.token))) ||
+      (await hasValidApiKey(req.headers["x-api-key"]))
+    )
+  )
+    return res.status(401).end();
   next();
 });
 
