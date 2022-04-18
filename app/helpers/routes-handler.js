@@ -16,6 +16,7 @@ import {
   getDayStandings,
   getMonthStandings,
   getScramble,
+  getSvg,
 } from "../controllers/cube-db.js";
 import { insertNewTimes } from "./global-helpers.js";
 import {
@@ -26,6 +27,8 @@ import {
   rejectRequest,
   setUserToken,
 } from "./routes-helpers.js";
+import Svg from "../models/svg.js";
+import Scrambles from "../models/scrambles.js";
 
 dayjs.extend(customParseFormat);
 
@@ -67,7 +70,7 @@ const authDiscord = async (request, response) => {
   response.end(JSON.stringify({ id, username, avatar: userAvatar }));
 };
 
-const scrambleString = (req, res) => {
+const scrambleString = async (req, res) => {
   const { event, date } = req.params;
 
   pipe(
@@ -79,8 +82,7 @@ const scrambleString = (req, res) => {
           res.writeHead(200, {
             "Content-Type": "application/json",
           });
-          const scrambleString = map((scr) => scr.scrambleString, scrambles);
-          res.end(JSON.stringify({ scrambles: scrambleString }));
+          res.end(JSON.stringify({ scrambles }));
         },
         () => rejectRequest(req, res, "Scrambles not found")
       )
@@ -88,22 +90,21 @@ const scrambleString = (req, res) => {
   )(date || dayjs().format("YYYY-MM-DD"), event);
 };
 
-const scrambleSvg = (req, res) => {
+const scrambleSvg = async (req, res) => {
   const { event, date } = req.params;
 
   pipe(
-    getScramble,
+    getSvg,
     andThen(
       ifElse(
         identity,
-        ({ scrambles }) => {
+        ({ svg }) => {
           res.writeHead(200, {
             "Content-Type": "application/json",
           });
-          const svg = map((scr) => scr.svg, scrambles);
           res.end(JSON.stringify({ svg }));
         },
-        () => rejectRequest(req, res, "Scrambles not found")
+        () => rejectRequest(req, res, "Svg not found")
       )
     )
   )(date || dayjs().format("YYYY-MM-DD"), event);

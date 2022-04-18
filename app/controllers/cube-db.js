@@ -22,6 +22,7 @@ import User from "../models/user.js";
 import Squad from "../models/notif.js";
 import Ranking from "../models/rankings.js";
 import Scrambles from "../models/scrambles.js";
+import Svg from "../models/svg.js";
 import {
   computeScore,
   secondsToTime,
@@ -170,7 +171,10 @@ const writeUser = (author, token) => new User({ author, token, pb: [] }).save();
 const updateUser = (author, token) =>
   User.findOneAndUpdate({ author }, { $set: { token } }).exec();
 
-const getScramble = (date, event) => Scrambles.findOne({ date, event }).exec();
+const getScramble = (date, event) =>
+  Scrambles.findOne({ date, event }, "scrambles").exec();
+
+const getSvg = (date, event) => Svg.findOne({ date, event }, "svg").exec();
 
 export {
   updateCube,
@@ -188,5 +192,6 @@ export {
   writeUser,
   updateUser,
   getScramble,
+  getSvg,
   updateUserPB,
 };
