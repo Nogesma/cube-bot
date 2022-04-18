@@ -27,8 +27,6 @@ import {
   rejectRequest,
   setUserToken,
 } from "./routes-helpers.js";
-import Svg from "../models/svg.js";
-import Scrambles from "../models/scrambles.js";
 
 dayjs.extend(customParseFormat);
 
@@ -153,6 +151,8 @@ const rankings = curry(async (fetchRankings, req, res) => {
   res.writeHead(200, {
     "Content-Type": "application/json",
   });
+
+  await guild.members.fetch();
 
   pipe(
     fetchRankings,

@@ -1366,6 +1366,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"blocked-at@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "blocked-at@npm:1.2.0"
+  checksum: 7780737b1ceab0747d27b55469bd80b353ac394c5e40ce0882849da15a0e7178f0bc51ddc2d29e4858358080623fb4f37cb979e8dcab3a1ab3fd6c59cc31c272
+  languageName: node
+  linkType: hard
+
 "bluebird@npm:^3.7.2":
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
@@ -1938,13 +1945,14 @@ __metadata:
     cookie-parser: ^1.4.6
     cron: ^1.8.2
     dayjs: ^1.11.1
+    debugging-aid: ^0.6.7
     discord.js: ^13.6.0
     dotenv: ^16.0.0
     express: ^4.17.3
     fs-extra: ^10.1.0
     jest: ^27.5.1
     mongoose: ^6.3.0
-    nanoid: ^3.3.2
+    nanoid: ^3.3.3
     node-fetch: ^3.2.3
     nodemon: ^2.0.15
     prettier: ^2.6.2
@@ -2006,6 +2014,17 @@ __metadata:
   dependencies:
     ms: ^2.1.1
   checksum: b3d8c5940799914d30314b7c3304a43305fd0715581a919dacb8b3176d024a782062368405b47491516d2091d6462d4d11f2f4974a405048094f8bfebfa3071c
+  languageName: node
+  linkType: hard
+
+"debugging-aid@npm:^0.6.7":
+  version: 0.6.7
+  resolution: "debugging-aid@npm:0.6.7"
+  dependencies:
+    blocked-at: ^1.2.0
+    mitm: ^1.7.1
+    request-to-curl: ^0.1.6
+  checksum: 6950d220c3c92ef31fb8c11bc92c7c04cfc26cf3ec386b87fc43c54c539a6adf52451b174f74e1c73cda248fa758c8e18b33bb9a1e75252b3e5a906a61025a65
   languageName: node
   linkType: hard
 
@@ -2800,6 +2819,13 @@ __metadata:
     statuses: ">= 1.5.0 < 2"
     toidentifier: 1.0.1
   checksum: d3c7e7e776fd51c0a812baff570bdf06fe49a5dc448b700ab6171b1250e4cf7db8b8f4c0b133e4bfe2451022a5790c1ca6c2cae4094dedd6ac8304a1267f91d2
+  languageName: node
+  linkType: hard
+
+"http-parser-js@npm:^0.5.1":
+  version: 0.5.6
+  resolution: "http-parser-js@npm:0.5.6"
+  checksum: 8a92f6782542211c77936104ea1eca3c86a95420eb286b100f6421630f29d8f94fd4cc7a245df8e078791d86cd9a237091094440ffb0cd1b44a3f85bfbf539fa
   languageName: node
   linkType: hard
 
@@ -4097,6 +4123,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mitm@npm:^1.7.1":
+  version: 1.7.2
+  resolution: "mitm@npm:1.7.2"
+  dependencies:
+    semver: ">= 5 < 6"
+    underscore: ">= 1.1.6 < 1.14"
+  checksum: 4228cb40f6f4bf9b38944a8f996a0610f30d66a7b4a94cba6522986fbee3e9d2a6110ff1ab97e144439be01dd1ce83d80f7dbe463ead3af462a847b13767309a
+  languageName: node
+  linkType: hard
+
 "mkdirp@npm:^1.0.3, mkdirp@npm:^1.0.4":
   version: 1.0.4
   resolution: "mkdirp@npm:1.0.4"
@@ -4200,12 +4236,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.3.2":
-  version: 3.3.2
-  resolution: "nanoid@npm:3.3.2"
+"nanoid@npm:^3.3.3":
+  version: 3.3.3
+  resolution: "nanoid@npm:3.3.3"
   bin:
     nanoid: bin/nanoid.cjs
-  checksum: 376717f0685251fad77850bd84c6b8d57837c71eeb1c05be7c742140cc1835a5a2953562add05166d6dbc8fb65f3fdffa356213037b967a470e1691dc3e7b9cc
+  checksum: ada019402a07464a694553c61d2dca8a4353645a7d92f2830f0d487fedff403678a0bee5323a46522752b2eab95a0bc3da98b6cccaa7c0c55cd9975130e6d6f0
   languageName: node
   linkType: hard
 
@@ -4784,6 +4820,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"request-to-curl@npm:^0.1.6":
+  version: 0.1.6
+  resolution: "request-to-curl@npm:0.1.6"
+  dependencies:
+    http-parser-js: ^0.5.1
+  checksum: 84f0c2d6b4247acd6869e508b6cab41a3f4e5eb240b388641dcbd4e4787fb244de16e1b8d4016d721f48a5b25b42f6174d700f76e0338b9cea9533c1759198b1
+  languageName: node
+  linkType: hard
+
 "require-directory@npm:^2.1.1":
   version: 2.1.1
   resolution: "require-directory@npm:2.1.1"
@@ -4934,7 +4979,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^5.7.1":
+"semver@npm:>= 5 < 6, semver@npm:^5.7.1":
   version: 5.7.1
   resolution: "semver@npm:5.7.1"
   bin:
@@ -5498,6 +5543,13 @@ __metadata:
   version: 2.0.5
   resolution: "undefsafe@npm:2.0.5"
   checksum: f42ab3b5770fedd4ada175fc1b2eb775b78f609156f7c389106aafd231bfc210813ee49f54483d7191d7b76e483bc7f537b5d92d19ded27156baf57592eb02cc
+  languageName: node
+  linkType: hard
+
+"underscore@npm:>= 1.1.6 < 1.14":
+  version: 1.13.2
+  resolution: "underscore@npm:1.13.2"
+  checksum: 6ab156c845ccc757fd01d8b9eb28be18ba89ac68993370dd7397a66a95b124f2ba26947fd53e687c084d334429914fc3dd1620d5123b6e0a7cf112cdcf4e859f
   languageName: node
   linkType: hard
 
