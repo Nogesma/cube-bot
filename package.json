@@ -35,7 +35,7 @@
     "debugging-aid": "^0.6.7",
     "dotenv": "^16.0.0",
     "jest": "^28.0.1",
-    "nodemon": "^2.0.15",
+    "nodemon": "^2.0.16",
     "prettier": "^2.6.2"
   },
   "packageManager": "yarn@3.1.1"
