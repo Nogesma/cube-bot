@@ -58,7 +58,7 @@ const authDiscord = async (request, response) => {
   await setUserToken(id, token);
 
   response.cookie("token", token, {
-    expire: dayjs().add(1, "w").toDate(),
+    expires: dayjs().add(1, "M").toDate(),
     sameSite: "strict",
   });
   response.writeHead(200, {
