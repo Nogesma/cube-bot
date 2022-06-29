@@ -1,12 +1,13 @@
-import { andThen, find, pipe, prop, propEq } from "ramda";
+import { andThen, find, not, pipe, prop, propEq } from "ramda";
 import fetch from "node-fetch";
 import {
+  getSessionByToken,
   getUserByApi,
   getUserById,
-  getUserByToken,
-  updateUser,
-  writeUser,
+  newSession,
+  newUser,
 } from "../controllers/cube-db.js";
+import dayjs from "dayjs";
 
 const getJSON = (res) => res.json();
 
@@ -42,14 +43,20 @@ const getGuildData = (token_type, access_token) =>
     },
   });
 
-const setUserToken = async (author, token) =>
-  Boolean(await getUserById(author))
-    ? updateUser(author, token)
-    : writeUser(author, token);
+const setUserToken = async (author, token, expires) => {
+  if (!(await getUserById(author))) await newUser(author);
+  await newSession(author, token, expires);
+};
 
-const getUserId = pipe(getUserByToken, andThen(prop("author")));
+const getUserId = pipe(getSessionByToken, andThen(prop("author")));
 
-const hasValidToken = pipe(getUserByToken, andThen(Boolean));
+const isValid = (date) => date && dayjs().isBefore(dayjs(date));
+
+const hasValidToken = pipe(
+  getSessionByToken,
+  andThen(prop("expires")),
+  andThen(isValid)
+);
 
 const hasValidApiKey = async (apikey) =>
   Boolean(await getUserByApi(apikey ?? ""));

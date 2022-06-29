@@ -12,7 +12,6 @@ const userSchema = new mongoose.Schema({
     },
   ],
   author: { type: String, required: true },
-  token: { type: String },
   apiKey: { type: String },
 });
 

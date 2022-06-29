@@ -29,6 +29,7 @@ import {
   sortRankings,
 } from "../tools/calculators.js";
 import dayjs from "dayjs";
+import Session from "../models/session.js";
 
 const updateCube = (author, date, event, average, single, solves) =>
   Cube.findOneAndUpdate(
@@ -164,9 +165,12 @@ const getUserByApi = (apiKey) => User.findOne({ apiKey }).exec();
 
 const getUserById = (author) => User.findOne({ author }).exec();
 
-const getUserByToken = (token) => User.findOne({ token }).exec();
+const getSessionByToken = (token) => Session.findOne({ token }).exec();
 
-const writeUser = (author, token) => new User({ author, token, pb: [] }).save();
+const newSession = (author, token, expires) =>
+  new Session({ author, token, expires }).save();
+
+const newUser = (author) => new User({ author, pb: [] }).save();
 
 const updateUser = (author, token) =>
   User.findOneAndUpdate({ author }, { $set: { token } }).exec();
@@ -188,10 +192,11 @@ export {
   getNotifSquad,
   getUserById,
   getUserByApi,
-  getUserByToken,
-  writeUser,
+  getSessionByToken,
+  newUser,
   updateUser,
   getScramble,
   getSvg,
   updateUserPB,
+  newSession,
 };

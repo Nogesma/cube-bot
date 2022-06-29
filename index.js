@@ -41,7 +41,7 @@ app.use((req, res, next) => {
 });
 app.use(cookieParser());
 
-app.get("/api/oauth/discord/:code", oauth);
+app.post("/api/oauth/discord/:code", oauth);
 app.use("/api", api);
 
 app.listen(port, () => {

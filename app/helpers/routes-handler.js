@@ -16,6 +16,7 @@ import {
   getDayStandings,
   getMonthStandings,
   getScramble,
+  getSessionByToken,
   getSvg,
 } from "../controllers/cube-db.js";
 import { insertNewTimes } from "./global-helpers.js";
@@ -55,10 +56,12 @@ const authDiscord = async (request, response) => {
   if (!id || !userInGuild) return response.writeHead(400).end();
 
   const token = nanoid();
-  await setUserToken(id, token);
+  const expires = dayjs().add(1, "M").toDate();
+
+  await setUserToken(id, token, expires);
 
   response.cookie("token", token, {
-    expires: dayjs().add(1, "M").toDate(),
+    expires,
     sameSite: "strict",
   });
   response.writeHead(200, {
@@ -114,11 +117,12 @@ const times = async (request, response) => {
   const { event, solves } = request.body;
   const { bot } = request;
 
-  const id = await getUserId(token);
+  const { author } = await getSessionByToken(token);
 
   const userInGuild = await bot.guilds
     .fetch(process.env.GUILD_ID)
-    .then((guild) => guild.members.fetch(id));
+    .then((guild) => guild.members.fetch())
+    .then((guildMembers) => guildMembers.has(author));
 
   if (!userInGuild)
     return response
@@ -137,7 +141,7 @@ const times = async (request, response) => {
       response.end(JSON.stringify({ result }));
     })
   )(
-    id,
+    author,
     event,
     map((s) => s ?? Infinity, solves),
     bot.channels
