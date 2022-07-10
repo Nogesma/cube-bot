@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
-import isBetween from "dayjs/plugin/isBetween.js";
 import { andThen, path, pipe } from "ramda";
 import {
   averageOfFiveCalculator,
@@ -15,11 +14,15 @@ import {
 } from "../controllers/cube-db.js";
 import { dailyRankingsFormat } from "./messages-helpers.js";
 
-dayjs.extend(customParseFormat).extend(isBetween);
+dayjs.extend(customParseFormat);
 
 const insertNewTimes = async (author, event, solves, channels) => {
-  const resultTime = dayjs("23:59", "H:m");
-  if (dayjs().isBetween(resultTime, resultTime.add(2, "m"))) {
+  const timeLimitStart = dayjs("00:01", "H:m");
+  const timeLimitEnd = dayjs("23:59", "H:m");
+
+  const now = dayjs();
+
+  if (now.isBefore(timeLimitStart) || now.isAfter(timeLimitEnd)) {
     return "Vous ne pouvez pas soumettre de temps pendant la phase des résultats";
   }
 
@@ -34,7 +37,7 @@ const insertNewTimes = async (author, event, solves, channels) => {
     return "Veuillez entrer des temps valides";
   }
 
-  const date = resultTime.format("YYYY-MM-DD");
+  const date = now.format("YYYY-MM-DD");
 
   const hasCube = await haveTimesForToday(date, author, event);
 
