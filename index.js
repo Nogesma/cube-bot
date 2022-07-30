@@ -11,6 +11,7 @@ import { api, oauth } from "./app/controllers/routes-controller.js";
 const bot = new Client({
   intents: [
     GatewayIntentBits.Guilds,
+    GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.DirectMessages,
