@@ -74,18 +74,9 @@ const startCron = (bot) => {
   cronList_.push(
     new CronJob({
       cronTime: "0 0 0 1 * *",
-      onTick: () => {
-        removeRole(bot);
-      },
-      start: false,
-      timeZone: "Europe/Paris",
-    })
-  );
+      onTick: async () => {
+        await removeRole(bot);
 
-  cronList_.push(
-    new CronJob({
-      cronTime: "0 0 0 1 * *",
-      onTick: () => {
         const date = dayjs().subtract(1, "h").format("YYYY-MM");
 
         const [standings, rankings] = ap([
