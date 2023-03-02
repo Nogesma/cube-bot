@@ -1,19 +1,31 @@
-import { forEach, head, prop } from "ramda";
+import { head, map, prop } from "ramda";
+import logger from "../tools/logger.js";
 
-const addRole = (bot, ranks) => {
+const addRole = async (bot, ranks) => {
   const guild = bot.guilds.cache.get(process.env.GUILD_ID);
   const role = guild.roles.cache.get(process.env.ROLE_ID);
-  const member = guild.members.cache.get(prop("author")(head(ranks)));
+  const author = prop("author")(head(ranks));
 
-  if (member) member.roles.add(role);
+  if (!author) {
+    logger.error("addRole: author does not exist");
+    return;
+  }
+
+  const member = await guild.members.fetch(author);
+
+  try {
+    await member.roles.add(role);
+  } catch (e) {
+    logger.error(`addRole: could not add role to ${member}. ${e}`);
+  }
 };
 
-const removeRole = (bot) => {
-  const role = bot.guilds.cache
-    .get(process.env.GUILD_ID)
-    .roles.cache.get(process.env.ROLE_ID);
+const removeRole = async (bot) => {
+  const guild = await bot.guilds.fetch(process.env.GUILD_ID);
+  await guild.members.fetch();
+  const role = await guild.roles.fetch(process.env.ROLE_ID);
 
-  forEach((member) => member.roles.remove(role), prop("members")(role));
+  await Promise.all(map((member) => member.roles.remove(role), role.members));
 };
 
 export { addRole, removeRole };

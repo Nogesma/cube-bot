@@ -103,7 +103,7 @@ const startCron = (bot) => {
           )(event);
         };
 
-        map(monthStandings, events);
+        await Promise.all(map(monthStandings, events));
       },
       start: false,
       timeZone: "Europe/Paris",
