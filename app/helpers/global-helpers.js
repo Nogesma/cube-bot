@@ -39,7 +39,7 @@ const insertNewTimes = async (author, event, solves, channels) => {
     times
   );
 
-  const single = getBestTime(solves);
+  const single = getBestTime(times);
 
   if (average < 0) {
     return "Veuillez entrer des temps valides";
