@@ -33,8 +33,10 @@ const insertNewTimes = async (author, event, solves, channels) => {
     if (solves.length !== 3) return "Veuillez entrer 3 temps";
   } else if (solves.length !== 5) return "Veuillez entrer 5 temps";
 
+  const times = map(timeToSeconds, solves);
+
   const average = (isMo3 ? meanOfThreeCalculator : averageOfFiveCalculator)(
-    map(timeToSeconds, solves)
+    times
   );
 
   const single = getBestTime(solves);
@@ -53,7 +55,7 @@ const insertNewTimes = async (author, event, solves, channels) => {
     event,
     average,
     single,
-    solves
+    times
   );
 
   await updateDiscordRanking(date, event, channels);
