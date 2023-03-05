@@ -40,9 +40,9 @@ const dailyRankingsFormat = curry(async (date, channel, ranks) =>
           const name = await parseUsername(cuber.author, channel);
           const pts = computeScore(ranks.length, idx);
           return join("\n", [
-            `#${idx + 1} ${name}: ${cuber.average} ao5, ${
-              cuber.single
-            } single, ${pts} pts`,
+            `#${idx + 1} ${name}: ${cuber.average} ${
+              ["666", "777"].includes(cuber.event) ? "mo3" : "ao5"
+            }, ${cuber.single} single, ${pts} pts`,
             `[${join(", ", cuber.solves)}]`,
           ]);
         }, ranks)

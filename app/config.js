@@ -12,6 +12,8 @@ const events = [
   "PYRA",
   "CLOCK",
   "SKEWB",
+  "666",
+  "777",
 ];
 const hours = range(1)(24);
 

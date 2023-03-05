@@ -26,7 +26,7 @@ import {
 } from "ramda";
 
 const timeToSeconds = (time) => {
-  if (time === "DNF") {
+  if (!time || time === "DNF") {
     return Infinity;
   }
 
@@ -54,16 +54,16 @@ const secondsToTime = (time) => {
   return `${min ? min + ":" : ""}${s}`;
 };
 
+const meanOfThreeCalculator = pipe(
+  sum,
+  divide(__, 3),
+  (x) => x.toFixed(2),
+  Number
+);
+
 const averageOfFiveCalculator = ifElse(
   pipe(filter(lt(0)), length, equals(5)),
-  pipe(
-    sort(subtract),
-    slice(1, -1),
-    sum,
-    divide(__, 3),
-    (x) => x.toFixed(2),
-    Number
-  ),
+  pipe(sort(subtract), slice(1, -1), meanOfThreeCalculator, Number),
   always(-Infinity)
 );
 
@@ -88,4 +88,5 @@ export {
   computeScore,
   getBestTime,
   sortRankings,
+  meanOfThreeCalculator,
 };

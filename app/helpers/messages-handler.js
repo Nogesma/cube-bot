@@ -54,13 +54,12 @@ const helpCommand = (x) =>
 const newTimesCommand = ({ channel, author, args }) => {
   const messageSender = sendMessageToChannel(channel);
   const event = getEvent(args, messageSender);
-  const solves = map(timeToSeconds, tail(args));
 
   if (event)
     pipe(insertNewTimes, andThen(messageSender))(
       prop("id")(author),
       event,
-      solves,
+      tail(args),
       channel.client.channels
     );
 };

@@ -1,10 +1,12 @@
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
-import { andThen, path, pipe } from "ramda";
+import { andThen, ifElse, map, path, pipe } from "ramda";
 import {
   averageOfFiveCalculator,
   getBestTime,
+  meanOfThreeCalculator,
   secondsToTime,
+  timeToSeconds,
 } from "../tools/calculators.js";
 import {
   getDayStandings,
@@ -26,11 +28,15 @@ const insertNewTimes = async (author, event, solves, channels) => {
     return "Vous ne pouvez pas soumettre de temps pendant la phase des résultats";
   }
 
-  if (solves.length !== 5) {
-    return "Veuillez entrer 5 temps";
-  }
+  const isMo3 = ["666", "777"].includes(event);
+  if (isMo3) {
+    if (solves.length !== 3) return "Veuillez entrer 3 temps";
+  } else if (solves.length !== 5) return "Veuillez entrer 5 temps";
 
-  const average = averageOfFiveCalculator(solves);
+  const average = (isMo3 ? meanOfThreeCalculator : averageOfFiveCalculator)(
+    map(timeToSeconds, solves)
+  );
+
   const single = getBestTime(solves);
 
   if (average < 0) {
@@ -52,9 +58,9 @@ const insertNewTimes = async (author, event, solves, channels) => {
 
   await updateDiscordRanking(date, event, channels);
 
-  return `Vos temps ont bien été ${
-    hasCube ? "modifiés" : "enregistrés"
-  }, ao5: ${secondsToTime(average)}`;
+  return `Vos temps ont bien été ${hasCube ? "modifiés" : "enregistrés"}, ${
+    isMo3 ? "mo3" : "ao5"
+  }: ${secondsToTime(average)}`;
 };
 
 const prependEvent = (event) => "EVENT_" + event;
@@ -70,7 +76,7 @@ const updateDiscordRanking = async (date, event, channels) => {
     andThen((x) =>
       chan.messages
         .fetch({ limit: 1 })
-        .then((messages) => messages.first().edit(x))
+        .then((messages) => messages.first()?.edit(x))
     )
   )(date, event);
 };

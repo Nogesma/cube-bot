@@ -28,6 +28,7 @@ import {
   rejectRequest,
   setUserToken,
 } from "./routes-helpers.js";
+import { timeToSeconds } from "../tools/calculators.js";
 
 dayjs.extend(customParseFormat);
 
@@ -131,6 +132,9 @@ const times = async (request, response) => {
         'Veuillez rejoindre le serveur discord <a href="https://discord.gg/B76mDkX">Cubeurs Francophones</a> pour participer.'
       );
 
+  if (!solves.every((x) => typeof x === "string"))
+    return response.status(400).send("Invalid solves");
+
   response.writeHead(200, {
     "Content-Type": "application/json",
   });
@@ -140,12 +144,7 @@ const times = async (request, response) => {
     andThen((result) => {
       response.end(JSON.stringify({ result }));
     })
-  )(
-    author,
-    event,
-    map((s) => s ?? Infinity, solves),
-    bot.channels
-  );
+  )(author, event, solves, bot.channels);
 };
 
 const rankings = curry(async (fetchRankings, req, res) => {

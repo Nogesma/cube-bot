@@ -34,6 +34,9 @@ describe("averageOfFiveCalculator", () => {
     expect(averageOfFiveCalculator([12.34, 0.05, 78.32, 34.21, 9.99])).toBe(
       18.85
     );
+    expect(averageOfFiveCalculator([12.78, 12.87, 12.84, 15.59, 10.41])).toBe(
+      12.83
+    );
   });
 });
 
