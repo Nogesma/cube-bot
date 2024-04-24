@@ -14,29 +14,29 @@
   },
   "dependencies": {
     "bluebird": "^3.7.2",
-    "chalk": "^5.2.0",
+    "chalk": "^5.3.0",
     "cookie-parser": "^1.4.6",
-    "cron": "^2.2.0",
-    "dayjs": "^1.11.7",
-    "discord.js": "^14.7.1",
-    "express": "^4.18.2",
-    "fs-extra": "^11.1.0",
-    "mongoose": "^7.0.0",
-    "nanoid": "^4.0.1",
-    "node-fetch": "^3.3.0",
+    "cron": "^2.4.4",
+    "dayjs": "^1.11.10",
+    "discord.js": "^14.14.1",
+    "express": "^4.19.2",
+    "fs-extra": "^11.2.0",
+    "mongoose": "^7.6.11",
+    "nanoid": "^4.0.2",
+    "node-fetch": "^3.3.2",
     "ramda": "^0.28.0",
-    "scrambow": "^1.7.0",
-    "winston": "^3.8.2"
+    "scrambow": "^1.8.1",
+    "winston": "^3.13.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.17",
-    "@types/jest": "^29.4.0",
-    "@types/node": "^18.14.6",
-    "debugging-aid": "^0.6.7",
-    "dotenv": "^16.0.3",
-    "jest": "^29.4.3",
-    "nodemon": "^2.0.21",
-    "prettier": "^2.8.4"
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^18.19.31",
+    "debugging-aid": "^0.6.8",
+    "dotenv": "^16.4.5",
+    "jest": "^29.7.0",
+    "nodemon": "^2.0.22",
+    "prettier": "^2.8.8"
   },
-  "packageManager": "yarn@3.3.1"
+  "packageManager": "yarn@4.1.1"
 }
