@@ -20,6 +20,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           # Docker registry password
-          password: ${{ secrets.GHCR_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
           # Adds latest tag to auto-generated GitOps tag
           addLatest: true
