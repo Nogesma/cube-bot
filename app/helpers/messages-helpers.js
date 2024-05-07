@@ -76,7 +76,7 @@ const monthlyRankingsFormat = curry(async (date, channel, ranks) =>
 
 const parseUsername = async (author, channel) => {
   const user = await channel.client.users.fetch(author);
-  const name = user?.username ?? "RAGE-QUITTER";
+  const name = user?.globalName ?? "RAGE-QUITTER";
   return replace(/'/g, "ˈ", name);
 };
 
