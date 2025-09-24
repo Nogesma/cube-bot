@@ -25,17 +25,17 @@ describe("averageOfFiveCalculator", () => {
     expect(averageOfFiveCalculator([13, 4, 5, 3, 6])).toBe(5);
     expect(averageOfFiveCalculator([12, 13, 17, 15, 22])).toBe(15);
     expect(averageOfFiveCalculator([Infinity, 4, Infinity, 3, 6])).toBe(
-      Infinity
+      Infinity,
     );
     expect(averageOfFiveCalculator([15, Infinity, 5, 3, 6])).toBe(8.67);
     expect(averageOfFiveCalculator([12.34, 0.05, 78.32, 34.21, 9.95])).toBe(
-      18.83
+      18.83,
     );
     expect(averageOfFiveCalculator([12.34, 0.05, 78.32, 34.21, 9.99])).toBe(
-      18.85
+      18.85,
     );
     expect(averageOfFiveCalculator([12.78, 12.87, 12.84, 15.59, 10.41])).toBe(
-      12.83
+      12.83,
     );
   });
 });
@@ -131,7 +131,7 @@ describe("sortRankings", () => {
           single: 21.58,
           event: "333",
         },
-      ])
+      ]),
     ).toEqual([
       {
         author: "1",
@@ -178,7 +178,7 @@ describe("sortRankings", () => {
           single: 40.39,
           event: "3BLD",
         },
-      ])
+      ]),
     ).toEqual([
       {
         author: "2",

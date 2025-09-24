@@ -10,7 +10,7 @@ describe("helpMessage", () => {
     expect(await helpMessage()).toBe(
       "```Markdown\n" +
         (await fs.readFile("./app/raw-data/help.md", "utf8")) +
-        "\n```"
+        "\n```",
     );
   });
 });

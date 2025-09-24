@@ -48,7 +48,7 @@ const helpCommand = (x) =>
   pipe(
     prop("channel"),
     helpMessage,
-    andThen(sendMessageToChannel(x.channel))
+    andThen(sendMessageToChannel(x.channel)),
   )(x);
 
 const newTimesCommand = ({ channel, author, args }) => {
@@ -60,7 +60,7 @@ const newTimesCommand = ({ channel, author, args }) => {
       prop("id")(author),
       event,
       tail(args),
-      channel.client.channels
+      channel.client.channels,
     );
 };
 
@@ -69,13 +69,13 @@ const dailyRanksCommand = ({ channel, args }) => {
 
   const event = getEvent(args, messageSender);
   const date = getDate(args, event ? messageSender : always(undefined))?.format(
-    "YYYY-MM-DD"
+    "YYYY-MM-DD",
   );
 
   if (and(date)(event))
     pipe(
       getDayStandings,
-      andThen(pipe(dailyRankingsFormat(date)(channel), andThen(messageSender)))
+      andThen(pipe(dailyRankingsFormat(date)(channel), andThen(messageSender))),
     )(date, event);
 };
 
@@ -84,15 +84,15 @@ const monthlyRanksCommand = ({ channel, args }) => {
 
   const event = getEvent(args, messageSender);
   const date = getDate(args, event ? messageSender : always(undefined))?.format(
-    "YYYY-MM"
+    "YYYY-MM",
   );
 
   if (and(date)(event))
     pipe(
       getMonthStandings,
       andThen(
-        pipe(monthlyRankingsFormat(date)(channel), andThen(messageSender))
-      )
+        pipe(monthlyRankingsFormat(date)(channel), andThen(messageSender)),
+      ),
     )(date, event);
 };
 
@@ -102,7 +102,7 @@ const idoCommand = ({ author, channel, args }) => {
   if (time)
     pipe(
       addNotifSquad,
-      andThen(messageSender("Vous avez bien été ajouté a la notif squad !"))
+      andThen(messageSender("Vous avez bien été ajouté a la notif squad !")),
     )(prop("id")(author), time);
 };
 
@@ -112,7 +112,7 @@ const idonotdoCommand = ({ author, channel, args }) => {
   if (time)
     pipe(
       deleteNotifSquad,
-      andThen(messageSender("Vous avez bien été supprimé de la notif squad !"))
+      andThen(messageSender("Vous avez bien été supprimé de la notif squad !")),
     )(prop("id", author), time);
 };
 
@@ -125,8 +125,8 @@ const pbCommand = ({ author, channel, args }) => {
   const user =
     channel.members?.find(
       either(pipe(prop("nickname"), equals(userName)))(
-        pipe(path(["user", "username"]), equals(userName))
-      )
+        pipe(path(["user", "username"]), equals(userName)),
+      ),
     )?.user ?? author;
 
   const displayPBforUser = displayPB(user);
@@ -135,10 +135,10 @@ const pbCommand = ({ author, channel, args }) => {
     async (events) =>
       filter(
         propSatisfies(includes(__, events), "event"),
-        (await getUserById(user.id))?.pb ?? []
+        (await getUserById(user.id))?.pb ?? [],
       ),
     andThen(displayPBforUser),
-    andThen(messageSender)
+    andThen(messageSender),
   )(event ? [event] : availableEvents);
 };
 

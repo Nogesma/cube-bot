@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Client, GatewayIntentBits, Partials } from "discord.js";
+import { Client, Events, GatewayIntentBits, Partials } from "discord.js";
 import express from "express";
 import cookieParser from "cookie-parser";
 
@@ -29,13 +29,13 @@ mongoose
   })
   .catch((e) => logger.error(`Could not connect to database: ${e}`));
 
-bot.on("ready", () => {
+bot.once(Events.ClientReady, () => {
   logger.info("Bot ready");
   startCron(bot);
   bot.user.setActivity({ name: "for new PB | ?h", type: 3 });
 });
 
-bot.on("messageCreate", incomingMessage);
+bot.on(Events.MessageCreate, incomingMessage);
 bot.login(process.env.TOKEN);
 
 app.use(express.json());

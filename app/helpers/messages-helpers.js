@@ -45,11 +45,11 @@ const dailyRankingsFormat = curry(async (date, channel, ranks) =>
             }, ${cuber.single} single, ${pts} pts`,
             `[${join(", ", cuber.solves)}]`,
           ]);
-        }, ranks)
+        }, ranks),
       )
     ).join("\n"),
     "```",
-  ])
+  ]),
 );
 
 const _displayMonthDate = (date) =>
@@ -66,12 +66,12 @@ const monthlyRankingsFormat = curry(async (date, channel, ranks) =>
             `#${idx + 1} ${await parseUsername(cuber.author, channel)} : ${
               cuber.score
             } pts (${cuber.attendances})`,
-          ranks
-        )
+          ranks,
+        ),
       )
     ).join("\n"),
     "```",
-  ])
+  ]),
 );
 
 const parseUsername = async (author, channel) => {
@@ -85,8 +85,8 @@ const getEvent = (args, messageSender) =>
     head,
     when(identity)(toUpper),
     ifElse(flip(includes)(availableEvents), identity, () =>
-      messageSender(`Veuillez entrer un event valide : ${availableEvents}`)
-    )
+      messageSender(`Veuillez entrer un event valide : ${availableEvents}`),
+    ),
   )(args);
 
 const getDate = (args, messageSender) =>
@@ -103,8 +103,8 @@ const getTime = (args, messageSender) =>
     head,
     Number,
     ifElse(flip(includes)(availableTimes), identity, () =>
-      messageSender(`Veuillez entrer une heure valide : ${availableTimes}`)
-    )
+      messageSender(`Veuillez entrer une heure valide : ${availableTimes}`),
+    ),
   )(args);
 
 const displayPB = curry((user, pb) =>
@@ -120,11 +120,11 @@ const displayPB = curry((user, pb) =>
           `PB Average: ${secondsToTime(average)} ${
             averageDate ? `(${dayjs(averageDate).format("YYYY-MM-DD")})` : ""
           }`,
-        ])
+        ]),
       ),
-      join("\n")
+      join("\n"),
     )(pb),
-  ])
+  ]),
 );
 
 export {

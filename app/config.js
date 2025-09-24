@@ -14,6 +14,7 @@ const events = [
   "SKEWB",
   "666",
   "777",
+  "4BLD",
 ];
 const hours = range(1)(24);
 

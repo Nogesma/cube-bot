@@ -34,7 +34,7 @@ import Session from "../models/session.js";
 const updateCube = (author, date, event, average, single, solves) =>
   Cube.findOneAndUpdate(
     { author, date, event },
-    { $set: { average, single, solves } }
+    { $set: { average, single, solves } },
   ).exec();
 
 const writeCube = (author, date, event, average, single, solves) =>
@@ -52,7 +52,7 @@ const modifyUserPB = (event, date, pb, single, average) =>
           singleDate: date,
           averageDate: date,
         },
-        pbArray
+        pbArray,
       ),
     (i, pbArray) => {
       const eventPB = nth(i, pbArray);
@@ -65,8 +65,8 @@ const modifyUserPB = (event, date, pb, single, average) =>
         eventPB.averageDate = date;
       }
       return update(i, eventPB, pbArray);
-    }
-  )(findIndex(propEq("event", event), pb), pb);
+    },
+  )(findIndex(propEq(event, "event"), pb), pb);
 
 const getUserPB = async (author) =>
   prop("pb", await User.findOne({ author }).exec());
@@ -76,7 +76,7 @@ const updateUserPB = async ({ author, event, date, single, average }) => {
   if (userPB) {
     return User.findOneAndUpdate(
       { author },
-      { $set: { pb: modifyUserPB(event, date, userPB, single, average) } }
+      { $set: { pb: modifyUserPB(event, date, userPB, single, average) } },
     ).exec();
   } else {
     return new User({
@@ -115,7 +115,7 @@ const updateStandings = curry(async (date, event) => {
             attendances: 1,
             event,
           }).save();
-        })
+        }),
     );
     promisesUpdate.push(updateUserPB(entry));
   }, todayStandings);
@@ -127,15 +127,15 @@ const getDayStandings = curry(async (date, event) =>
     (x) =>
       over(
         lensProp("average"),
-        secondsToTime
+        secondsToTime,
       )(
         over(
           lensProp("single"),
-          secondsToTime
-        )(over(lensProp("solves"), map(secondsToTime))(x))
+          secondsToTime,
+        )(over(lensProp("solves"), map(secondsToTime))(x)),
       ),
-    sortRankings(await Cube.find({ date, event }).exec())
-  )
+    sortRankings(await Cube.find({ date, event }).exec()),
+  ),
 );
 
 const getMonthStandings = curry(async (date, event) => {
@@ -149,13 +149,13 @@ const haveTimesForToday = async (date, author, event) =>
 const addNotifSquad = (author, time) =>
   Squad.findOneAndUpdate(
     { event: time },
-    { $addToSet: { authors: author } }
+    { $addToSet: { authors: author } },
   ).exec();
 
 const deleteNotifSquad = (author, time) =>
   Squad.findOneAndUpdate(
     { event: time },
-    { $pull: { authors: author } }
+    { $pull: { authors: author } },
   ).exec();
 
 const getNotifSquad = async (time) =>

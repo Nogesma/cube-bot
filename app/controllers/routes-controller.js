@@ -22,8 +22,8 @@ api.use(async (req, res, next) => {
   next();
 });
 
-api.get("/scrambles/:event/:date?", scrambleString);
-api.get("/svg/:event/:date?", scrambleSvg);
+api.get("/scrambles/:event{/:date}", scrambleString);
+api.get("/svg/:event{/:date}", scrambleSvg);
 api.get("/ping", (req, res) => res.sendStatus(200));
 api.get("/rankings/day/:event/:date", dailyRankings);
 api.get("/rankings/month/:event/:date", monthlyRankings);

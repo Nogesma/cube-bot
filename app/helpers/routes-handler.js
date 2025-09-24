@@ -47,7 +47,7 @@ const authDiscord = async (request, response) => {
 
   const { id, username, avatar, discriminator } = await getUserData(
     token_type,
-    access_token
+    access_token,
   );
 
   const userAvatar = avatar ?? discriminator % 5;
@@ -86,9 +86,9 @@ const scrambleString = async (req, res) => {
           });
           res.end(JSON.stringify({ scrambles }));
         },
-        () => rejectRequest(req, res, "Scrambles not found")
-      )
-    )
+        () => rejectRequest(req, res, "Scrambles not found"),
+      ),
+    ),
   )(date || dayjs().format("YYYY-MM-DD"), event);
 };
 
@@ -106,9 +106,9 @@ const scrambleSvg = async (req, res) => {
           });
           res.end(JSON.stringify({ svg }));
         },
-        () => rejectRequest(req, res, "Svg not found")
-      )
-    )
+        () => rejectRequest(req, res, "Svg not found"),
+      ),
+    ),
   )(date || dayjs().format("YYYY-MM-DD"), event);
 };
 
@@ -129,7 +129,7 @@ const times = async (request, response) => {
     return response
       .status(401)
       .send(
-        'Veuillez rejoindre le serveur discord <a href="https://discord.gg/B76mDkX">Cubeurs Francophones</a> pour participer.'
+        'Veuillez rejoindre le serveur discord <a href="https://discord.gg/B76mDkX">Cubeurs Francophones</a> pour participer.',
       );
 
   if (!solves.every((x) => typeof x === "string"))
@@ -143,7 +143,7 @@ const times = async (request, response) => {
     insertNewTimes,
     andThen((result) => {
       response.end(JSON.stringify({ result }));
-    })
+    }),
   )(author, event, solves, bot.channels);
 };
 
@@ -161,7 +161,7 @@ const rankings = curry(async (fetchRankings, req, res) => {
     fetchRankings,
     andThen(map((x) => mergeLeft(x, getAvatarAndUsername(guild, x.author)))),
     andThen(JSON.stringify),
-    andThen((x) => res.end(x))
+    andThen((x) => res.end(x)),
   )(date || dayjs().format("YYYY-MM-DD"), event);
 });
 
@@ -169,16 +169,16 @@ const dailyRankings = rankings(
   pipe(
     getDayStandings,
     andThen(
-      map(pick(["solves", "event", "author", "average", "single", "date"]))
-    )
-  )
+      map(pick(["solves", "event", "author", "average", "single", "date"])),
+    ),
+  ),
 );
 
 const monthlyRankings = rankings(
   pipe(
     getMonthStandings,
-    andThen(map(pick(["score", "attendances", "author", "date", "event"])))
-  )
+    andThen(map(pick(["score", "attendances", "author", "date", "event"]))),
+  ),
 );
 
 const getAvatarAndUsername = pipe(
@@ -186,7 +186,7 @@ const getAvatarAndUsername = pipe(
   (member) => ({
     avatar: member?.user.avatar ?? member?.user.discriminator % 5,
     username: member?.user.username,
-  })
+  }),
 );
 
 export {

@@ -28,7 +28,7 @@ const insertNewTimes = async (author, event, solves, channels) => {
     return "Vous ne pouvez pas soumettre de temps pendant la phase des résultats";
   }
 
-  const isMo3 = ["666", "777"].includes(event);
+  const isMo3 = ["666", "777", "4BLD"].includes(event);
   if (isMo3) {
     if (solves.length !== 3) return "Veuillez entrer 3 temps";
   } else if (solves.length !== 5) return "Veuillez entrer 5 temps";
@@ -36,7 +36,7 @@ const insertNewTimes = async (author, event, solves, channels) => {
   const times = map(timeToSeconds, solves);
 
   const average = (isMo3 ? meanOfThreeCalculator : averageOfFiveCalculator)(
-    times
+    times,
   );
 
   const single = getBestTime(times);
@@ -55,7 +55,7 @@ const insertNewTimes = async (author, event, solves, channels) => {
     event,
     average,
     single,
-    times
+    times,
   );
 
   await updateDiscordRanking(date, event, channels);
@@ -69,7 +69,7 @@ const prependEvent = (event) => "EVENT_" + event;
 
 const updateDiscordRanking = async (date, event, channels) => {
   const chan = await channels.fetch(
-    path(["env", prependEvent(event)], process)
+    path(["env", prependEvent(event)], process),
   );
 
   pipe(
@@ -78,8 +78,8 @@ const updateDiscordRanking = async (date, event, channels) => {
     andThen((x) =>
       chan.messages
         .fetch({ limit: 1 })
-        .then((messages) => messages.first()?.edit(x))
-    )
+        .then((messages) => messages.first()?.edit(x)),
+    ),
   )(date, event);
 };
 

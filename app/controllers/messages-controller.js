@@ -26,18 +26,18 @@ import {
 
 const messageIsCommand = both(
   pipe(prop("content"), startsWith("?")),
-  pipe(path(["author", "bot"]), not)
+  pipe(path(["author", "bot"]), not),
 );
 
 const commandChoose = cond([
-  [propEq("command")("?t"), newTimesCommand],
+  [propEq("?t")("command"), newTimesCommand],
   [propSatisfies(includes(__, ["?h", "?help"]))("command"), helpCommand],
-  [propEq("command")("?classement"), dailyRanksCommand],
-  [propEq("command")("?classementmois"), monthlyRanksCommand],
-  [propEq("command")("?ido"), idoCommand],
-  [propEq("command")("?idonotdo"), idonotdoCommand],
-  [propEq("command")("?pb"), pbCommand],
-  [propEq("command")("?scr"), scrCommand],
+  [propEq("?classement")("command"), dailyRanksCommand],
+  [propEq("?classementmois")("command"), monthlyRanksCommand],
+  [propEq("?ido")("command"), idoCommand],
+  [propEq("?idonotdo")("command"), idonotdoCommand],
+  [propEq("?pb")("command"), pbCommand],
+  [propEq("?scr")("command"), scrCommand],
 ]);
 
 const applyCommand = (message) => {

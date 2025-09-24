@@ -35,7 +35,7 @@ const cronList_ = [];
 
 const startCron = (bot) => {
   cronList_.push(
-    new CronJob({
+    CronJob.from({
       cronTime: "30 59 23 * * *",
       onTick: () => {
         const standingsDate = dayjs().format("YYYY-MM-DD");
@@ -43,10 +43,10 @@ const startCron = (bot) => {
       },
       start: false,
       timeZone: "Europe/Paris",
-    })
+    }),
   );
   cronList_.push(
-    new CronJob({
+    CronJob.from({
       cronTime: "30 0 0 * * *",
       onTick: async () => {
         const date = dayjs().format("YYYY-MM-DD");
@@ -55,12 +55,12 @@ const startCron = (bot) => {
 
         const scrambleSend = async (event) => {
           const chan = await bot.channels.fetch(
-            path(["env", prependEvent(event)], process)
+            path(["env", prependEvent(event)], process),
           );
           const scrambles = prop("scrambles", await getScramble(date, event));
 
           send(chan, formatScrambles(scrambles)).then(
-            chan.send(await dailyRankingsFormat(date)(chan)([]))
+            chan.send(await dailyRankingsFormat(date)(chan)([])),
           );
         };
 
@@ -68,11 +68,11 @@ const startCron = (bot) => {
       },
       start: false,
       timeZone: "Europe/Paris",
-    })
+    }),
   );
 
   cronList_.push(
-    new CronJob({
+    CronJob.from({
       cronTime: "0 0 0 1 * *",
       onTick: async () => {
         await removeRole(bot);
@@ -86,7 +86,7 @@ const startCron = (bot) => {
 
         const monthStandings = (event) => {
           const chan = bot.channels.cache.get(
-            path(["env", prependEvent(event)], process)
+            path(["env", prependEvent(event)], process),
           );
 
           pipe(
@@ -97,9 +97,9 @@ const startCron = (bot) => {
                   addRole(bot, ranks);
                   return rankings(chan, ranks);
                 },
-                andThen((x) => chan.send(x))
-              )
-            )
+                andThen((x) => chan.send(x)),
+              ),
+            ),
           )(event);
         };
 
@@ -107,11 +107,11 @@ const startCron = (bot) => {
       },
       start: false,
       timeZone: "Europe/Paris",
-    })
+    }),
   );
 
   cronList_.push(
-    new CronJob({
+    CronJob.from({
       cronTime: "0 0 * * * *",
       onTick: () => {
         const time = dayjs().hour();
@@ -125,17 +125,17 @@ const startCron = (bot) => {
                 chan.send(
                   `Participez au tournoi ! ${join(
                     " ",
-                    map((x) => `<@${x}>`, doc)
-                  )}`
-                )
-              )
-            )
+                    map((x) => `<@${x}>`, doc),
+                  )}`,
+                ),
+              ),
+            ),
           )(time);
         }
       },
       start: false,
       timeZone: "Europe/Paris",
-    })
+    }),
   );
 
   cronList_.forEach((c) => c.start());

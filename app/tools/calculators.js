@@ -7,11 +7,13 @@ import {
   filter,
   head,
   ifElse,
+  includes,
   length,
   lt,
   map,
   match,
   min,
+  or,
   path,
   pipe,
   prop,
@@ -34,9 +36,9 @@ const timeToSeconds = (time) => {
     head(
       match(
         /\d+(\.\d{1,2})?/g,
-        String(reduce((acc, t) => 60 * acc + Number(t), 0, split(":", time)))
-      )
-    )
+        String(reduce((acc, t) => 60 * acc + Number(t), 0, split(":", time))),
+      ),
+    ),
   );
 };
 
@@ -58,13 +60,13 @@ const meanOfThreeCalculator = pipe(
   sum,
   divide(__, 3),
   (x) => x.toFixed(2),
-  Number
+  Number,
 );
 
 const averageOfFiveCalculator = ifElse(
   pipe(filter(lt(0)), length, equals(5)),
   pipe(sort(subtract), slice(1, -1), meanOfThreeCalculator, Number),
-  always(-Infinity)
+  always(-Infinity),
 );
 
 const getBestTime = reduce(min, Infinity);
@@ -76,9 +78,9 @@ const sorter = map(pipe(prop, ascend), ["average", "single"]);
 
 const sortRankings = (ranks) =>
   sortWith(
-    ifElse(pipe(path([0, "event"]), equals("3BLD")))(always(reverse(sorter)))(
-      always(sorter)
-    )(ranks)
+    ifElse(pipe(path([0, "event"]), includes(__, ["3BLD", "4BLD"])))(
+      always(reverse(sorter)),
+    )(always(sorter))(ranks),
   )(ranks);
 
 export {
