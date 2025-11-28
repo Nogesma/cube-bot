@@ -181,10 +181,10 @@ const monthlyRankings = rankings(
 
 const getAvatarAndUsername = pipe(
   (guild, author) => guild.members.fetch(author),
-  (member) => ({
+  andThen((member) => ({
     avatar: member?.user.avatar ?? member?.user.discriminator % 5,
     username: member?.user.username,
-  }),
+  })),
 );
 
 export {
