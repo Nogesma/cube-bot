@@ -157,7 +157,11 @@ const rankings = curry(async (fetchRankings, req, res) => {
 
   pipe(
     fetchRankings,
-    andThen(map(async (x) => mergeLeft(x, await getAvatarAndUsername(guild, x.author)))),
+    andThen(
+      map(async (x) =>
+        mergeLeft(x, await getAvatarAndUsername(guild, x.author)),
+      ),
+    ),
     andThen((x) => Promise.all(x)),
     andThen(JSON.stringify),
     andThen((x) => res.end(x)),
