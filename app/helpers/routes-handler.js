@@ -155,8 +155,6 @@ const rankings = curry(async (fetchRankings, req, res) => {
     "Content-Type": "application/json",
   });
 
-  if (guild.members.cache.first() === undefined) await guild.members.fetch();
-
   pipe(
     fetchRankings,
     andThen(map((x) => mergeLeft(x, getAvatarAndUsername(guild, x.author)))),
@@ -182,7 +180,7 @@ const monthlyRankings = rankings(
 );
 
 const getAvatarAndUsername = pipe(
-  (guild, author) => guild.members.cache.get(author),
+  (guild, author) => guild.members.fetch(author),
   (member) => ({
     avatar: member?.user.avatar ?? member?.user.discriminator % 5,
     username: member?.user.username,
